@@ -1,0 +1,13 @@
+# Routes
+# This file defines all application common.routes (Higher priority common.routes first)
+# ~~~~
+
+
+POST     /sms/:mobile            controllers.common.SmsController.sendVerificationCode(mobile:String)
+GET      /wechat/getqrcode       wechat.common.WechatController.getqrcode()
+
+GET      /message               controllers.common.MessageController.read()
+POST     /message               controllers.common.MessageController.create()
+POST     /message/settle        controllers.common.MessageController.settle()
+GET      /message/count         controllers.common.MessageController.readCount()
+
