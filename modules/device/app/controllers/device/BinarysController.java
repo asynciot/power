@@ -5,7 +5,7 @@ import com.avaje.ebean.ExpressionList;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
-import models.device.Binary;
+import models.device.Binaries;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.FormFactory;
@@ -35,13 +35,13 @@ public class BinarysController  extends BaseController {
             if (filepart != null) {
 
                 String fileName = filepart.getFilename().split("\\.")[0];
-                int count=Binary.finder.where().eq("name",fileName).eq("type","firmware").findRowCount();
+                int count= Binaries.finder.where().eq("name",fileName).eq("type","firmware").findRowCount();
                 if(count>0){
                     throw  new CodeException(ErrDefinition.E_COMMOND_REGISTER_ALREADY_EXIST);
                 }
                 String contentType = filepart.getContentType();
                 File file = (File) filepart.getFile();//获取到默认上传保存的完整文件路径，这只是个临时文件
-                Binary binary = new Binary();
+                Binaries binaries = new Binaries();
                 FileInputStream fis = new FileInputStream(file);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 byte[] b = new byte[1024];
@@ -52,12 +52,12 @@ public class BinarysController  extends BaseController {
                 }
                 fis.close();
                 bos.close();
-                binary.data = bos.toByteArray();
-                binary.t_create = new Date();
-                binary.name=fileName;
-                binary.type="firmware";
-                binary.save();
-                return success("binary", binary.id);
+                binaries.data = bos.toByteArray();
+                binaries.t_create = new Date();
+                binaries.name=fileName;
+                binaries.type="firmware";
+                binaries.save();
+                return success("binaries", binaries.id);
             } else {
                 return failure(ErrDefinition.E_BINARYS_UPLOAD_FAILD );
             }
@@ -74,25 +74,25 @@ public class BinarysController  extends BaseController {
 
     }
     public Result delete(){
-        return delete(Binary.class,formFactory);
+        return delete(Binaries.class,formFactory);
     }
     public Result read() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
-            List<Binary> binaryList = null;
+            List<Binaries> binariesList = null;
             String id = form.get("id");
 
             if (id != null && !id.isEmpty()) {
-                Binary binary =Binary.finder.byId(Integer.parseInt(id));
-                if(binary == null){
+                Binaries binaries = Binaries.finder.byId(Integer.parseInt(id));
+                if(binaries == null){
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
-                binaryList = new ArrayList<Binary>();
-                binaryList.add(binary);
-                return successList(1, 1, binaryList);
+                binariesList = new ArrayList<Binaries>();
+                binariesList.add(binaries);
+                return successList(1, 1, binariesList);
             }
 
-            ExpressionList<Binary> exprList = Binary.finder.where();
+            ExpressionList<Binaries> exprList = Binaries.finder.where();
             String pageStr = form.get("page");
             String numStr = form.get("num");
 
@@ -111,7 +111,7 @@ public class BinarysController  extends BaseController {
                 exprList.add(Expr.eq("type", type));
             }
 
-            binaryList = exprList
+            binariesList = exprList
                     .setFirstRow((page-1)*num)
                     .setMaxRows(num)
                     .findList();
@@ -119,7 +119,7 @@ public class BinarysController  extends BaseController {
             int totalNum = exprList.findRowCount();
             int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
 
-            return successList(totalNum, totalPage,binaryList);
+            return successList(totalNum, totalPage, binariesList);
         }
         catch (CodeException ce) {
             Logger.error(ce.getMessage());

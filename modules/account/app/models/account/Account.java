@@ -23,6 +23,9 @@ public class Account extends Model{
     @Column(nullable = false)
     public  String username;
 
+    @Column(nullable = false)
+    public  String nickname;
+
     @JsonIgnore
     public  String password;
 

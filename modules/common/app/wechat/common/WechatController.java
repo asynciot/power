@@ -68,7 +68,7 @@ public class WechatController extends XDomainController {
         Map<String, Object> result = new HashMap<String,Object>();
         result.put("touser",touser);
         result.put("template_id","7Do5VrpCMm6XGAbzBM6wHRPXxiqThdslYTvMadIkKhE");
-        result.put("url","http://weixin.qq.com/download");
+        result.put("url","http://server.asynciot.com/company/work-order/"+device_id);
 
         Map<String, Object> data = new HashMap<String,Object>();
 
@@ -78,13 +78,13 @@ public class WechatController extends XDomainController {
         data.put("first",first);
 
         Map<String, Object> OrderSn = new HashMap<String,Object>();
-        OrderSn.put("value",device_id);
+        OrderSn.put("value",device_id+" (电梯编号)");
         OrderSn.put("color","#173177");
 
         data.put("OrderSn",OrderSn);
 
         Map<String, Object> OrderStatus = new HashMap<String,Object>();
-        OrderStatus.put("value",type);
+        OrderStatus.put("value",type+" (故障类型)");
         OrderStatus.put("color","#173177");
 
         data.put("OrderStatus",OrderStatus);

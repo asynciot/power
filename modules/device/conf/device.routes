@@ -24,10 +24,10 @@ GET         /Device/ReadCountFollow     controllers.device.DeviceController.read
 GET         /Event              controllers.device.EventController.read()
 
 GET         /Fault              controllers.device.FaultController.read()
-POST         /Fault/order              controllers.device.FaultController.order()
+POST        /Fault/order              controllers.device.FaultController.order()
 
 GET         /Repair              controllers.device.RepairController.read()
-POST         /Repair/finish       controllers.device.RepairController.finish()
+POST        /Repair/finish       controllers.device.RepairController.finish()
 
 GET         /Monitor/socket      controllers.device.MonitorController.socket(deviceId:String)
 

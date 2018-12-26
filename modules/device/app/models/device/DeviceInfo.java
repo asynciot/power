@@ -22,6 +22,14 @@ public class DeviceInfo extends Model{
 
     public String device_name;
 
+    public String maintenance_type;
+
+    public String maintenance_cycle;
+
+    public String install_date;
+
+    public String install_addr;
+
     public String register;
 
     public String tagcolor;
@@ -34,7 +42,10 @@ public class DeviceInfo extends Model{
 
     public String delay;
 
-    public  Integer rssi;
+    public Integer rssi;
+
+    public Integer runtime_state;
+
 
     public static Find<Integer, DeviceInfo> finder =
             new Find<Integer, DeviceInfo>(){};

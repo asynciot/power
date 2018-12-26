@@ -6,6 +6,7 @@
 create table account (
   id                            varchar(255) not null,
   username                      varchar(255) not null,
+  nickname                      varchar(255) not null,
   password                      varchar(255),
   mobile                        varchar(255),
   wechat                        varchar(255),
@@ -19,13 +20,13 @@ create table account (
   constraint pk_account primary key (id)
 );
 
-create table `binary` (
+create table binaries (
   id                            integer auto_increment not null,
   name                          varchar(255),
   type                          varchar(255),
   t_create                      datetime(6),
   data                          varbinary(255),
-  constraint pk_binary primary key (id)
+  constraint pk_binaries primary key (id)
 );
 
 create table cellocation (
@@ -59,6 +60,7 @@ create table commands (
   submit                        datetime(6),
   execute                       datetime(6),
   finish                        datetime(6),
+  `binary`                      varbinary(255),
   constraint pk_commands primary key (id)
 );
 
@@ -75,6 +77,10 @@ create table device_info (
   iplocation_id                 integer,
   cellocation_id                integer,
   device_name                   varchar(255),
+  maintenance_type              varchar(255),
+  maintenance_cycle             varchar(255),
+  install_date                  varchar(255),
+  install_addr                  varchar(255),
   register                      varchar(255),
   tagcolor                      varchar(255),
   state                         varchar(255),
@@ -82,6 +88,7 @@ create table device_info (
   commond                       varchar(255),
   delay                         varchar(255),
   rssi                          integer,
+  runtime_state                 integer,
   constraint pk_device_info primary key (id)
 );
 
@@ -138,6 +145,7 @@ create table fault (
   type                          integer,
   create_time                   datetime(6),
   state                         varchar(255),
+  device_type                   varchar(255),
   constraint pk_fault primary key (id)
 );
 
@@ -248,7 +256,7 @@ create index ix_sms_record_mobile on sms_record (mobile);
 
 drop table if exists account;
 
-drop table if exists `binary`;
+drop table if exists binaries;
 
 drop table if exists cellocation;
 

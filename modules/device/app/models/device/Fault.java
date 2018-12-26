@@ -23,7 +23,7 @@ public class Fault extends Model {
 
     public String state;
 
-
+    public String device_type;
 
     public static Find<Integer, Fault> finder =
             new Find<Integer, Fault>(){};

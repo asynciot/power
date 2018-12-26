@@ -1,10 +1,9 @@
 package controllers.device;
 
-import com.avaje.ebean.Ebean;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
-import models.device.Binary;
+import models.device.Binaries;
 import models.device.Commands;
 import models.device.DeviceInfo;
 import play.data.DynamicForm;
@@ -83,8 +82,8 @@ public class CommandController extends BaseController {
             if(firmware.isEmpty()||firmware==null){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            Binary binary=Binary.finder.where().eq("name",firmware).findUnique();
-            if(binary==null){
+            Binaries binaries = Binaries.finder.where().eq("name",firmware).findUnique();
+            if(binaries ==null){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             if(imei==null||imei.isEmpty()){
@@ -98,7 +97,7 @@ public class CommandController extends BaseController {
             commands.IMEI=imei;
             commands.command="UPDATE";
             commands.str1=firmware;
-            commands.binary_id=binary.id;
+            commands.binary_id= binaries.id;
             commands.submit=new Date();
             commands.save();
 
@@ -115,14 +114,41 @@ public class CommandController extends BaseController {
             String duration = form.get("duration");
             String threshold = form.get("threshold");//每条记录包含帧数
             String interval = form.get("interval");
+            String device_type=form.get("device_type");
             String op=form.get("op");
-            if (imei == null || imei.isEmpty()||op==null||op.isEmpty()) {
+            String type=form.get("type");
+            if (type==null|| type.isEmpty()||imei == null || imei.isEmpty()||op==null||op.isEmpty()||device_type==null||device_type.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+            }
+            byte[] tmp=new byte[20];
+            if(Integer.parseInt(device_type)==240){
+                String segment=form.get("segment");
+                String address=form.get("address");
+                if(segment==null||address==null){
+                    throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+                }
+                Integer type_int=Integer.parseInt(type);
+//                tmp[0]=type_int.byteValue();
+                int segment_int=Integer.parseInt(segment);
+                tmp[0] = (byte) ((segment_int>>24) & 0xFF);
+                tmp[1] = (byte) ((segment_int>>16)& 0xFF);
+                tmp[2] = (byte) ((segment_int>>8) & 0xFF);
+                tmp[3] = (byte) (segment_int & 0xFF);
+                String address_str[] = address.split(",");
+                if (address_str.length < 8){
+                    throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+                }
+                for(int i=0;i<8;i++){
+                    int address_int=Integer.parseInt(address_str[i]);
+                    tmp[4+i*2]=(byte) ((address_int>>8)&0xFF);
+                    tmp[4+i*2+1]=(byte) (address_int&0xFF);
+                }
             }
             Commands commands = new Commands();
             commands.command = "MONITOR";
             commands.submit=new Date();
             commands.IMEI=imei;
+            commands.binary=tmp;
             DeviceInfo deviceInfo=DeviceInfo.finder.where().eq("IMEI",imei).findUnique();
 
             if(op.equals("close")){
@@ -146,6 +172,12 @@ public class CommandController extends BaseController {
             commands.int2=Integer.parseInt(duration);
             commands.int3=Integer.parseInt(interval);
             commands.int4=Integer.parseInt(threshold);
+            if (type.equals("0")){
+                commands.str1 = "STATUS";
+            }else if(type.equals("1")){
+                commands.str1 = "MEMORY";
+            }
+
             commands.save();
             return success();
         }

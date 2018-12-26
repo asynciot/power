@@ -1,5 +1,6 @@
 package controllers.account;
 
+import Sms.common.SmsManager;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
@@ -8,6 +9,7 @@ import controllers.common.CodeException;
 import controllers.common.CodeGenerator;
 import controllers.common.ErrDefinition;
 import controllers.common.XDomainController;
+import inceptors.common.Secured;
 import models.account.Account;
 import models.common.Message;
 import models.common.SmsRecord;
@@ -17,6 +19,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ public class AccountController extends XDomainController {
 
     @Inject
     public FormFactory formFactory;
-
+    @Security.Authenticated(Secured.class)
     public Result create() {
         Form<Account> form = formFactory.form(Account.class);
         try {
@@ -51,6 +54,9 @@ public class AccountController extends XDomainController {
             Account newAccount = form.bindFromRequest().get();
             if (Account.finder.where().eq("username", newAccount.username).findRowCount() != 0) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_ALREADY_EXIST);
+            }
+            if(Account.finder.where().eq("mobile",newAccount.mobile).findRowCount()!=0){
+                throw new CodeException(ErrDefinition.E_ACCOUNT_ALREADY_BINDED);
             }
 
             if (newAccount.password == null || newAccount.password.isEmpty()) {
@@ -92,19 +98,21 @@ public class AccountController extends XDomainController {
 
             Account account = Account.finder.where().eq("username", username).findUnique();
             if (account == null) {
-                throw new CodeException(ErrDefinition.E_ACCOUNT_NOT_FOUND);
+                account = Account.finder.where().eq("mobile", username).findUnique();
             }
+            if(account==null){
+                throw new CodeException(ErrDefinition.E_ACCOUNT_NOT_FOUND);
 
+            }
             if (account.password.compareTo(CodeGenerator.generateMD5(password)) != 0) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_PASSWORD_MISMATCH);
             }
-
             session("userId", account.id);
-
             ObjectNode node = Json.newObject();
             node.put("id", account.id);
             node.put("username", account.username);
             node.put("mobile", account.mobile);
+            node.put("nickname",account.nickname);
             return success("account", node);
         }
         catch (CodeException ce) {
@@ -119,9 +127,9 @@ public class AccountController extends XDomainController {
     }
     public Result logout() {
         session().clear();
-
         return success(null, null);
     }
+    @Security.Authenticated(Secured.class)
     public Result update() {
         Form<Account> form = formFactory.form(Account.class).bindFromRequest();
 
@@ -140,38 +148,28 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
             }
 
-            if (tmp.username != null) {
-                account.username = tmp.username;
+            if (tmp.nickname != null) {
+                account.nickname = tmp.nickname;
             }
-
             if (tmp.mobile != null) {
                 account.mobile = tmp.mobile;
             }
-
             if (tmp.sex != null) {
                 account.sex = tmp.sex;
             }
-
             if (tmp.birthday != null) {
                 account.birthday = tmp.birthday;
             }
-
             if (tmp.profession != null) {
                 account.profession = tmp.profession;
             }
-
             if (tmp.email != null) {
                 account.email = tmp.email;
             }
-
             if (tmp.introduction != null) {
                 account.introduction = tmp.introduction;
             }
-            if (tmp.password != null) {
-                account.password = CodeGenerator.generateMD5(tmp.password);
-            }
             Ebean.update(account);
-
             return success(null, null);
         }
         catch (CodeException ce) {
@@ -185,7 +183,7 @@ public class AccountController extends XDomainController {
         }
 
     }
-
+    @Security.Authenticated(Secured.class)
     public Result read() {
         try {
 
@@ -254,7 +252,7 @@ public class AccountController extends XDomainController {
             return failure(ErrDefinition.E_ACCOUNT_READ_FAILED);
         }
     }
-
+    @Security.Authenticated(Secured.class)
     public Result delete() {
         try {
             String userId = session("userId");
@@ -306,7 +304,9 @@ public class AccountController extends XDomainController {
             Account existAccount = Account.finder.where()
                     .eq("username", account.username)
                     .findUnique();
-
+            if(existAccount==null){
+                existAccount=Account.finder.where().eq("mobile",account.mobile).findUnique();
+            }
             if (existAccount != null) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_ALREADY_EXIST);
             }
@@ -342,6 +342,80 @@ public class AccountController extends XDomainController {
         finally {
             Ebean.endTransaction();
         }
+    }
+    @Security.Authenticated(Secured.class)
+    public Result password() {
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+
+            String userId = session("userId");
+
+            if (userId == null || userId.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+
+            String password = form.get("password");
+            if (password == null || password.isEmpty()){
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
+
+            String oldPassword = form.get("oldPassword");
+            if (oldPassword == null || oldPassword.isEmpty()){
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
+
+            Account account = Account.finder.byId(session("userId"));
+
+
+            if (account.password.compareTo(CodeGenerator.generateMD5(oldPassword)) != 0) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_PASSWORD_MISMATCH);
+            }
+
+            account.password = CodeGenerator.generateMD5(password);
+
+            Ebean.update(account);
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_ACCOUNT_UPDATE_FAILED);
+        }
+    }
+    public Result retrieve(){
+        DynamicForm form=formFactory.form().bindFromRequest();
+        try {
+            String mobile = form.get("mobile");
+            String code = form.get("verifyCode");
+            String newpassword=form.get("newpassword");
+            if(mobile==null||code==null||newpassword==null){
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
+            if(SmsManager.getInstance().verifyCode(mobile, code)==false){
+                throw new CodeException(ErrDefinition.E_SMS_VERIFY_FAILED);
+            }
+            Account account=Account.finder.where().eq("mobile", mobile).findUnique();;
+            if (account==null) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_NOT_FOUND);
+            }
+            account.password=CodeGenerator.generateMD5(newpassword);
+            Ebean.update(account);
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_ACCOUNT_LOGIN_FAILED);
+        }
+
     }
     private void createWelcomeMsg(String toId) {
         //create notification message

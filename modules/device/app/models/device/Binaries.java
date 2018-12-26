@@ -12,8 +12,7 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "`binary`")
-public class Binary extends Model {
+public class Binaries extends Model {
     @Id
     public Integer id;
 
@@ -25,6 +24,6 @@ public class Binary extends Model {
 
     public byte[] data;
 
-    public static Find<Integer, Binary> finder =
-            new Find<Integer, Binary>(){};
+    public static Find<Integer, Binaries> finder =
+            new Find<Integer, Binaries>(){};
 }

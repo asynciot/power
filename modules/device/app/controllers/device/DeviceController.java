@@ -190,14 +190,31 @@ public class DeviceController extends BaseController {
             DynamicForm form = formFactory.form().bindFromRequest();
             String device_id = form.get("device_id");
             String device_name = form.get("device_name");
+            String install_addr = form.get("install_addr");
+            String install_date = form.get("install_date");
+            String maintenance_cycle = form.get("maintenance_cycle");
+            String maintenance_type = form.get("maintenance_type");
+
             if (device_id == null || device_id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if (device_name == null || device_name.isEmpty()) {
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-            }
             DeviceInfo deviceInfo=DeviceInfo.finder.byId(Integer.parseInt(device_id));
-            deviceInfo.device_name=device_name;
+            if(!device_name.isEmpty()&&device_name!=null){
+                deviceInfo.device_name=device_name;
+            }
+            if(!install_addr.isEmpty()&&install_addr!=null){
+                deviceInfo.install_addr=install_addr;
+            }
+            if(!install_date.isEmpty()&&install_date!=null){
+                deviceInfo.install_date=install_date;
+            }
+            if(!maintenance_cycle.isEmpty()&&maintenance_cycle!=null){
+                deviceInfo.maintenance_cycle=maintenance_cycle;
+            }
+            if(!maintenance_type.isEmpty()&&maintenance_type!=null){
+                deviceInfo.maintenance_type=maintenance_type;
+            }
+
             deviceInfo.save();
             return success();
 

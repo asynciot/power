@@ -128,7 +128,7 @@ public class FaultController extends XDomainController {
             int count = Fault.finder.where()
                     .eq("device_id", fault.device_id)
                     .eq("type", fault.type)
-                    .eq("state","untreated")
+                    .eq("state",fault.state)
                     .findRowCount();
 
             if (count != 0) {

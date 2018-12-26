@@ -51,6 +51,9 @@ public class Commands extends Model{
 
     public Date finish;
 
+    @Column(name = "`binary`")
+    public  byte[] binary;
+
     public static Find<Integer, Commands> finder =
             new Find<Integer, Commands>(){};
 
