@@ -20,7 +20,9 @@ public class AccountInitializer {
                 superAdmin.id = CodeGenerator.generateUUId();
                 superAdmin.username = "admin";
                 superAdmin.password = CodeGenerator.generateMD5("adminadmin");
-                superAdmin.mobile="12345678910";
+                superAdmin.mobile="18018592775";
+                superAdmin.augroup=1;
+                superAdmin.maxfollow=100000;
                 Ebean.save(superAdmin);
                 Logger.info("create super admin successfully.");
             }

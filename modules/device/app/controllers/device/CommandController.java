@@ -76,10 +76,8 @@ public class CommandController extends BaseController {
         DynamicForm form=formFactory.form().bindFromRequest();
         String imei  =form.get("IMEI");
         String firmware= form.get("firmware");
-
         try{
-
-            if(firmware.isEmpty()||firmware==null){
+            if(firmware==null||firmware.isEmpty()){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             Binaries binaries = Binaries.finder.where().eq("name",firmware).findUnique();

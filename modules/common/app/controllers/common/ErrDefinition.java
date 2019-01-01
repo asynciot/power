@@ -22,7 +22,7 @@ public class ErrDefinition {
     public static final int E_ACCOUNT_PASSWORD_SAME                    = 618;
     public static final int E_ACCOUNT_PASSWORD_MISMATCH                = 619;
     public static final int E_ACCOUNT_READ_FAILURE                     = 620;
-    public static final int E_ACCOUNT_NOT_SUBSCRIBE                    = 621;
+    public static final int E_ACCOUNT_FOLLOW_OUT_BOUND                 = 621;
     public static final int E_ACCOUNT_DISABLED                         = 622;
     public static final int E_ACCOUNT_HAS_ROLE                         = 623;
     public static final int E_ACCOUNT_CREATE_FAILED                    = 624;

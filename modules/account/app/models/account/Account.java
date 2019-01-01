@@ -62,6 +62,12 @@ public class Account extends Model{
     @Transient
     public Integer verifyCode;
 
+    public String portrait;
+
+    public Integer maxfollow;
+
+    public Integer augroup;
+
     public static Find<String, Account> finder =
             new Find<String, Account>(){};
 

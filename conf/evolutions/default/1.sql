@@ -17,6 +17,9 @@ create table account (
   introduction                  varchar(255),
   email                         varchar(255),
   create_time                   datetime(6),
+  portrait                      varchar(255),
+  maxfollow                     integer,
+  augroup                       integer,
   constraint pk_account primary key (id)
 );
 
@@ -78,7 +81,13 @@ create table device_info (
   cellocation_id                integer,
   device_name                   varchar(255),
   maintenance_type              varchar(255),
-  maintenance_cycle             varchar(255),
+  maintenance_nexttime          varchar(255),
+  maintenance_remind            varchar(255),
+  maintenance_lasttime          varchar(255),
+  inspection_type               varchar(255),
+  inspection_lasttime           varchar(255),
+  inspection_nexttime           varchar(255),
+  inspection_remind             varchar(255),
   install_date                  varchar(255),
   install_addr                  varchar(255),
   register                      varchar(255),
@@ -116,6 +125,24 @@ create table devices (
   constraint pk_devices primary key (id)
 );
 
+create table dispatch (
+  id                            integer auto_increment not null,
+  device_id                     integer,
+  user_id                       varchar(255),
+  order_id                      integer,
+  order_type                    integer,
+  state                         varchar(255),
+  phone                         varchar(255),
+  result                        varchar(255),
+  create_time                   varchar(255),
+  finish_time                   varchar(255),
+  confirm_time                  varchar(255),
+  before_pic                    varchar(255),
+  after_pic                     varchar(255),
+  confirm_pic                   varchar(255),
+  constraint pk_dispatch primary key (id)
+);
+
 create table docks (
   id                            integer auto_increment not null,
   name                          varchar(255),
@@ -137,16 +164,6 @@ create table events (
   `interval`                    integer,
   data                          varbinary(255),
   constraint pk_events primary key (id)
-);
-
-create table fault (
-  id                            integer auto_increment not null,
-  device_id                     integer,
-  type                          integer,
-  create_time                   datetime(6),
-  state                         varchar(255),
-  device_type                   varchar(255),
-  constraint pk_fault primary key (id)
 );
 
 create table follow (
@@ -220,16 +237,16 @@ create table monitor (
   constraint pk_monitor primary key (id)
 );
 
-create table repair (
+create table `order` (
   id                            integer auto_increment not null,
   device_id                     integer,
-  user_id                       varchar(255),
-  fault_id                      varchar(255),
+  type                          integer,
+  create_time                   varchar(255),
   state                         varchar(255),
-  phone                         varchar(255),
-  create_time                   datetime(6),
-  finish_time                   datetime(6),
-  constraint pk_repair primary key (id)
+  code                          integer,
+  device_type                   varchar(255),
+  producer                      varchar(255),
+  constraint pk_order primary key (id)
 );
 
 create table runtime (
@@ -268,11 +285,11 @@ drop table if exists device_info;
 
 drop table if exists devices;
 
+drop table if exists dispatch;
+
 drop table if exists docks;
 
 drop table if exists events;
-
-drop table if exists fault;
 
 drop table if exists follow;
 
@@ -286,7 +303,7 @@ drop table if exists message;
 
 drop table if exists monitor;
 
-drop table if exists repair;
+drop table if exists `order`;
 
 drop table if exists runtime;
 

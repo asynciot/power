@@ -14,3 +14,4 @@ POST      /logout                     controllers.account.AccountController.logo
 POST      /register                   controllers.account.AccountController.register()
 POST      /password                   controllers.account.AccountController.password()
 POST      /retrieve                   controllers.account.AccountController.retrieve()
+POST      /portrait                   controllers.account.AccountController.portrait()

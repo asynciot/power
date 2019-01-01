@@ -3,9 +3,9 @@ package controllers;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 import controllers.common.XDomainController;
+import inceptors.common.Secured;
 import models.account.Account;
-import models.device.DeviceInfo;
-import models.device.Fault;
+import models.device.Order;
 import models.device.Follow;
 import org.w3c.dom.Document;
 import play.Logger;
@@ -16,14 +16,14 @@ import play.libs.XPath;
 import play.libs.ws.WSClient;
 import play.mvc.*;
 
-import sun.rmi.runtime.Log;
-import views.html.*;
 import wechat.common.WechatController;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -49,16 +49,30 @@ public class HomeController extends XDomainController {
         }
         return resource("");
     }
+    @Security.Authenticated(Secured.class)
+    public Result getfile(){
+        DynamicForm form = formFactory.form().bindFromRequest();
+        String filePath=form.get("filePath");
+        String physicalPath = "./public/images/";
+        return ok(new File(physicalPath+filePath));
+        /*
+        InputStream is= Play.application().resourceAsStream(physicalPath + filePath);
+        if(is==null){
+            return failure(404);
+        }
+        response().setHeader("Content-Type","text/html; charset=UTF-8");
+        return ok(is);
+        */
+    }
     public Result resource(String filePath) {
         String physicalPath = "public/dist/";
-        InputStream is = Play.application().resourceAsStream(physicalPath + "index.html");
+        InputStream is= Play.application().resourceAsStream(physicalPath + "index.html");
         response().setHeader("Content-Type","text/html; charset=UTF-8");
         return ok(is);
     }
     public Result getwechat() {
 
         Document dom =request().body().asXml();
-
         if(dom!=null){
 
             String ToUserName= XPath.selectText("//ToUserName",dom);
@@ -96,42 +110,49 @@ public class HomeController extends XDomainController {
 
     }
     public Result getalert(){
+
         DynamicForm form = formFactory.form().bindFromRequest();
         try{
-            String alert = form.get("alert");
+            String code = form.get("code");
             String device_id = form.get("device_id");
             String device_type = form.get("device_type");
-
-            if(alert==null&&alert.isEmpty()&&device_id==null&&device_id.isEmpty()){
+            String producer=form.get("producer");
+            String type=form.get("type");
+            Account account_pro=Account.finder.where().eq("username",producer).findUnique();
+            if(!producer.equals("sys")&&account_pro==null){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            Logger.info("get alert "+alert+" from id"+device_id);
-            if(alert.equals("0")){
+            if(code==null||code.isEmpty()||device_id==null||device_id.isEmpty()||producer==null||producer.isEmpty()||type==null||type.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            if(type.equals("1")&&code.equals("0")){
                 Logger.info("no alert");
                 return ok("no alert");
             }
-            Fault fault=new Fault();
-            fault.device_id=Integer.parseInt(device_id);
-            fault.type=Integer.parseInt(alert);
-            fault.device_type=device_type;
-            fault.createTime=new Date();
-            fault.state="untreated";
-            int count = Fault.finder.where()
-                    .eq("device_id", fault.device_id)
-                    .eq("type", fault.type)
-                    .eq("state","untreated")
+            Order Order =new Order();
+            Order.device_id=Integer.parseInt(device_id);
+            Order.code=Integer.parseInt(code);
+            Order.type=Integer.parseInt(type);
+            Order.producer=producer;
+            Order.device_type=device_type;
+            Order.createTime=new Date().getTime()+"";
+            Order.state="untreated";
+            int count = Order.finder.where()
+                    .eq("device_id", Order.device_id)
+                    .eq("type", Order.type)
+                    .notIn("state","treated")
                     .findRowCount();
             if (count != 0) {
                 return  ok("already in db");
             }
-            fault.save();
+            Order.save();
 
             WechatController wechatController=new WechatController(ws);
             List<Follow> followList=Follow.finder.where().eq("device_id",device_id).findList();
             for(Follow follow:followList){
                 Account account=Account.finder.byId(follow.userId);
                 if(account.wechat_id==null)continue;
-                wechatController.SendTmp_on(account.wechat_id,alert,"",Integer.parseInt(device_id),account.id);
+                wechatController.SendTmp_on(account.wechat_id,Order.code,Order.type,Order.device_id,Order.producer,account.id,Order.id);
             }
             return ok("ok");
         }catch (CodeException ce) {

@@ -190,28 +190,49 @@ public class DeviceController extends BaseController {
             DynamicForm form = formFactory.form().bindFromRequest();
             String device_id = form.get("device_id");
             String device_name = form.get("device_name");
+            String tagcolor = form.get("tagcolor");
             String install_addr = form.get("install_addr");
             String install_date = form.get("install_date");
-            String maintenance_cycle = form.get("maintenance_cycle");
+            String maintenance_nexttime = form.get("maintenance_nexttime");
             String maintenance_type = form.get("maintenance_type");
+            String maintenance_remind = form.get("maintenance_remind");
+            String inspection_type = form.get("inspection_type");
+            String inspection_nexttime = form.get("inspection_nexttime");
+            String inspection_remind = form.get("inspection_remind");
+
 
             if (device_id == null || device_id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             DeviceInfo deviceInfo=DeviceInfo.finder.byId(Integer.parseInt(device_id));
-            if(!device_name.isEmpty()&&device_name!=null){
+            if(device_name!=null&&!device_name.isEmpty()){
                 deviceInfo.device_name=device_name;
             }
-            if(!install_addr.isEmpty()&&install_addr!=null){
+            if(install_addr!=null&&!install_addr.isEmpty()){
                 deviceInfo.install_addr=install_addr;
             }
-            if(!install_date.isEmpty()&&install_date!=null){
+            if(install_date!=null&&!install_date.isEmpty()){
                 deviceInfo.install_date=install_date;
             }
-            if(!maintenance_cycle.isEmpty()&&maintenance_cycle!=null){
-                deviceInfo.maintenance_cycle=maintenance_cycle;
+            if(tagcolor!=null&&!tagcolor.isEmpty()){
+                deviceInfo.tagcolor=tagcolor;
             }
-            if(!maintenance_type.isEmpty()&&maintenance_type!=null){
+            if(maintenance_nexttime!=null&&!maintenance_nexttime.isEmpty()){
+                deviceInfo.maintenance_nexttime=maintenance_nexttime;
+            }
+            if(maintenance_remind!=null&&!maintenance_remind.isEmpty()){
+                deviceInfo.maintenance_remind=maintenance_remind;
+            }
+            if(inspection_type!=null&&!inspection_type.isEmpty()){
+                deviceInfo.inspection_type=inspection_type;
+            }
+            if(inspection_nexttime!=null&&!inspection_nexttime.isEmpty()){
+                deviceInfo.inspection_nexttime=inspection_nexttime;
+            }
+            if(inspection_remind!=null&&!inspection_remind.isEmpty()){
+                deviceInfo.inspection_remind=inspection_remind;
+            }
+            if(maintenance_type!=null&&!maintenance_type.isEmpty()){
                 deviceInfo.maintenance_type=maintenance_type;
             }
 

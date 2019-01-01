@@ -18,10 +18,14 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +48,7 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Account adminAccount = Account.finder.byId(userId);
-            if (adminAccount == null||!adminAccount.username.equals("admin")) {
+            if (adminAccount == null||adminAccount.augroup==null||adminAccount.augroup>1) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
 
@@ -69,6 +73,8 @@ public class AccountController extends XDomainController {
 
             newAccount.id = CodeGenerator.generateShortUUId();
             newAccount.createTime = new Date();
+            newAccount.maxfollow=10;
+            newAccount.augroup=3;
             Ebean.save(newAccount);
 
             return success("id", newAccount.id);
@@ -132,7 +138,6 @@ public class AccountController extends XDomainController {
     @Security.Authenticated(Secured.class)
     public Result update() {
         Form<Account> form = formFactory.form(Account.class).bindFromRequest();
-
         try {
             if (form.hasErrors()) {
                 Logger.info(form.errorsAsJson()+"");
@@ -142,6 +147,7 @@ public class AccountController extends XDomainController {
             if (null == userId) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
+            Account user=Account.finder.byId(userId);
             Account tmp = form.get();
             Account account = Account.finder.byId(tmp.id);
             if (account == null) {
@@ -169,6 +175,31 @@ public class AccountController extends XDomainController {
             if (tmp.introduction != null) {
                 account.introduction = tmp.introduction;
             }
+            if(tmp.maxfollow!=null&&user.augroup!=null&&user.maxfollow!=null){
+                if(user.augroup==1){
+                    account.maxfollow=tmp.maxfollow;
+                }
+                else if(user.augroup==2){
+                    if(account.maxfollow<tmp.maxfollow){
+                        throw new CodeException(ErrDefinition.E_ACCOUNT_FOLLOW_OUT_BOUND);
+                    }else {
+                        account.maxfollow=tmp.maxfollow;
+                    }
+                }else {
+                    throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+
+                }
+
+            }
+            if(tmp.augroup!=null&&user.augroup!=null){
+                if(user.augroup==1){
+                    account.augroup=tmp.augroup;
+                }else {
+                    throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+
+                }
+            }
+
             Ebean.update(account);
             return success(null, null);
         }
@@ -194,7 +225,6 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Account adminAccount = Account.finder.byId(userId);
-
             List<Account> accountList = null;
             userId = form.get("id");
             if (userId != null && !userId.isEmpty()) {
@@ -207,8 +237,7 @@ public class AccountController extends XDomainController {
                 return successList(1, 1, accountList);
             }
 
-
-            if (adminAccount == null||!adminAccount.username.equals("admin")) {
+            if (adminAccount == null||adminAccount.augroup>2) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
 
@@ -230,6 +259,10 @@ public class AccountController extends XDomainController {
             String username = form.get("username");
             if (username != null && !username.isEmpty()) {
                 exprList.add(Expr.contains("username", username));
+            }
+            String mobile = form.get("mobile");
+            if (mobile != null && !mobile.isEmpty()) {
+                exprList.add(Expr.contains("mobile", mobile));
             }
             accountList = exprList
                     .setFirstRow((page-1)*num)
@@ -260,7 +293,7 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Account adminAccount = Account.finder.byId(userId);
-            if (adminAccount == null||!adminAccount.username.equals("admin")) {
+            if (adminAccount == null||adminAccount.augroup>1) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             DynamicForm form = formFactory.form().bindFromRequest();
@@ -325,6 +358,8 @@ public class AccountController extends XDomainController {
             account.password = CodeGenerator.generateMD5(account.password);
             account.id = CodeGenerator.generateShortUUId();
             account.createTime = new Date();
+            account.augroup=3;
+            account.maxfollow=10;
             Ebean.save(account);
             createWelcomeMsg(account.id);
             Ebean.commitTransaction();
@@ -385,6 +420,36 @@ public class AccountController extends XDomainController {
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_ACCOUNT_UPDATE_FAILED);
         }
+    }
+    @Security.Authenticated(Secured.class)
+    public Result portrait(){
+        try {
+            String portrait_path="./public/images/portrait/";
+
+            File files=new File(portrait_path);
+            if(!Files.exists(files.toPath())){
+                Files.createDirectories(files.toPath());
+            }
+            Http.MultipartFormData body = request().body().asMultipartFormData();
+            if(body!=null){
+                List<Http.MultipartFormData.FilePart> fileParts = body.getFiles();
+                for(Http.MultipartFormData.FilePart filePart:fileParts){
+                    File file=(File) filePart.getFile();
+                    File storeFile = new File( portrait_path+ filePart.getFilename());
+                    Files.move(file.toPath(),storeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Account account=Account.finder.byId(session("userId"));
+                    account.portrait="portrait/"+storeFile.getName();
+                    account.save();
+                    break;
+                }
+            }else {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return success();
     }
     public Result retrieve(){
         DynamicForm form=formFactory.form().bindFromRequest();

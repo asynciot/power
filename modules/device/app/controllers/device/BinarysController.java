@@ -33,7 +33,6 @@ public class BinarysController  extends BaseController {
             Http.MultipartFormData body = request().body().asMultipartFormData();
             Http.MultipartFormData.FilePart filepart = body.getFile("file");
             if (filepart != null) {
-
                 String fileName = filepart.getFilename().split("\\.")[0];
                 int count= Binaries.finder.where().eq("name",fileName).eq("type","firmware").findRowCount();
                 if(count>0){
@@ -112,6 +111,8 @@ public class BinarysController  extends BaseController {
             }
 
             binariesList = exprList
+                    .setDisableLazyLoading(true)
+                    .select("name")
                     .setFirstRow((page-1)*num)
                     .setMaxRows(num)
                     .findList();

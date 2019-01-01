@@ -24,7 +24,19 @@ public class DeviceInfo extends Model{
 
     public String maintenance_type;
 
-    public String maintenance_cycle;
+    public String maintenance_nexttime;
+
+    public String maintenance_remind;
+
+    public String maintenance_lasttime;
+
+    public String inspection_type;
+
+    public String inspection_lasttime;
+
+    public String inspection_nexttime;
+
+    public String inspection_remind;
 
     public String install_date;
 

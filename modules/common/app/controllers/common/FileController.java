@@ -26,7 +26,6 @@ import java.util.Map;
 
 public class FileController extends XDomainController {
 	private static int MAX_FILENAME_LENGTH = 50;
-	
 	@Security.Authenticated(Secured.class)
 	public Result uploadFile() {
 		String url = null;

@@ -2,11 +2,10 @@
 # This file defines all application common.device.other.routes (Higher priority common.device.other.routes first)
 # ~~~~
 OPTIONS   /*name                     @controllers.OptionController.OptionMethod(name:String)
-GET     /                           controllers.HomeController.index
-
-POST    /device/Alert              controllers.HomeController.getalert()
-POST     /                           controllers.HomeController.getwechat
-
+GET       /                           controllers.HomeController.index
+GET       /getfile                   controllers.HomeController.getfile
+POST      /device/alert              controllers.HomeController.getalert()
+POST      /                          controllers.HomeController.getwechat
 
 ->        /common                    common.Routes
 

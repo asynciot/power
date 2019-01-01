@@ -6,6 +6,7 @@ import com.avaje.ebean.ExpressionList;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
+import models.account.Account;
 import models.device.Devices;
 import models.device.Follow;
 import play.Configuration;
@@ -60,6 +61,14 @@ public class FollowController extends BaseController {
             
             if (count != 0) {
             	throw new CodeException(ErrDefinition.E_FOLLOW_INFO_ALREADY_EXIST);
+            }
+
+            count=Follow.finder.where().eq("userId", session("userId")).findRowCount();
+            Account account=Account.finder.byId(followInfo.userId);
+            if(account!=null){
+                if(account.maxfollow<=count){
+                    throw new CodeException(ErrDefinition.E_ACCOUNT_FOLLOW_OUT_BOUND);
+                }
             }
 
             Ebean.save(followInfo);

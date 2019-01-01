@@ -64,36 +64,41 @@ public class WechatController extends XDomainController {
         return success();
     }
 
-    public void SendTmp_on(String touser,String type,String loc,Integer device_id,String userId) {
+
+    public void SendTmp_on(String touser,Integer code,Integer type,Integer device_id,String producer,String userId,Integer order_id) {
         Map<String, Object> result = new HashMap<String,Object>();
         result.put("touser",touser);
         result.put("template_id","7Do5VrpCMm6XGAbzBM6wHRPXxiqThdslYTvMadIkKhE");
-        result.put("url","http://server.asynciot.com/company/work-order/"+device_id);
+        result.put("url","http://server.asynciot.com/order/"+order_id);
 
         Map<String, Object> data = new HashMap<String,Object>();
 
         Map<String, Object> first = new HashMap<String,Object>();
-        first.put("value","电梯故障推送消息");
+        first.put("value","电梯事件推送消息");
         first.put("color","#173177");
         data.put("first",first);
 
         Map<String, Object> OrderSn = new HashMap<String,Object>();
         OrderSn.put("value",device_id+" (电梯编号)");
         OrderSn.put("color","#173177");
-
         data.put("OrderSn",OrderSn);
 
-        Map<String, Object> OrderStatus = new HashMap<String,Object>();
-        OrderStatus.put("value",type+" (故障类型)");
-        OrderStatus.put("color","#173177");
+        String type_str=null;
+        if(type==1)type_str="故障提示";
+        if(type==2)type_str="维保提示";
+        if(type==3)type_str="检验提示";
 
+        Map<String, Object> OrderStatus = new HashMap<String,Object>();
+        OrderStatus.put("value",type_str+" (事件类型)，"+code+" (事件代码)");
+        OrderStatus.put("color","#173177");
         data.put("OrderStatus",OrderStatus);
 
         Map<String, Object> remark = new HashMap<String,Object>();
-        remark.put("value","地址:"+loc);
+        remark.put("value","下单人:"+producer);
         remark.put("color","#173177");
-
         data.put("remark",remark);
+
+
         result.put("data",data);
         String url=POST_TMP_URL.replace("ACCESS_TOKEN",WechatManage.Access_token).replace("\"","");
 
@@ -110,7 +115,7 @@ public class WechatController extends XDomainController {
             MessRecord messRecord=new MessRecord();
             messRecord.createTime=new Date();
             messRecord.device_id=device_id;
-            messRecord.title="电梯故障推送消息";
+            messRecord.title="电梯推送消息";
             messRecord.toId=userId;
             messRecord.type=1;
             messRecord.save();
