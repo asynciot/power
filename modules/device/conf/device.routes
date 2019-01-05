@@ -17,6 +17,7 @@ POST        /Update             controllers.device.CommandController.update()
 
 GET         /Device                     controllers.device.DeviceController.read()
 PUT         /Device                     controllers.device.DeviceController.update()
+DELETE      /Device                     controllers.device.DeviceController.delete()
 GET         /Device/ReadMore            controllers.device.DeviceController.readMore()
 GET         /Device/ReadCount           controllers.device.DeviceController.readCount()
 GET         /Device/ReadCountFollow     controllers.device.DeviceController.readCountfollow()

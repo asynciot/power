@@ -252,7 +252,7 @@ public class DeviceController extends BaseController {
 
     }
     public Result delete() {
-        return delete(Devices.class, formFactory);
+        return delete(DeviceInfo.class, formFactory);
     }
     public Result readCountfollow() {
 
