@@ -206,7 +206,7 @@ public class DispatchController extends BaseController{
             }
             String follow=form.get("follow");
             if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
-                exprList.add(Expr.eq("userId",session("userId")));
+                exprList.add(Expr.eq("user_id",session("userId")));
             }
             dispatchList = exprList
                 .setFirstRow((page-1)*num)
