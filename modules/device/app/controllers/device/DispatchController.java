@@ -103,7 +103,7 @@ public class DispatchController extends BaseController{
                 }
             }
             String result=form.get("result");
-            if(result==null&&result.isEmpty()){
+            if(result==null||result.isEmpty()){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             dispatch.result=result;
