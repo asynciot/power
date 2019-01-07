@@ -54,6 +54,7 @@ public class FollowController extends BaseController {
             followInfo.device_id=devices.id;
             followInfo.createTime=new Date();
             followInfo.userId=session("userId");
+            /*
             int count = Follow.finder.where()
             		.eq("userId", session("userId"))
             		.eq("imei", followInfo.imei)
@@ -70,6 +71,7 @@ public class FollowController extends BaseController {
                     throw new CodeException(ErrDefinition.E_ACCOUNT_FOLLOW_OUT_BOUND);
                 }
             }
+            */
 
             Ebean.save(followInfo);
 

@@ -14,6 +14,7 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -70,12 +71,16 @@ public class DispatchController extends BaseController{
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
-
     public Result finish(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
             String id = form.get("id");
+            String result=form.get("result");
+            Logger.info(result+"ss");
             if(id==null||id.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            if(result==null||result.isEmpty()){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
@@ -102,10 +107,8 @@ public class DispatchController extends BaseController{
                     }
                 }
             }
-            String result=form.get("result");
-            if(result==null||result.isEmpty()){
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-            }
+
+
             dispatch.result=result;
             dispatch.state="treated";
             dispatch.finish_time=new Date().getTime()+"";

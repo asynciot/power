@@ -64,10 +64,6 @@ public class RuntimeController extends BaseController {
             if (type != null && !type.isEmpty()) {
                 exprList.add(Expr.eq("type", type));
             }
-            String state=form.get("state");
-            if (state != null && !state.isEmpty()) {
-                exprList.add(Expr.eq("state", state));
-            }
 
             runtimeList = exprList
                     .setFirstRow((page-1)*num)
