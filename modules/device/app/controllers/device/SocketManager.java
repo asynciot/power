@@ -58,18 +58,13 @@ public class SocketManager {
 			Logger.info("broadcast ok at "+s);
 			if (m_roomMap.get(roomName) != null) {
 				for (Entry<String, Out> entry : m_roomMap.get(roomName).entrySet()) {
-					try {
 						entry.getValue().write(msg);
-					}
-					catch (Throwable e1) {
-						
-					}
 				}
 			}
 			
 		}
 		catch (Throwable e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
