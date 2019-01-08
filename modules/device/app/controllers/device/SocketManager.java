@@ -61,8 +61,11 @@ public class SocketManager {
 			if (m_roomMap.get(roomName) != null) {
 
 				for (Entry<String, Out> entry : m_roomMap.get(roomName).entrySet()) {
-
 					entry.getValue().write(msg);
+					if(msg.equals("closed")){
+						entry.getValue().close();
+					}
+
 				}
 			}
 			
