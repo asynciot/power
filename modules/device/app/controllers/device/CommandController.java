@@ -135,7 +135,7 @@ public class CommandController extends BaseController {
                     tmp[i]=(byte) (segment_int&0xFF);
                 }
                 for(int i=4;i<20;i++){
-                    int address_int=Integer.parseInt(address_str[i],16);
+                    int address_int=Integer.parseInt(address_str[i-4],16);
                     tmp[i]=(byte) (address_int&0xFF);
                 }
             }
