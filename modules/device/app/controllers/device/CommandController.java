@@ -127,7 +127,7 @@ public class CommandController extends BaseController {
                 }
                 String segment_str[] = address.split(",");
                 String address_str[] = address.split(",");
-                if (segment_str.length<4||address_str.length < 8){
+                if (segment_str.length<4||address_str.length < 16){
                     throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
                 }
                 for(int i=0;i<4;i++){
