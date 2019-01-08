@@ -33,6 +33,7 @@ POST        /Dispatch/finish       controllers.device.DispatchController.finish(
 POST        /Dispatch/confirm       controllers.device.DispatchController.confirm()
 
 GET         /Monitor/socket      controllers.device.MonitorController.socket(deviceId:String)
+GET         /Monitor/pernums      controllers.device.MonitorController.pernums(deviceId:String)
 
 GET         /Runtime             controllers.device.RuntimeController.read()
 

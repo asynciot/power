@@ -125,21 +125,18 @@ public class CommandController extends BaseController {
                 if(segment==null||address==null){
                     throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
                 }
-                Integer type_int=Integer.parseInt(type);
-//                tmp[0]=type_int.byteValue();
-                int segment_int=Integer.parseInt(segment);
-                tmp[0] = (byte) ((segment_int>>24) & 0xFF);
-                tmp[1] = (byte) ((segment_int>>16)& 0xFF);
-                tmp[2] = (byte) ((segment_int>>8) & 0xFF);
-                tmp[3] = (byte) (segment_int & 0xFF);
+                String segment_str[] = address.split(",");
                 String address_str[] = address.split(",");
-                if (address_str.length < 8){
+                if (segment_str.length<4||address_str.length < 8){
                     throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
                 }
-                for(int i=0;i<8;i++){
-                    int address_int=Integer.parseInt(address_str[i]);
-                    tmp[4+i*2]=(byte) ((address_int>>8)&0xFF);
-                    tmp[4+i*2+1]=(byte) (address_int&0xFF);
+                for(int i=0;i<4;i++){
+                    int segment_int=Integer.parseInt(segment_str[i],16);
+                    tmp[i]=(byte) (segment_int&0xFF);
+                }
+                for(int i=4;i<20;i++){
+                    int address_int=Integer.parseInt(address_str[i],16);
+                    tmp[i]=(byte) (address_int&0xFF);
                 }
             }
             Commands commands = new Commands();

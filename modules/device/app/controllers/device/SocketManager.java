@@ -47,18 +47,21 @@ public class SocketManager {
 		else {
 			userOutMap = m_roomMap.get(roomName);
 		}
-		
 		userOutMap.put(username, out);
+
 	}
 	
 	public void broadcast(String roomName, Object msg) {
 
 		try {
 			Date s=new Date();
-			Logger.info("broadcast ok at "+s);
+			Logger.info("broadcast ok at : "+s);
+
 			if (m_roomMap.get(roomName) != null) {
+
 				for (Entry<String, Out> entry : m_roomMap.get(roomName).entrySet()) {
-						entry.getValue().write(msg);
+
+					entry.getValue().write(msg);
 				}
 			}
 			

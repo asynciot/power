@@ -1,6 +1,7 @@
 package controllers.device;
 
 import controllers.common.BaseController;
+import play.Logger;
 import play.mvc.LegacyWebSocket;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -20,8 +21,7 @@ public class MonitorController extends BaseController {
     }
 
     public LegacyWebSocket<String> socket(final String deviceId){
-        //final String userId = session().get("userId");
-        String userId= session("userId");
+        final String userId = session().get("userId");
         return WebSocket.whenReady((in, out) -> {
             SocketManager.getInstance().joinRoom(deviceId, userId, out);
             in.onClose(()->SocketManager.getInstance().leave(deviceId, userId));
