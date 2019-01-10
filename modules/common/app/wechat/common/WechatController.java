@@ -89,7 +89,7 @@ public class WechatController extends XDomainController {
         if(type==3)type_str="检验提示";
 
         Map<String, Object> OrderStatus = new HashMap<String,Object>();
-        OrderStatus.put("value",type_str+" (事件类型)，"+code+" (事件代码)");
+        OrderStatus.put("value",type_str+" (事件类型)，"+Integer.toHexString(code)+" (事件代码)");
         OrderStatus.put("color","#173177");
         data.put("OrderStatus",OrderStatus);
 
