@@ -42,7 +42,6 @@ public class OrderController extends BaseController {
                 orderList.add(Order);
                 return successList(1, 1, orderList);
             }
-
             ExpressionList<Order> exprList = Order.finder.where();
             String pageStr = form.get("page");
             String numStr = form.get("num");
@@ -60,6 +59,10 @@ public class OrderController extends BaseController {
             String device_id=form.get("device_id");
             if (device_id != null && !device_id.isEmpty()) {
                 exprList.add(Expr.eq("device_id", Integer.parseInt(device_id)));
+            }
+            String islast=form.get("islast");
+            if (islast != null && !islast.isEmpty()) {
+                exprList.add(Expr.eq("islast", Integer.parseInt(islast)));
             }
             String type=form.get("type");
             if (type != null && !type.isEmpty()) {
@@ -81,7 +84,6 @@ public class OrderController extends BaseController {
             if(endtime!=null&&!endtime.isEmpty()){
                 exprList.add(Expr.le("createTime",endtime));
             }
-
             String follow=form.get("follow");
             if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
                 List<Follow> followList= Follow.finder.where().eq("userId", session("userId")).findList();

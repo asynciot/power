@@ -137,14 +137,26 @@ public class HomeController extends XDomainController {
             Order.device_type=device_type;
             Order.createTime=new Date().getTime()+"";
             Order.state="untreated";
+            Order.islast=1;
             int count = Order.finder.where()
                     .eq("device_id", Order.device_id)
                     .eq("type", Order.type)
+                    .eq("code",Order.code)
                     .notIn("state","treated")
                     .findRowCount();
             if (count != 0) {
                 return  ok("already in db");
             }
+            Order orderlast=Order.finder.where()
+                    .eq("device_id", Order.device_id)
+                    .eq("type", Order.type)
+                    .eq("islast",1)
+                    .notIn("state","treated")
+                    .findUnique();
+            if(orderlast!=null){
+                orderlast.islast=0;
+            }
+            orderlast.save();
             Order.save();
 
             WechatController wechatController=new WechatController(ws);
