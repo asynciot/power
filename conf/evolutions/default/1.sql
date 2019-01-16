@@ -246,6 +246,7 @@ create table `order` (
   code                          integer,
   device_type                   varchar(255),
   producer                      varchar(255),
+  islast                        integer,
   constraint pk_order primary key (id)
 );
 

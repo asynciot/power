@@ -25,6 +25,7 @@ GET         /Device/ReadCountFollow     controllers.device.DeviceController.read
 GET         /Event              controllers.device.EventController.read()
 
 GET         /Order              controllers.device.OrderController.read()
+GET         /TopFive              controllers.device.OrderController.gettopfive()
 POST        /Order/receipt              controllers.device.OrderController.receipt()
 DELETE      /Order              controllers.device.OrderController.delete()
 

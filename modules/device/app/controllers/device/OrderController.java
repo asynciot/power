@@ -3,6 +3,7 @@ package controllers.device;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.SqlRow;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
@@ -27,6 +28,13 @@ public class OrderController extends BaseController {
 
     @Inject
     FormFactory formFactory;
+
+    public Result gettopfive(){
+        String sql="SELECT device_id,count(device_id) as type FROM ladder.`order` group by device_id order by count(device_id) desc limit 10 ";
+        List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
+        Logger.info(orderList.size()+"");
+        return successList(orderList);
+    }
 
     public Result read(){
         try{
@@ -71,6 +79,10 @@ public class OrderController extends BaseController {
             String producer=form.get("producer");
             if (producer != null && !producer.isEmpty()) {
                 exprList.add(Expr.eq("producer", producer));
+            }
+            String device_type=form.get("device_type");
+            if (device_type != null && !device_type.isEmpty()) {
+                exprList.add(Expr.eq("device_type", device_type));
             }
             String state=form.get("state");
             if (state != null && !state.isEmpty()) {

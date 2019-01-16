@@ -155,8 +155,9 @@ public class HomeController extends XDomainController {
                     .findUnique();
             if(orderlast!=null){
                 orderlast.islast=0;
+                orderlast.save();
             }
-            orderlast.save();
+
             Order.save();
 
             WechatController wechatController=new WechatController(ws);
