@@ -76,6 +76,7 @@ public class DispatchController extends BaseController{
             DynamicForm form = formFactory.form().bindFromRequest();
             String id = form.get("id");
             String result=form.get("result");
+            String remarks=form.get("remarks");
             Logger.info(result+"ss");
             if(id==null||id.isEmpty()){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
@@ -107,8 +108,9 @@ public class DispatchController extends BaseController{
                     }
                 }
             }
-
-
+            if(remarks!=null){
+                dispatch.remarks=remarks;
+            }
             dispatch.result=result;
             dispatch.state="treated";
             dispatch.finish_time=new Date().getTime()+"";

@@ -43,3 +43,8 @@ POST    /follow                 controllers.device.FollowController.create()
 GET     /follow                 controllers.device.FollowController.read()
 #PUT     /followInfo               controllers.documents.FollowInfoController.update()
 DELETE  /follow                 controllers.device.FollowController.delete()
+
+POST    /artlocation                 controllers.device.ArtlocationController.create()
+GET     /artlocation                 controllers.device.ArtlocationController.read()
+#PUT     /followInfo               controllers.documents.FollowInfoController.update()
+DELETE  /artlocation                 controllers.device.ArtlocationController.delete()

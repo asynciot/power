@@ -60,6 +60,9 @@ public class MessageController extends BaseController {
 
 
 	}
+	public Result delete(){
+    	return delete(Message.class,formFactory);
+	}
 	public Result read() {
 		try {
 			DynamicForm form = formFactory.form().bindFromRequest();

@@ -164,7 +164,7 @@ public class HomeController extends XDomainController {
             List<Follow> followList=Follow.finder.where().eq("device_id",device_id).findList();
             for(Follow follow:followList){
                 Account account=Account.finder.byId(follow.userId);
-                if(account.wechat_id==null)continue;
+                if(account==null||account.wechat_id==null)continue;
                 wechatController.SendTmp_on(account.wechat_id,Order.code,Order.type,Order.device_id,Order.producer,account.id,Order.id);
             }
             return ok("ok");

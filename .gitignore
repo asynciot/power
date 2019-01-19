@@ -7,3 +7,6 @@ target
 /.public
 /.settings
 /RUNNING_PID
+*.js
+*.css
+*.js

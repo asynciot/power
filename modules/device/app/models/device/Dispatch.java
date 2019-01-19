@@ -31,6 +31,7 @@ public class Dispatch extends  Model{
     public String after_pic;
     public String confirm_pic;
 
+    public String remarks;
 
     public static Find<Integer, Dispatch> finder =
             new Find<Integer, Dispatch>(){};

@@ -10,4 +10,5 @@ GET      /message               controllers.common.MessageController.read()
 POST     /message               controllers.common.MessageController.create()
 POST     /message/settle        controllers.common.MessageController.settle()
 GET      /message/count         controllers.common.MessageController.readCount()
+DELETE   /message               controllers.common.MessageController.delete()
 
