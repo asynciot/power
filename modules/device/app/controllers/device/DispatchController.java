@@ -1,5 +1,6 @@
 package controllers.device;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import controllers.common.BaseController;
@@ -71,6 +72,65 @@ public class DispatchController extends BaseController{
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+
+    public Result examine(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String id = form.get("id");
+            if(id==null||id.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            String userId = session("userId");
+            if (null == userId) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Account adminAccount = Account.finder.byId(userId);
+            if (adminAccount == null||adminAccount.augroup>1) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
+            dispatch.state="examined";
+            dispatch.save();
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result handover(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String to_user = form.get("to_user");
+            if(to_user==null||to_user.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            Account account=Account.finder.where().eq("username",to_user).findUnique();
+            if(account==null){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            List<Dispatch> dispatchList = models.device.Dispatch.finder.where().eq("user_id",session("userId")).ieq("state","finish").findList();
+            for(Dispatch dispatch:dispatchList){
+                dispatch.user_id=account.id;
+            }
+            Ebean.saveAll(dispatchList);
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
     public Result finish(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
@@ -85,6 +145,9 @@ public class DispatchController extends BaseController{
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
+            if(dispatch.state!="examined"){
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
             String order_path="./public/images/order/";
             File files=new File(order_path);
             if(!Files.exists(files.toPath())){
@@ -212,6 +275,22 @@ public class DispatchController extends BaseController{
             String follow=form.get("follow");
             if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
                 exprList.add(Expr.eq("user_id",session("userId")));
+            }
+            String starttime = form.get("creat_starttime");
+            String endtime = form.get("create_endtime");
+            if(starttime!=null&&!starttime.isEmpty()){
+                exprList.add(Expr.ge("create_time",starttime));
+            }
+            if(endtime!=null&&!endtime.isEmpty()){
+                exprList.add(Expr.le("create_time",endtime));
+            }
+            starttime = form.get("finish_starttime");
+            endtime = form.get("finish_endtime");
+            if(starttime!=null&&!starttime.isEmpty()){
+                exprList.add(Expr.ge("finish_time",starttime));
+            }
+            if(endtime!=null&&!endtime.isEmpty()){
+                exprList.add(Expr.le("finish_time",endtime));
             }
             dispatchList = exprList
                 .setFirstRow((page-1)*num)

@@ -32,6 +32,7 @@ DELETE      /Order              controllers.device.OrderController.delete()
 GET         /Dispatch              controllers.device.DispatchController.read()
 POST        /Dispatch/finish       controllers.device.DispatchController.finish()
 POST        /Dispatch/confirm       controllers.device.DispatchController.confirm()
+POST        /Dispatch/handover       controllers.device.DispatchController.handover()
 
 GET         /Monitor/socket      controllers.device.MonitorController.socket(deviceId:String,userId:String)
 GET         /Monitor/pernums      controllers.device.MonitorController.pernums(deviceId:String)

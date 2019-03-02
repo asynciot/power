@@ -145,9 +145,11 @@ public class FollowController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             String device_id = form.get("device_id");
+            String ftype = form.get("ftype");
             Follow follow= Follow.finder.where()
                     .eq("userId", session("userId"))
                     .eq("device_id", device_id)
+                    .eq("ftype", ftype)
                     .findUnique();
             if (follow == null ) {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);

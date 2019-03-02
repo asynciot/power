@@ -23,6 +23,15 @@ create table account (
   constraint pk_account primary key (id)
 );
 
+create table artlocation (
+  id                            integer auto_increment not null,
+  lat                           varchar(255),
+  lon                           varchar(255),
+  user_id                       varchar(255),
+  t_create                      varchar(255),
+  constraint pk_artlocation primary key (id)
+);
+
 create table binaries (
   id                            integer auto_increment not null,
   name                          varchar(255),
@@ -140,6 +149,7 @@ create table dispatch (
   before_pic                    varchar(255),
   after_pic                     varchar(255),
   confirm_pic                   varchar(255),
+  remarks                       varchar(255),
   constraint pk_dispatch primary key (id)
 );
 
@@ -273,6 +283,8 @@ create index ix_sms_record_mobile on sms_record (mobile);
 # --- !Downs
 
 drop table if exists account;
+
+drop table if exists artlocation;
 
 drop table if exists binaries;
 

@@ -61,6 +61,7 @@ public class DeviceController extends BaseController {
             String numStr = form.get("num");
             String follow=form.get("follow");
             String device_id=form.get("device_id");
+            String install_addr=form.get("install_addr");
             if (device_id != null && !device_id.isEmpty()) {
                 DeviceInfo deviceInfo = DeviceInfo.finder.byId(Integer.parseInt(device_id));
                 if(deviceInfo!=null){
@@ -105,6 +106,9 @@ public class DeviceController extends BaseController {
 
             if(register!=null&&!register.isEmpty()){
                 exprList=exprList.eq("register",register);
+            }
+            if(install_addr!=null&&!install_addr.isEmpty()){
+                exprList=exprList.contains("install_addr",install_addr);
             }
 
             if (null == pageStr || pageStr.isEmpty()) {

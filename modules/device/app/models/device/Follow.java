@@ -1,6 +1,7 @@
 package models.device;
 
 import com.avaje.ebean.Model;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,6 +22,8 @@ public class Follow extends Model {
     public Integer device_id;
 
     public Date createTime;
+
+    public String ftype;
 
     public static Find<Integer, Follow> finder =
             new Find<Integer, Follow>(){};

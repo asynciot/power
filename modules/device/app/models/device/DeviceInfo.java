@@ -58,6 +58,8 @@ public class DeviceInfo extends Model{
 
     public Integer runtime_state;
 
+    public Integer group_id;
+
 
     public static Find<Integer, DeviceInfo> finder =
             new Find<Integer, DeviceInfo>(){};
