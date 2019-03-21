@@ -12,3 +12,6 @@ POST     /message/settle        controllers.common.MessageController.settle()
 GET      /message/count         controllers.common.MessageController.readCount()
 DELETE   /message               controllers.common.MessageController.delete()
 
+GET      /chat               controllers.common.ChatController.read()
+POST     /chat               controllers.common.ChatController.create()
+DELETE   /chat               controllers.common.ChatController.delete()

@@ -202,6 +202,25 @@ create table iplocation (
   constraint pk_iplocation primary key (id)
 );
 
+create table ladder (
+  id                            integer auto_increment not null,
+  name                          varchar(255),
+  t_create                      datetime(6),
+  t_update                      datetime(6),
+  t_logon                       datetime(6),
+  t_logout                      datetime(6),
+  ctrl                          varchar(255),
+  door1                         varchar(255),
+  door2                         varchar(255),
+  install_addr                  varchar(255),
+  ipaddr                        varchar(255),
+  cell_mcc                      integer,
+  cell_mnc                      integer,
+  cell_lac                      integer,
+  cell_cid                      integer,
+  constraint pk_ladder primary key (id)
+);
+
 create table logs (
   id                            integer auto_increment not null,
   dock_id                       integer,

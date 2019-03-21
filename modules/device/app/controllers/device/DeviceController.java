@@ -103,18 +103,15 @@ public class DeviceController extends BaseController {
             if (device_type != null && !device_type.isEmpty()) {
                 exprList=exprList.eq("device_type",device_type);
             }
-
             if(register!=null&&!register.isEmpty()){
                 exprList=exprList.eq("register",register);
             }
             if(install_addr!=null&&!install_addr.isEmpty()){
                 exprList=exprList.contains("install_addr",install_addr);
             }
-
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-
             if (null == numStr || numStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
@@ -172,7 +169,9 @@ public class DeviceController extends BaseController {
                     node.put("device_t_create",devices.t_create.toString());
                     node.put("device_t_update",devices.t_update.toString());
                     node.put("device_t_logon",devices.t_logon.toString());
-                    node.put("device_t_logout",devices.t_logout.toString());
+                    if(devices.t_logon!=null){
+                        node.put("device_t_logout",devices.t_logout.toString());
+                    }
                 }
                 if(iplocation!=null){
                     node.put("ip_ip", iplocation.ip);
@@ -180,7 +179,6 @@ public class DeviceController extends BaseController {
                     node.put("ip_country", iplocation.country);
                     node.put("ip_region",iplocation.region);
                 }
-
                 nodeList.add(node);
             }
             return successList(totalNum, totalPage, nodeList);
@@ -190,7 +188,6 @@ public class DeviceController extends BaseController {
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
-
 
     }
     public Result update() {

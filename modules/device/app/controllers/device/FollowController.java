@@ -85,7 +85,6 @@ public class FollowController extends BaseController {
             e.printStackTrace();
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_FOLLOW_INFO_CREATE_FAILED);
-
         }
     }
     public Result read() {
@@ -167,7 +166,4 @@ public class FollowController extends BaseController {
             return failure(ErrDefinition.E_FOLLOW_INFO_DELETE_FAILED);
         }
     }
-
-
-
 }

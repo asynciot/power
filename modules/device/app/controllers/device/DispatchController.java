@@ -20,6 +20,7 @@ import play.mvc.Security;
 import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
@@ -77,6 +78,7 @@ public class DispatchController extends BaseController{
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
             String id = form.get("id");
+            String remarks=form.get("remarks");
             if(id==null||id.isEmpty()){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
@@ -90,6 +92,9 @@ public class DispatchController extends BaseController{
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
             dispatch.state="examined";
+            if(remarks!=null){
+                dispatch.remarks=remarks;
+            }
             dispatch.save();
             return success();
         }
@@ -103,6 +108,38 @@ public class DispatchController extends BaseController{
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+
+    public Result adopt(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String id = form.get("id");
+            if(id==null||id.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            String userId = session("userId");
+            if (null == userId) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Account adminAccount = Account.finder.byId(userId);
+            if (adminAccount == null||adminAccount.augroup>1) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
+            dispatch.state="reprieve";
+            dispatch.save();
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
     public Result handover(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
@@ -145,9 +182,9 @@ public class DispatchController extends BaseController{
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
-            if(dispatch.state!="examined"){
-                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
-            }
+//            if(dispatch.state!="examined"){
+//                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+//            }
             String order_path="./public/images/order/";
             File files=new File(order_path);
             if(!Files.exists(files.toPath())){
@@ -220,11 +257,9 @@ public class DispatchController extends BaseController{
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
-
-
     }
-    public Result read(){
-        try{
+    public Result read() {
+        try {
             DynamicForm form = formFactory.form().bindFromRequest();
             List<Dispatch> dispatchList = null;
             String id = form.get("id");
@@ -252,61 +287,59 @@ public class DispatchController extends BaseController{
             Integer page = Integer.parseInt(pageStr);
             Integer num = Integer.parseInt(numStr);
 
-            String order_id=form.get("order_id");
+            String order_id = form.get("order_id");
             if (order_id != null && !order_id.isEmpty()) {
                 exprList.add(Expr.eq("order_id", Integer.parseInt(order_id)));
             }
-            String device_id=form.get("device_id");
+            String device_id = form.get("device_id");
             if (device_id != null && !device_id.isEmpty()) {
                 exprList.add(Expr.eq("device_id", Integer.parseInt(device_id)));
             }
-            String order_type=form.get("order_type");
+            String order_type = form.get("order_type");
             if (order_type != null && !order_type.isEmpty()) {
                 exprList.add(Expr.eq("order_type", order_type));
             }
-            String state=form.get("state");
+            String state = form.get("state");
             if (state != null && !state.isEmpty()) {
                 exprList.add(Expr.eq("state", state));
             }
-            String user_id=form.get("user_id");
+            String user_id = form.get("user_id");
             if (user_id != null && !user_id.isEmpty()) {
                 exprList.add(Expr.eq("user_id", user_id));
             }
-            String follow=form.get("follow");
-            if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
-                exprList.add(Expr.eq("user_id",session("userId")));
+            String follow = form.get("follow");
+            if (follow != null && !follow.isEmpty() && follow.equals("yes")) {
+                exprList.add(Expr.eq("user_id", session("userId")));
             }
             String starttime = form.get("creat_starttime");
             String endtime = form.get("create_endtime");
-            if(starttime!=null&&!starttime.isEmpty()){
-                exprList.add(Expr.ge("create_time",starttime));
+            if (starttime != null && !starttime.isEmpty()) {
+                exprList.add(Expr.ge("create_time", starttime));
             }
-            if(endtime!=null&&!endtime.isEmpty()){
-                exprList.add(Expr.le("create_time",endtime));
+            if (endtime != null && !endtime.isEmpty()) {
+                exprList.add(Expr.le("create_time", endtime));
             }
             starttime = form.get("finish_starttime");
             endtime = form.get("finish_endtime");
-            if(starttime!=null&&!starttime.isEmpty()){
-                exprList.add(Expr.ge("finish_time",starttime));
+            if (starttime != null && !starttime.isEmpty()) {
+                exprList.add(Expr.ge("finish_time", starttime));
             }
-            if(endtime!=null&&!endtime.isEmpty()){
-                exprList.add(Expr.le("finish_time",endtime));
+            if (endtime != null && !endtime.isEmpty()) {
+                exprList.add(Expr.le("finish_time", endtime));
             }
             dispatchList = exprList
-                .setFirstRow((page-1)*num)
-                .setMaxRows(num)
-                .orderBy("create_time desc")
-                .findList();
+                    .setFirstRow((page - 1) * num)
+                    .setMaxRows(num)
+                    .orderBy("create_time desc")
+                    .findList();
             int totalNum = exprList.findRowCount();
             int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
 
             return successList(totalNum, totalPage, dispatchList);
-        }
-        catch (CodeException ce) {
+        } catch (CodeException ce) {
             Logger.error(ce.getMessage());
             return failure(ce.getCode());
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);

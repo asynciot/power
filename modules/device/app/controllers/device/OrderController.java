@@ -8,6 +8,8 @@ import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 import controllers.common.XDomainController;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.account.Account;
 import models.device.Order;
 import models.device.Dispatch;
 import models.device.Follow;
@@ -16,6 +18,7 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Result;
+import play.libs.Json;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -34,6 +37,68 @@ public class OrderController extends BaseController {
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
         Logger.info(orderList.size()+"");
         return successList(orderList);
+    }
+
+    public Result examine(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String id = form.get("id");
+            if(id==null||id.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            String userId = session("userId");
+            if (null == userId) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Account adminAccount = Account.finder.byId(userId);
+            if (adminAccount == null||adminAccount.augroup>1) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Order order = models.device.Order.finder.byId(Integer.parseInt(id));
+            order.state="examined";
+            order.save();
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
+    public Result adopt(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String id = form.get("id");
+            if(id==null||id.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            String userId = session("userId");
+            if (null == userId) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Account adminAccount = Account.finder.byId(userId);
+            if (adminAccount == null||adminAccount.augroup>1) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            Order order = models.device.Order.finder.byId(Integer.parseInt(id));
+            order.state="untreated";
+            order.save();
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
     }
 
     public Result read(){
@@ -171,6 +236,7 @@ public class OrderController extends BaseController {
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
             String order_id=form.get("order_id");
+            String mobile=form.get("mobile");
             if(order_id==null||order_id.isEmpty()){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
@@ -191,6 +257,7 @@ public class OrderController extends BaseController {
             dispatch.state="untreated";
             dispatch.device_id=Order.device_id;
             dispatch.order_type=Order.type;
+            dispatch.phone=mobile;
             dispatch.save();
             return success();
         }
@@ -207,4 +274,98 @@ public class OrderController extends BaseController {
 
     }
 
+    public Result readCountOrder(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            List<Order> orderList = null;
+
+            String starttime = form.get("starttime");
+            String endtime = form.get("endtime");
+            if (null == starttime || starttime.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            if (null == endtime || endtime.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            long st=sdf.parse(starttime).getTime();
+            long ed= st+86400000;
+
+            int monday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+            st = ed;
+            ed = ed+86400000;
+            int tuesday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+            st = ed;
+            ed = ed+86400000;
+            int wensday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+            st = ed;
+            ed = ed+86400000;
+            int thursday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+            st = ed;
+            ed = ed+86400000;
+            int friday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+            st = ed;
+            ed = ed+86400000;
+            int saturday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+            st = ed;
+            ed = ed+86400000;
+            int sunday =Order.finder
+                    .where()
+                    .ge("create_time", st)
+                    .le("create_time", ed)
+                    .findRowCount();
+
+            ObjectNode node = Json.newObject();
+            node.put("monday", String.format("%d", monday));
+            node.put("tuesday", String.format("%d", tuesday));
+            node.put("wensday", String.format("%d", wensday));
+            node.put("thursday", String.format("%d", thursday));
+            node.put("friday", String.format("%d", friday));
+            node.put("saturday", String.format("%d", saturday));
+            node.put("sunday", String.format("%d", sunday));
+
+            return success("data",node);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
+    public Result faultfreq(){
+        String sql="SELECT code,count(code) as type FROM ladder.`order` WHERE type=1 group by code order by count(code) desc limit 10 ";
+        List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
+        Logger.info(orderList.size()+"");
+        return successList(orderList);
+    }
 }
