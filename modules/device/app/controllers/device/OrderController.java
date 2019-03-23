@@ -363,7 +363,7 @@ public class OrderController extends BaseController {
     }
 
     public Result faultfreq(){
-        String sql="SELECT code,count(code) as type FROM ladder.`order` WHERE type=1 group by code order by count(code) desc limit 10 ";
+        String sql="SELECT code,count(1) as counter FROM ladder.`order` WHERE type=1 group by code order by count(code) desc limit 10 ";
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
         Logger.info(orderList.size()+"");
         return successList(orderList);

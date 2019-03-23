@@ -24,9 +24,11 @@ GET         /Device/ReadCountFollow     controllers.device.DeviceController.read
 
 GET         /Event                      controllers.device.EventController.read()
 GET         /Event/ReadCount            controllers.device.EventController.readCountEvent()
+GET         /Event/Activedoor           controllers.device.EventController.activedoor()
 
 GET         /Order                      controllers.device.OrderController.read()
 GET         /TopFive                    controllers.device.OrderController.gettopfive()
+GET         /Order/Faultfreq            controllers.device.OrderController.faultfreq()
 GET         /Order/ReadCount            controllers.device.OrderController.readCountOrder()
 POST        /Order/receipt              controllers.device.OrderController.receipt()
 POST        /Order/examine              controllers.device.OrderController.examine()
@@ -52,7 +54,6 @@ DELETE      /follow                     controllers.device.FollowController.dele
 
 POST        /artlocation                controllers.device.ArtlocationController.create()
 GET         /artlocation                controllers.device.ArtlocationController.read()
-#PUT        /followInfo                 controllers.documents.FollowInfoController.update()
 DELETE      /artlocation                controllers.device.ArtlocationController.delete()
 
 POST        /Group                      controllers.device.GroupController.create()

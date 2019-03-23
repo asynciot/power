@@ -1,7 +1,9 @@
 package controllers.device;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.SqlRow;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
@@ -208,10 +210,18 @@ public class EventController extends BaseController {
         }
     }
 
+    public Result activedoor(){
+        String sql="SELECT device_id,count(1) as counter FROM ladder.`events` group by device_id order by count(device_id) desc limit 10 ";
+        List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
+        Logger.info(orderList.size()+"");
+        return successList(orderList);
+    }
+
     public Result update() {
         return update(Events.class, formFactory);
     }
     public Result delete() {
         return delete(Events.class, formFactory);
     }
+
 }

@@ -254,6 +254,18 @@ create table message (
   constraint pk_message primary key (id)
 );
 
+create table chat (
+  id                            integer auto_increment not null,
+  title                         varchar(255),
+  content                       varchar(255),
+  type                          integer not null,
+  follow                        integer default 0 not null,
+  from_id                       varchar(32) not null,
+  info                          varchar(255),
+  create_time                   datetime(6) not null,
+  constraint pk_chat primary key (id)
+);
+
 create table monitor (
   id                            integer auto_increment not null,
   device_id                     integer,
