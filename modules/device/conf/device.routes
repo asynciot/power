@@ -63,5 +63,11 @@ DELETE      /Group                      controllers.device.GroupController.delet
 
 POST        /Ladder                     controllers.device.LadderController.create()
 GET         /Ladder                     controllers.device.LadderController.read()
+GET         /Ladder/ReadMore            controllers.device.LadderController.readMore()
 PUT         /Ladder                     controllers.device.LadderController.update()
 DELETE      /Ladder                     controllers.device.LadderController.delete()
+
+POST        /followladder               controllers.device.FollowLadderController.create()
+GET         /followladder               controllers.device.FollowLadderController.read()
+GET         /followladder/ReadMore      controllers.device.FollowLadderController.readMore()
+DELETE      /followladder               controllers.device.FollowLadderController.delete()

@@ -54,6 +54,18 @@ create table cellocation (
   constraint pk_cellocation primary key (id)
 );
 
+create table chat (
+  id                            integer auto_increment not null,
+  title                         varchar(255),
+  content                       varchar(255),
+  follow                        integer,
+  type                          integer not null,
+  from_id                       varchar(32) not null,
+  info                          varchar(255),
+  create_time                   datetime(6) not null,
+  constraint pk_chat primary key (id)
+);
+
 create table commands (
   id                            integer auto_increment not null,
   imei                          varchar(255),
@@ -107,6 +119,7 @@ create table device_info (
   delay                         varchar(255),
   rssi                          integer,
   runtime_state                 integer,
+  group_id                      integer,
   constraint pk_device_info primary key (id)
 );
 
@@ -182,7 +195,29 @@ create table follow (
   imei                          varchar(255),
   device_id                     integer,
   create_time                   datetime(6),
+  ftype                         varchar(255),
   constraint pk_follow primary key (id)
+);
+
+create table follow_ladder (
+  id                            integer auto_increment not null,
+  user_id                       varchar(255),
+  ctrl                          varchar(255),
+  door1                         varchar(255),
+  door2                         varchar(255),
+  ladder_id                     integer,
+  create_time                   datetime(6),
+  constraint pk_follow_ladder primary key (id)
+);
+
+create table group (
+  id                            integer auto_increment not null,
+  leader                        varchar(255),
+  name                          varchar(255),
+  mobile                        integer,
+  create_time                   datetime(6),
+  region                        varchar(255),
+  constraint pk_group primary key (id)
 );
 
 create table iplocation (
@@ -209,15 +244,15 @@ create table ladder (
   t_update                      datetime(6),
   t_logon                       datetime(6),
   t_logout                      datetime(6),
-  ctrl                          varchar(255),
-  door1                         varchar(255),
-  door2                         varchar(255),
-  install_addr                  varchar(255),
-  ipaddr                        varchar(255),
   cell_mcc                      integer,
   cell_mnc                      integer,
   cell_lac                      integer,
   cell_cid                      integer,
+  ipaddr                        varchar(255),
+  ctrl                          varchar(255),
+  door1                         varchar(255),
+  door2                         varchar(255),
+  install_addr                  varchar(255),
   constraint pk_ladder primary key (id)
 );
 
@@ -252,18 +287,6 @@ create table message (
   create_time                   datetime(6) not null,
   is_settled                    tinyint(1) default 0 not null,
   constraint pk_message primary key (id)
-);
-
-create table chat (
-  id                            integer auto_increment not null,
-  title                         varchar(255),
-  content                       varchar(255),
-  type                          integer not null,
-  follow                        integer default 0 not null,
-  from_id                       varchar(32) not null,
-  info                          varchar(255),
-  create_time                   datetime(6) not null,
-  constraint pk_chat primary key (id)
 );
 
 create table monitor (
@@ -321,6 +344,8 @@ drop table if exists binaries;
 
 drop table if exists cellocation;
 
+drop table if exists chat;
+
 drop table if exists commands;
 
 drop table if exists credentials;
@@ -337,7 +362,13 @@ drop table if exists events;
 
 drop table if exists follow;
 
+drop table if exists follow_ladder;
+
+drop table if exists group;
+
 drop table if exists iplocation;
+
+drop table if exists ladder;
 
 drop table if exists logs;
 
