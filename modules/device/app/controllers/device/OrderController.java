@@ -362,8 +362,18 @@ public class OrderController extends BaseController {
         }
     }
 
-    public Result faultfreq(){
-        String sql="SELECT code,count(1) as counter FROM ladder.`order` WHERE type=1 group by code order by count(code) desc limit 10 ";
+	public Result faultfreq(){
+		DynamicForm form = formFactory.form().bindFromRequest();
+        String sql="SELECT code,count(1) as counter FROM ladder.`order` WHERE type=1 ";
+		String starttime = form.get("starttime");
+		String endtime = form.get("endtime");
+		if(starttime!=null&&!starttime.isEmpty()){
+		    sql=sql+"AND time>'"+starttime+"' ";
+		}
+		if(endtime!=null&&!endtime.isEmpty()){
+			sql=sql+"AND time>'"+endtime+"' ";
+		}
+		sql=sql+"group by code order by count(code) desc limit 10 ";
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
         Logger.info(orderList.size()+"");
         return successList(orderList);
