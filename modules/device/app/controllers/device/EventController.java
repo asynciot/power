@@ -210,12 +210,32 @@ public class EventController extends BaseController {
         }
     }
 
-    public Result activedoor(){
-        String sql="SELECT device_id,count(1) as counter FROM ladder.`events` group by device_id order by count(device_id) desc limit 10 ";
-        List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
-        Logger.info(orderList.size()+"");
-        return successList(orderList);
-    }
+	public Result activedoor(){
+		DynamicForm form = formFactory.form().bindFromRequest();
+	    String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.`events` inner join ladder.`device_info` on ladder.`events`.device_id=ladder.`device_info`.id ";
+		String starttime = form.get("starttime");
+		String endtime = form.get("endtime");
+		if(starttime!=null&&!starttime.isEmpty()){
+		    sql=sql+"WHERE time>'"+starttime+"' ";
+		}
+		if(endtime!=null&&!endtime.isEmpty()){
+		    if(starttime!=null&&!starttime.isEmpty()){
+				sql=sql+"AND time>'"+endtime+"' ";
+			}
+			else{
+				sql=sql+"WHERE time<'"+endtime+"' ";
+			}
+		}
+		sql=sql+"group by device_id order by count(device_id) desc limit 10";
+	    List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
+
+	    Logger.info(orderList.size()+"");
+	    return successList(orderList);
+		
+// 		ObjectNode node = Json.newObject();
+// 		node.put("sql", sql);		
+// 		return success("data",node);
+	}
 
     public Result update() {
         return update(Events.class, formFactory);
