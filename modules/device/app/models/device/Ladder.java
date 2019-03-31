@@ -41,6 +41,8 @@ public class Ladder extends Model {
 
     public String install_addr;
 
+    public String state;
+
     public static Find<Integer, Ladder> finder =
             new Find<Integer, Ladder>(){};
 }
