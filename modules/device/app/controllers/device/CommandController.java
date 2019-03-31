@@ -180,4 +180,31 @@ public class CommandController extends BaseController {
             return failure(ce.getCode());
         }
     }
+    public Result call(){
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String imei = form.get("IMEI");
+            String from=form.get("from");
+            String to=form.get("to");
+            if (imei == null || imei.isEmpty() || from==null||to==null) {
+                throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+            }
+            byte[] tmp=new byte[20];
+            Commands commands = new Commands();
+            commands.command = "CALL";
+            commands.submit=new Date();
+            commands.IMEI=imei;
+            commands.binary=tmp;
+            DeviceInfo deviceInfo=DeviceInfo.finder.where().eq("IMEI",imei).findUnique();
+
+            commands.int1 = Integer.parseInt(from);
+            commands.int2 = Integer.parseInt(to);
+
+            commands.save();
+            return success();
+        }
+        catch (CodeException ce){
+            return failure(ce.getCode());
+        }
+    }
 }
