@@ -32,7 +32,6 @@ public class Order extends Model {
     public String producer;
 
     public  Integer islast;
-
     public static Find<Integer, Order> finder =
             new Find<Integer, Order>(){};
 }

@@ -237,7 +237,7 @@ public class OrderController extends BaseController {
             DynamicForm form = formFactory.form().bindFromRequest();
             String order_id=form.get("order_id");
             String mobile=form.get("mobile");
-			String expect=form.get("expect")
+			String expect=form.get("expect_time");
             if(order_id==null||order_id.isEmpty()){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
@@ -263,7 +263,7 @@ public class OrderController extends BaseController {
 			    dispatch.phone=mobile;
 			}
 			if(expect!=null&&!expect.isEmpty()){
-			    dispatch.expect=expect;
+			    dispatch.expect_time=expect;
 			}
             dispatch.save();
             return success();
