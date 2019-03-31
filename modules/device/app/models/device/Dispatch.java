@@ -20,7 +20,7 @@ public class Dispatch extends  Model{
     public Integer order_type;
     public String state;
     public String phone;
-
+	public String expect;
     public String result;
 
     public String create_time;
