@@ -155,6 +155,7 @@ create table dispatch (
   order_type                    integer,
   state                         varchar(255),
   phone                         varchar(255),
+	expect                        varchar(255),
   result                        varchar(255),
   create_time                   varchar(255),
   finish_time                   varchar(255),
