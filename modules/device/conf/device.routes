@@ -12,7 +12,6 @@ DELETE      /Command                    controllers.device.CommandController.del
 
 
 POST        /Monitor                    controllers.device.CommandController.monitor()
-POST        /Call                       controllers.device.CommandController.call()
 POST        /Register                   controllers.device.CommandController.register()
 POST        /Update                     controllers.device.CommandController.update()
 
