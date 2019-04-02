@@ -163,6 +163,7 @@ create table dispatch (
   before_pic                    varchar(255),
   after_pic                     varchar(255),
   confirm_pic                   varchar(255),
+  code                          integer,
   remarks                       varchar(255),
   constraint pk_dispatch primary key (id)
 );
@@ -254,6 +255,7 @@ create table ladder (
   door1                         varchar(255),
   door2                         varchar(255),
   install_addr                  varchar(255),
+  state                         varchar(255),
   constraint pk_ladder primary key (id)
 );
 
