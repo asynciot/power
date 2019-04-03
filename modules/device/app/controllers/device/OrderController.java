@@ -249,27 +249,28 @@ public class OrderController extends BaseController {
             if(Order ==null){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if(Order.state=="treating"){
+            Dispatch dispatch =new Dispatch();
+            if(mobile!=null&&!mobile.isEmpty()){
+                dispatch.phone=mobile;
+            }
+            if(expect!=null&&!expect.isEmpty()){
+                dispatch.expect_time=expect;
+            }
+            if(Order.state.equals("treating")){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }else{
                 Order.state="treating";
+                Order.save();
+                System.out.println("2");
+                dispatch.order_id=Order.id;
+                dispatch.create_time=new Date().getTime()+"";
+                dispatch.user_id=session("userId");
+                dispatch.state="untreated";
+                dispatch.device_id=Order.device_id;
+                dispatch.order_type=Order.type;
+                dispatch.save();
             }
-            Order.save();
-            Dispatch dispatch =new Dispatch();
-            dispatch.order_id=Order.id;
-            dispatch.create_time=new Date().getTime()+"";
-            dispatch.user_id=session("userId");
-            dispatch.state="untreated";
-            dispatch.device_id=Order.device_id;
-            dispatch.order_type=Order.type;
-			
-			if(mobile!=null&&!mobile.isEmpty()){
-			    dispatch.phone=mobile;
-			}
-			if(expect!=null&&!expect.isEmpty()){
-			    dispatch.expect_time=expect;
-			}
-            dispatch.save();
+
             return success();
         }
         catch (CodeException ce) {
