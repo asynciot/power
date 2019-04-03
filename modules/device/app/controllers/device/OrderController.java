@@ -249,7 +249,11 @@ public class OrderController extends BaseController {
             if(Order ==null){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            Order.state="treating";
+            if(Order.state=="treating"){
+                throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }else{
+                Order.state="treating";
+            }
             Order.save();
             Dispatch dispatch =new Dispatch();
             dispatch.order_id=Order.id;

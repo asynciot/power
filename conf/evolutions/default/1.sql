@@ -120,6 +120,7 @@ create table device_info (
   rssi                          integer,
   runtime_state                 integer,
   group_id                      integer,
+  ladder_id                     integer,
   constraint pk_device_info primary key (id)
 );
 
@@ -240,20 +241,13 @@ create table iplocation (
 
 create table ladder (
   id                            integer auto_increment not null,
+  ctrl_id                       integer,
   name                          varchar(255),
-  t_create                      datetime(6),
-  t_update                      datetime(6),
-  t_logon                       datetime(6),
-  t_logout                      datetime(6),
-  cell_mcc                      integer,
-  cell_mnc                      integer,
-  cell_lac                      integer,
-  cell_cid                      integer,
-  ipaddr                        varchar(255),
   ctrl                          varchar(255),
   door1                         varchar(255),
   door2                         varchar(255),
   install_addr                  varchar(255),
+  state                         varchar(255),
   constraint pk_ladder primary key (id)
 );
 

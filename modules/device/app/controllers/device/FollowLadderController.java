@@ -173,17 +173,8 @@ public class FollowLadderController extends BaseController {
                 Ladder ladder = Ladder.finder.where().eq("ctrl",node.get("ctrl").asText()).findUnique();
                 if(ladder !=null){
                     node.put("ladder_id", ladder.id);
-                    node.put("ladder_t_create",ladder.t_create.toString());
-                    if(ladder.t_update != null ){
-                        node.put("ladder_t_update",ladder.t_update.toString());
-                    }
-                    node.put("ladder_t_logon",ladder.t_logon.toString());
-                    if(ladder.t_logout != null ){
-                        node.put("ladder_t_logout",ladder.t_logout.toString());
-                    }
                     DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei",node.get("ctrl").asText()).findUnique();
                     if(deviceInfo!=null){
-                        node.put("state", deviceInfo.state);
                         node.put("rssi",deviceInfo.rssi);
                         node.put("cellocation_id",deviceInfo.cellocation_id);
                         node.put("IPlocation_id",deviceInfo.IPlocation_id);
@@ -205,17 +196,8 @@ public class FollowLadderController extends BaseController {
                 }else{
                     ladder = Ladder.finder.where().eq("door1",node.get("door1").asText()).findUnique();
                     node.put("ladder_id", ladder.id);
-                    node.put("ladder_t_create",ladder.t_create.toString());
-                    if(ladder.t_update != null ){
-                        node.put("ladder_t_update",ladder.t_update.toString());
-                    }
-                    node.put("ladder_t_logon",ladder.t_logon.toString());
-                    if(ladder.t_logout != null ){
-                        node.put("ladder_t_logout",ladder.t_logout.toString());
-                    }
                     DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei",node.get("door1").asText()).findUnique();
                     if(deviceInfo!=null){
-                        node.put("state", deviceInfo.state);
                         node.put("rssi",deviceInfo.rssi);
                         node.put("cellocation_id",deviceInfo.cellocation_id);
                         node.put("IPlocation_id",deviceInfo.IPlocation_id);

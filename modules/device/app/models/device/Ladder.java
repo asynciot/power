@@ -13,25 +13,9 @@ public class Ladder extends Model {
     @Id
     public Integer id;
 
+    public Integer ctrl_id;
+
     public String name;
-
-    public Date t_create;
-
-    public Date t_update;
-
-    public Date t_logon;
-
-    public Date t_logout;
-
-    public Integer cell_mcc;
-
-    public Integer cell_mnc;
-
-    public Integer cell_lac;
-
-    public Integer cell_cid;
-
-    public String ipaddr;
 
     public String ctrl;
 

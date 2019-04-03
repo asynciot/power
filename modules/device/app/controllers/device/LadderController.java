@@ -65,28 +65,19 @@ public class LadderController extends BaseController {
             if (ladderInfo.name == null || ladderInfo.name.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
             }
-
+            Devices devices = new Devices();
             if (!ladderInfo.ctrl.isEmpty()) {
-                Devices devices = Devices.finder.where().eq("IMEI", ladderInfo.ctrl).findUnique();
-                ladderInfo.t_logon = devices.t_logon;
-                ladderInfo.t_logout = devices.t_logout;
-                ladderInfo.cell_mcc = devices.cell_mcc;
-                ladderInfo.cell_mnc = devices.cell_mnc;
-                ladderInfo.cell_lac = devices.cell_lac;
-                ladderInfo.cell_cid = devices.cell_cid;
+                devices = Devices.finder.where().eq("IMEI", ladderInfo.ctrl).findUnique();
+                ladderInfo.ctrl_id = devices.id;
             }else{
-                Devices devices = Devices.finder.where().eq("IMEI", ladderInfo.door1).findUnique();
-                ladderInfo.t_logon = devices.t_logon;
-                ladderInfo.t_logout = devices.t_logout;
-                ladderInfo.cell_mcc = devices.cell_mcc;
-                ladderInfo.cell_mnc = devices.cell_mnc;
-                ladderInfo.cell_lac = devices.cell_lac;
-                ladderInfo.cell_cid = devices.cell_cid;
+                devices = Devices.finder.where().eq("IMEI", ladderInfo.door1).findUnique();
+                ladderInfo.ctrl_id = devices.id;
             }
-
-            ladderInfo.t_create = new Date();
-
+            DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("IMEI", devices.IMEI).findUnique();
+            ladderInfo.state = deviceInfo.state;
             Ebean.save(ladderInfo);
+            deviceInfo.ladder_id = ladderInfo.id;
+            Ebean.save(deviceInfo);
 
             return success();
         }
@@ -142,7 +133,9 @@ public class LadderController extends BaseController {
                 exprList=exprList.in("door1",door1list);
                 exprList=exprList.in("door2",door2list);
             }
-
+            if (state != null && !state.isEmpty()) {
+                exprList=exprList.contains("state",state);
+            }
             if (tabcor != null && !tabcor.isEmpty()) {
                 exprList=exprList.contains("tagcolor",tabcor);
             }
@@ -201,7 +194,6 @@ public class LadderController extends BaseController {
                         node.put("name", ladder.name);
                         DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
                         if (deviceInfo != null) {
-                            node.put("state", deviceInfo.state);
                             node.put("rssi", deviceInfo.rssi);
                             node.put("tagcolor", deviceInfo.tagcolor);
                             node.put("cellocation_id", deviceInfo.cellocation_id);
@@ -228,7 +220,6 @@ public class LadderController extends BaseController {
                         node.put("name", ladder.name);
                         DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("door1").asText()).findUnique();
                         if (deviceInfo != null) {
-                            node.put("state", deviceInfo.state);
                             node.put("rssi", deviceInfo.rssi);
                             node.put("tagcolor", deviceInfo.tagcolor);
                             node.put("cellocation_id", deviceInfo.cellocation_id);
@@ -267,6 +258,8 @@ public class LadderController extends BaseController {
             String ladder_id = form.get("ladder_id");
             String name = form.get("name");
             String install_addr = form.get("install_addr");
+            String type = form.get("type");
+            String IMEI = form.get("IMEI");
 
             if (ladder_id == null || ladder_id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
@@ -277,6 +270,13 @@ public class LadderController extends BaseController {
             }
             if(install_addr!=null&&!install_addr.isEmpty()){
                 ladder.install_addr=install_addr;
+            }
+            if(type=="1"){
+                ladder.ctrl=IMEI;
+            }else if(type=="2"){
+                ladder.door1=IMEI;
+            }else if(type=="3"){
+                ladder.door2=IMEI;
             }
 
             ladder.save();
@@ -302,6 +302,10 @@ public class LadderController extends BaseController {
             if (ladder == null ) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
+            DeviceInfo deviceInfo=DeviceInfo.finder.where()
+                    .eq("ladder_id", ladder_id)
+                    .findUnique();
+            deviceInfo.ladder_id=null;
             Ebean.delete(ladder);
             return success();
         }
