@@ -30,7 +30,7 @@ public class Dispatch extends  Model{
     public String before_pic;
     public String after_pic;
     public String confirm_pic;
-
+	public Integer code;
     public String remarks;
 
     public static Find<Integer, Dispatch> finder =

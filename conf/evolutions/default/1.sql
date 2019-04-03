@@ -164,6 +164,7 @@ create table dispatch (
   before_pic                    varchar(255),
   after_pic                     varchar(255),
   confirm_pic                   varchar(255),
+  code                          integer,
   remarks                       varchar(255),
   constraint pk_dispatch primary key (id)
 );
