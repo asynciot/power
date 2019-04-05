@@ -68,15 +68,15 @@ public class LadderController extends BaseController {
             Devices devices = new Devices();
             if (!ladderInfo.ctrl.isEmpty()) {
                 devices = Devices.finder.where().eq("IMEI", ladderInfo.ctrl).findUnique();
-                ladderInfo.ctrl_id = devices.id;
+                ladderInfo.ctrl_id = devices.id.toString();
             }else{
                 devices = Devices.finder.where().eq("IMEI", ladderInfo.door1).findUnique();
-                ladderInfo.ctrl_id = devices.id;
+                ladderInfo.ctrl_id = devices.id.toString();
             }
             DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("IMEI", devices.IMEI).findUnique();
             ladderInfo.state = deviceInfo.state;
             Ebean.save(ladderInfo);
-            deviceInfo.ladder_id = ladderInfo.id;
+            deviceInfo.ladder_id = ladderInfo.id.toString();
             Ebean.save(deviceInfo);
 
             return success();
@@ -99,6 +99,7 @@ public class LadderController extends BaseController {
             List<Ladder> ladderInfoList = new ArrayList<Ladder>();
 
             String search_info = form.get("search_info");
+            String ladder_id = form.get("id");
             String register=form.get("register");
             String tabcor = form.get("tagcolor");
             String state = form.get("state");
@@ -107,6 +108,13 @@ public class LadderController extends BaseController {
             String follow=form.get("follow");
             String install_addr=form.get("install_addr");
 
+            if (ladder_id != null && !ladder_id.isEmpty()) {
+                Ladder ladder = Ladder.finder.byId(Integer.parseInt(ladder_id));
+                if(ladder!=null){
+                    ladderInfoList.add(ladder);
+                }
+                return successList(ladderInfoList.size(), 1, ladderInfoList);
+            }
             if (search_info != null && !search_info.isEmpty()){
                 exprList=Ladder.finder.where().contains("ctrl",search_info);
                 if(exprList.findRowCount()<1) {
@@ -271,14 +279,37 @@ public class LadderController extends BaseController {
             if(install_addr!=null&&!install_addr.isEmpty()){
                 ladder.install_addr=install_addr;
             }
-            if(type=="1"){
-                ladder.ctrl=IMEI;
-            }else if(type=="2"){
-                ladder.door1=IMEI;
-            }else if(type=="3"){
-                ladder.door2=IMEI;
+            DeviceInfo deviceInfo = new DeviceInfo();
+            if(type!=null&&!type.isEmpty()){
+                if(type.equals("1")){
+                    deviceInfo = DeviceInfo.finder.where().eq("IMEI", ladder.ctrl).findUnique();
+                    deviceInfo.ladder_id = null;
+                    Ebean.save(deviceInfo);
+                    ladder.ctrl=IMEI;
+                    deviceInfo = DeviceInfo.finder.where().eq("IMEI", ladder.ctrl).findUnique();
+                    deviceInfo.ladder_id = ladder_id;
+                    ladder.ctrl_id = deviceInfo.id.toString();
+                }else if(type.equals("2")){
+                    deviceInfo = DeviceInfo.finder.where().eq("IMEI", ladder.door1).findUnique();
+                    deviceInfo.ladder_id = null;
+                    Ebean.save(deviceInfo);
+                    ladder.door1=IMEI;
+                    deviceInfo = DeviceInfo.finder.where().eq("IMEI", ladder.door1).findUnique();
+                    deviceInfo.ladder_id = ladder_id;
+                    ladder.ctrl_id = deviceInfo.id.toString();
+                }else if(type.equals("3")){
+                    deviceInfo = DeviceInfo.finder.where().eq("IMEI", ladder.door2).findUnique();
+                    deviceInfo.ladder_id = null;
+                    Ebean.save(deviceInfo);
+                    ladder.door2=IMEI;
+                    deviceInfo = DeviceInfo.finder.where().eq("IMEI", ladder.door2).findUnique();
+                    deviceInfo.ladder_id = ladder_id;
+                    ladder.ctrl_id = deviceInfo.id.toString();
+                }
             }
 
+
+            Ebean.save(deviceInfo);
             ladder.save();
             return success();
         }

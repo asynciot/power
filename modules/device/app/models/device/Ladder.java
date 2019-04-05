@@ -13,7 +13,7 @@ public class Ladder extends Model {
     @Id
     public Integer id;
 
-    public Integer ctrl_id;
+    public String ctrl_id;
 
     public String name;
 

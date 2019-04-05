@@ -60,7 +60,7 @@ public class DeviceInfo extends Model{
 
     public Integer group_id;
 
-    public Integer ladder_id;
+    public String ladder_id;
 
     public static Find<Integer, DeviceInfo> finder =
             new Find<Integer, DeviceInfo>(){};
