@@ -21,6 +21,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.avaje.ebean.SqlRow;
+
+
+
+
 public class ChatController extends BaseController {
     @Inject
     private FormFactory formFactory;
@@ -78,7 +83,6 @@ public class ChatController extends BaseController {
 				return successList(1, 1, chatList);
 			}
 
-			ExpressionList<Chat> exprList = Chat.finder.where();
 			String pageStr = form.get("page");
 			String numStr = form.get("num");
 			String followStr = form.get("follow");
@@ -92,28 +96,23 @@ public class ChatController extends BaseController {
 			
 			if (null == followStr || followStr.isEmpty()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-			}
-			
+			}			
 			Integer page = Integer.parseInt(pageStr);
 			Integer num = Integer.parseInt(numStr);
 			Integer follow = Integer.parseInt(followStr);
-			// exprList.add(Expr.eq("follow", follow));
-			exprList=exprList.eq("follow",follow);
-			// exprList.add(Expr.eq("toId", session("userId")));
-// 			if (settledStr != null && !settledStr.isEmpty()) {
-// 				exprList.add(Expr.eq("isSettled", Boolean.parseBoolean(settledStr)));
-// 			}
+			
 
-			chatList = exprList
-					.setFirstRow((page-1)*num)
-					.setMaxRows(num)
-					.orderBy("createTime desc")
-					.findList();
-
-			int totalNum = exprList.findRowCount();
-			int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
-
-			return successList(totalNum, totalPage, chatList);
+			String sql="SELECT ladder.`chat`.id,content,follow,username,createTime FROM ladder.`chat` inner join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
+			if(followStr!=null&&!followStr.isEmpty()){
+			    sql=sql+"WHERE follow='"+follow+"' ";
+			}
+			sql=sql+"order by createTime desc";
+			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
+										.setFirstRow((page-1)*num)
+										.setMaxRows(num)
+										.findList();
+			Logger.info(orderList.size()+"");
+			return successList(orderList);
 		}
 		catch (CodeException ce) {
 			Logger.error(ce.getMessage());
