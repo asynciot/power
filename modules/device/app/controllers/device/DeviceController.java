@@ -272,24 +272,28 @@ public class DeviceController extends BaseController {
                     .where()
                     .eq("device_type", 240)
                     .eq("state", "online")
+                    .eq("register", "registered")
                     .in("IMEI",imeilist)
                     .findRowCount();
             int dooronline =DeviceInfo.finder
                     .where()
                     .eq("device_type", 15)
                     .eq("state", "online")
+                    .eq("register", "registered")
                     .in("IMEI",imeilist)
                     .findRowCount();
             int ctrloffline =DeviceInfo.finder
                     .where()
                     .eq("device_type", 240)
                     .eq("state", "offline")
+                    .eq("register", "registered")
                     .in("IMEI",imeilist)
                     .findRowCount();
             int dooroffline =DeviceInfo.finder
                     .where()
                     .eq("device_type", 15)
                     .eq("state", "offline")
+                    .eq("register", "registered")
                     .in("IMEI",imeilist)
                     .findRowCount();
 
@@ -297,12 +301,14 @@ public class DeviceController extends BaseController {
                     .where()
                     .eq("device_type", 240)
                     .eq("state", "longoffline")
+                    .eq("register", "registered")
                     .in("IMEI",imeilist)
                     .findRowCount();
             int doorlongoffline =DeviceInfo.finder
                     .where()
                     .eq("device_type", 15)
                     .eq("state", "longoffline")
+                    .eq("register", "registered")
                     .in("IMEI",imeilist)
                     .findRowCount();
 

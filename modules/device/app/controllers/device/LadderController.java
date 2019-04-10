@@ -308,7 +308,6 @@ public class LadderController extends BaseController {
                 }
             }
 
-
             Ebean.save(deviceInfo);
             ladder.save();
             return success();
@@ -337,6 +336,7 @@ public class LadderController extends BaseController {
                     .eq("ladder_id", ladder_id)
                     .findUnique();
             deviceInfo.ladder_id=null;
+            Ebean.save(deviceInfo);
             Ebean.delete(ladder);
             return success();
         }
@@ -347,7 +347,7 @@ public class LadderController extends BaseController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_DELETE_FAILED );
+            return failure(ErrDefinition.E_COMMON_DELETE_FAILED);
         }
     }
 

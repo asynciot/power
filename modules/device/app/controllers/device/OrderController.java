@@ -154,10 +154,10 @@ public class OrderController extends BaseController {
                 exprList.add(Expr.eq("state", state));
             }
             String starttime = form.get("starttime");
-            String endtime = form.get("endtime");
             if(starttime!=null&&!starttime.isEmpty()){
                 exprList.add(Expr.ge("createTime",starttime));
             }
+            String endtime = form.get("endtime");
             if(endtime!=null&&!endtime.isEmpty()){
                 exprList.add(Expr.le("createTime",endtime));
             }
@@ -256,12 +256,11 @@ public class OrderController extends BaseController {
             if(expect!=null&&!expect.isEmpty()){
                 dispatch.expect_time=expect;
             }
-            if(Order.state.equals("treating")){
+            if(Order.state.equals("treated")){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }else{
-                Order.state="treating";
+                Order.state="treated";
                 Order.save();
-                System.out.println("2");
                 dispatch.order_id=Order.id;
                 dispatch.create_time=new Date().getTime()+"";
                 dispatch.user_id=session("userId");

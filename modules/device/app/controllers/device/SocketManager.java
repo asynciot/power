@@ -16,7 +16,7 @@ public class SocketManager {
 		if (s_instance == null) {
 			s_instance = new SocketManager();
 		}
-		
+
 		return s_instance;
 	}
 	
@@ -53,22 +53,18 @@ public class SocketManager {
 	}
 	
 	public void broadcast(String roomName, Object msg) {
-
 		try {
 			Date s=new Date();
 			Logger.info("broadcast ok at : "+s);
 
 			if (m_roomMap.get(roomName) != null) {
-
 				for (Entry<String, Out> entry : m_roomMap.get(roomName).entrySet()) {
 					entry.getValue().write(msg);
-					if(msg.equals("closed")){
+					if (msg.equals("closed")) {
 						entry.getValue().close();
 					}
-
 				}
 			}
-			
 		}
 		catch (Throwable e) {
 			e.printStackTrace();
@@ -82,6 +78,6 @@ public class SocketManager {
 			if (m_roomMap.get(roomName).size() == 0) {
 				m_roomMap.remove(roomName);
 			}
-		}	
+		}
 	}
 }
