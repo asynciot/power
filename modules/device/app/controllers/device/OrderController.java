@@ -267,6 +267,7 @@ public class OrderController extends BaseController {
                 dispatch.state="untreated";
                 dispatch.device_id=Order.device_id;
                 dispatch.order_type=Order.type;
+				dispatch.code=Order.code;
                 dispatch.save();
             }
 
