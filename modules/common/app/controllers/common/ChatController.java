@@ -49,7 +49,7 @@ public class ChatController extends BaseController {
 			chat.fromId=fromId;
 			chat.type=Integer.parseInt(type);
 			chat.info=info;
-			chat.createTime=new Date();
+			chat.create_time=new Date();
 			Ebean.save(chat);
 			return success();
 		} 	catch (CodeException ce) {
@@ -102,11 +102,11 @@ public class ChatController extends BaseController {
 			Integer follow = Integer.parseInt(followStr);
 			
 
-			String sql="SELECT ladder.`chat`.id,content,follow,username,createTime FROM ladder.`chat` inner join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
+			String sql="SELECT ladder.`chat`.id,content,follow,username,ladder.`chat`.create_time FROM ladder.`chat` inner join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
 			if(followStr!=null&&!followStr.isEmpty()){
 			    sql=sql+"WHERE follow='"+follow+"' ";
 			}
-			sql=sql+"order by createTime desc";
+			sql=sql+"order by create_time desc";
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.setFirstRow((page-1)*num)
 										.setMaxRows(num)
