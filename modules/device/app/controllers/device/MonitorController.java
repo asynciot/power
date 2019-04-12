@@ -22,7 +22,7 @@ public class MonitorController extends BaseController {
     public LegacyWebSocket<String> socket(final String deviceId,final String userId){
         //final String userId = session().get("userId");
         String date = new Date().toString();
-        Logger.info(deviceId+"->"+userId);
+        Logger.info(deviceId+"->"+date);
         return WebSocket.whenReady((in, out) -> {
             SocketManager.getInstance().joinRoom(deviceId, date, out);
             in.onClose(()->SocketManager.getInstance().leave(deviceId, date));
