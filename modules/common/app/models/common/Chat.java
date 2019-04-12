@@ -30,7 +30,7 @@ public class Chat extends Model {
     public String info;
 
     @Column(nullable=false)
-    public Date createTime;
+    public Date create_time;
 
     public static Find<Integer, Chat> finder =
             new Find<Integer, Chat>(){};
