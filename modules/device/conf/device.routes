@@ -30,6 +30,7 @@ GET         /Event/Activedoor           controllers.device.EventController.activ
 GET         /Order                      controllers.device.OrderController.read()
 GET         /TopFive                    controllers.device.OrderController.gettopfive()
 GET         /Order/Faultfreq            controllers.device.OrderController.faultfreq()
+GET         /Order/Progress             controllers.device.OrderController.progress()
 GET         /Order/ReadCount            controllers.device.OrderController.readCountOrder()
 POST        /Order/receipt              controllers.device.OrderController.receipt()
 POST        /Order/examine              controllers.device.OrderController.examine()

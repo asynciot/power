@@ -125,8 +125,38 @@ public class DispatchController extends BaseController{
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
-            dispatch.state="reprieve";
+            dispatch.state="treated";
             dispatch.save();
+			
+			Order order=Order.finder.byId(dispatch.order_id);
+			order.state="treated";		
+			if(!dispatch.result.equals("transfer")){
+			    DeviceInfo deviceInfo=DeviceInfo.finder.byId(dispatch.device_id);
+			    if(deviceInfo==null){
+			        throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+			    }
+			    if(dispatch.order_type==2){
+			        deviceInfo.maintenance_lasttime=new Date().getTime()+"";
+			    }
+			    if(dispatch.order_type==3){
+			        deviceInfo.inspection_lasttime=new Date().getTime()+"";
+			
+			    }
+			    String inspection_nexttime=form.get("inspection_nexttime");
+			    if(inspection_nexttime!=null&&!inspection_nexttime.isEmpty()){
+			        deviceInfo.inspection_nexttime=inspection_nexttime;
+			    }
+			    String maintenance_nexttime=form.get("maintenance_nexttime");
+			    if(maintenance_nexttime!=null&&!maintenance_nexttime.isEmpty()){
+			        deviceInfo.maintenance_nexttime=maintenance_nexttime;
+			    }
+			    deviceInfo.save();
+			
+			}else {
+			    order.state="untreated";
+			}
+			order.save();
+			
             return success();
         }
         catch (CodeException ce) {
@@ -212,40 +242,12 @@ public class DispatchController extends BaseController{
                 dispatch.remarks=remarks;
             }
             dispatch.result=result;
-            dispatch.state="treated";
+            dispatch.state="examined";
             dispatch.finish_time=new Date().getTime()+"";
             dispatch.before_pic=beforestr;
             dispatch.after_pic=afterstr;
             dispatch.save();
-            Order order=Order.finder.byId(dispatch.order_id);
-            order.state="treated";
 
-            if(!result.equals("transfer")){
-                DeviceInfo deviceInfo=DeviceInfo.finder.byId(dispatch.device_id);
-                if(deviceInfo==null){
-                    throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-                }
-                if(dispatch.order_type==2){
-                    deviceInfo.maintenance_lasttime=new Date().getTime()+"";
-                }
-                if(dispatch.order_type==3){
-                    deviceInfo.inspection_lasttime=new Date().getTime()+"";
-
-                }
-                String inspection_nexttime=form.get("inspection_nexttime");
-                if(inspection_nexttime!=null&&!inspection_nexttime.isEmpty()){
-                    deviceInfo.inspection_nexttime=inspection_nexttime;
-                }
-                String maintenance_nexttime=form.get("maintenance_nexttime");
-                if(maintenance_nexttime!=null&&!maintenance_nexttime.isEmpty()){
-                    deviceInfo.maintenance_nexttime=maintenance_nexttime;
-                }
-                deviceInfo.save();
-
-            }else {
-                order.state="untreated";
-            }
-            order.save();
             return success();
         }
         catch (CodeException ce) {

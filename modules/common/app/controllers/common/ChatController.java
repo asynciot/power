@@ -106,10 +106,8 @@ public class ChatController extends BaseController {
 			if(followStr!=null&&!followStr.isEmpty()){
 			    sql=sql+"WHERE follow='"+follow+"' ";
 			}
-			sql=sql+"order by create_time desc";
+			sql=sql+"order by create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
-										.setFirstRow((page-1)*num)
-										.setMaxRows(num)
 										.findList();
 			Logger.info(orderList.size()+"");
 			return successList(orderList);

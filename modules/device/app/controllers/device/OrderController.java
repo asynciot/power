@@ -390,4 +390,36 @@ public class OrderController extends BaseController {
         Logger.info(orderList.size()+"");
         return successList(orderList);
     }
+	
+	public Result progress(){
+		try {
+			DynamicForm form = formFactory.form().bindFromRequest();
+			String pageStr = form.get("page");
+			String numStr = form.get("num");
+			if (null == pageStr || pageStr.isEmpty()) {
+				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+			}
+			
+			if (null == numStr || numStr.isEmpty()) {
+				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+			}
+			Integer page = Integer.parseInt(pageStr);
+			Integer num = Integer.parseInt(numStr);
+			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id WHERE ladder.`order`.state<>'treated' ";
+			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
+			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
+										.findList();
+			Logger.info(orderList.size()+"");
+			return successList(orderList);
+			}
+		catch (CodeException ce) {
+			Logger.error(ce.getMessage());
+			return failure(ce.getCode());
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			Logger.error(e.getMessage());
+			return failure(ErrDefinition.E_COMMON_READ_FAILED);
+		}
+	}
 }
