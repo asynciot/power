@@ -256,10 +256,10 @@ public class OrderController extends BaseController {
             if(expect!=null&&!expect.isEmpty()){
                 dispatch.expect_time=expect;
             }
-            if(Order.state.equals("treated")){
+            if(Order.state.equals("treating")){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }else{
-                Order.state="treated";
+                Order.state="treating";
                 Order.save();
                 dispatch.order_id=Order.id;
                 dispatch.create_time=new Date().getTime()+"";
