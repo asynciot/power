@@ -405,7 +405,7 @@ public class OrderController extends BaseController {
 			}
 			Integer page = Integer.parseInt(pageStr);
 			Integer num = Integer.parseInt(numStr);
-			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id WHERE ladder.`order`.state<>'treated' ";
+			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
 			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.findList();
