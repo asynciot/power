@@ -35,7 +35,6 @@ public class SocketManager {
 		if (m_roomMap.get(roomName) != null) {
 			return m_roomMap.get(roomName).size();
 		}
-		
 		return 0;
 	}
 	

@@ -36,7 +36,6 @@ public class SendMonitorThread extends Thread {
         Field[] fields = Monitor.class.getDeclaredFields();
         while (true){
             try{
-                Thread.sleep(1000);
                 monitorList=Monitor.finder.where().gt("time",update_time).findList();
                 for(Monitor monitor:monitorList){
                     update_time=monitor.time.getTime()>update_time.getTime()?monitor.time:update_time;
@@ -52,7 +51,6 @@ public class SendMonitorThread extends Thread {
                             }else {
                                 events.data=byteMerger(events.data,monitor1.data);
                             }
-
                             events.length+=monitor1.length;
                         }
                         events.interval=monitor.interval;
@@ -62,10 +60,10 @@ public class SendMonitorThread extends Thread {
                         Ebean.deleteAll(monitorList_event);
                     }else{
                         JsonNode node = Json.toJson(monitor);
+                        Logger.info(monitor.sequence.toString());
                         SocketManager.getInstance().broadcast(monitor.device_id.toString(), node.toString());
                     }
                 }
-
             }catch (Exception e){
                 e.printStackTrace();
             }
