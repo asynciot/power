@@ -64,8 +64,31 @@ public class ChatController extends BaseController {
 
 
 	}
-	public Result delete(){
-    	return delete(Chat.class,formFactory);
+// 	public Result delete(){
+//     	return delete(Chat.class,formFactory);
+// 	}
+	public Result delete() {
+	    try {
+	        DynamicForm form = formFactory.form().bindFromRequest();
+	        String id = form.get("id");
+	        Chat chat= Chat.finder.where()
+	                .eq("id",id)
+	                .findUnique();
+	        if (chat == null ) {
+	            throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
+	        }
+	        Ebean.delete(chat);
+	        return success();
+	    }
+	    catch (CodeException ce) {
+	        Logger.error(ce.getMessage());
+	        return failure(ce.getCode());
+	    }
+	    catch (Throwable e) {
+	        e.printStackTrace();
+	        Logger.error(e.getMessage());
+	        return failure(ErrDefinition.E_FOLLOW_INFO_DELETE_FAILED);
+	    }
 	}
 	public Result read() {
 		try {
@@ -102,7 +125,7 @@ public class ChatController extends BaseController {
 			Integer follow = Integer.parseInt(followStr);
 			
 
-			String sql="SELECT ladder.`chat`.id,content,follow,username,nickname,ladder.`chat`.create_time,portrait FROM ladder.`chat` left join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
+			String sql="SELECT ladder.`chat`.id,content,follow,username,from_id,nickname,ladder.`chat`.create_time,portrait FROM ladder.`chat` left join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
 			if(followStr!=null&&!followStr.isEmpty()){
 			    sql=sql+"WHERE follow='"+follow+"' ";
 			}

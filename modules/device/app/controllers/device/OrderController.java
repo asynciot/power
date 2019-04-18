@@ -396,6 +396,7 @@ public class OrderController extends BaseController {
 			DynamicForm form = formFactory.form().bindFromRequest();
 			String pageStr = form.get("page");
 			String numStr = form.get("num");
+			String stateStr = form.get("state");
 			if (null == pageStr || pageStr.isEmpty()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}
@@ -405,7 +406,26 @@ public class OrderController extends BaseController {
 			}
 			Integer page = Integer.parseInt(pageStr);
 			Integer num = Integer.parseInt(numStr);
-			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
+			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id ";
+			
+			if(stateStr=null&&stateStr.isEmpty()){
+			    sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
+			}
+			if(stateStr == '5'){
+			    sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
+			}
+			if(stateStr == '1'){
+			    sql=sql+"WHERE ladder.`order`.state='examined' ";
+			}
+			if(stateStr == '2'){
+			    sql=sql+"WHERE ladder.`order`.state<>'untreated' ";
+			}
+			if(stateStr == '3'){
+			    sql=sql+"WHERE ladder.`order`.state<>'untreated' ";
+			}
+			if(stateStr == '4'){
+			    sql=sql+"WHERE ladder.`order`.state<>'examined' ";
+			}
 			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.findList();
