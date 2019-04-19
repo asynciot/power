@@ -411,20 +411,20 @@ public class OrderController extends BaseController {
 			if(stateStr ==null&&stateStr.isEmpty()){
 			    sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
 			}
-			if(stateStr == "5"){
+			if(stateStr.equals("5")){
 			    sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
 			}
-			if(stateStr == "1"){
+			if(stateStr.equals("1")){
 			    sql=sql+"WHERE ladder.`order`.state='examined' ";
 			}
-			if(stateStr == "2"){
-			    sql=sql+"WHERE ladder.`order`.state<>'untreated' ";
+			if(stateStr.equals("2")){
+			    sql=sql+"WHERE ladder.`order`.state='untreated' ";
 			}
-			if(stateStr == "3"){
-			    sql=sql+"WHERE ladder.`order`.state<>'untreated' ";
+			if(stateStr.equals("3")){
+			    sql=sql+"WHERE ladder.`dispatch`.state='untreated' ";
 			}
-			if(stateStr == "4"){
-			    sql=sql+"WHERE ladder.`order`.state<>'examined' ";
+			if(stateStr.equals("4")){
+			    sql=sql+"WHERE ladder.`dispatch`.state='examined' ";
 			}
 			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
