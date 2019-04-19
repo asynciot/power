@@ -55,7 +55,7 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Order order = models.device.Order.finder.byId(Integer.parseInt(id));
-            order.state="examined";
+            order.state="untreated";
             order.save();
             return success();
         }
@@ -86,8 +86,15 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Order order = models.device.Order.finder.byId(Integer.parseInt(id));
-            order.state="untreated";
-            order.save();
+			Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
+			if(order.state.equals("treating")){
+			    throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+			}else{
+			    order.state="treating";
+			    order.save();
+			    dispatch.state="untreated";
+			    dispatch.save();
+			}
             return success();
         }
         catch (CodeException ce) {
@@ -256,15 +263,15 @@ public class OrderController extends BaseController {
             if(expect!=null&&!expect.isEmpty()){
                 dispatch.expect_time=expect;
             }
-            if(Order.state.equals("treating")){
+            if(Order.state.equals("examined")){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }else{
-                Order.state="treating";
+                Order.state="examined";
                 Order.save();
                 dispatch.order_id=Order.id;
                 dispatch.create_time=new Date().getTime()+"";
                 dispatch.user_id=session("userId");
-                dispatch.state="untreated";
+                dispatch.state="prepare";
                 dispatch.device_id=Order.device_id;
                 dispatch.order_type=Order.type;
 				dispatch.code=Order.code;
@@ -407,12 +414,11 @@ public class OrderController extends BaseController {
 			Integer page = Integer.parseInt(pageStr);
 			Integer num = Integer.parseInt(numStr);
 			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id ";
-			
 			if(stateStr ==null&&stateStr.isEmpty()){
-			    sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
+			    // sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
 			}
-			if(stateStr.equals("5")){
-			    sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
+			if(stateStr.equals("6")){
+			    // sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
 			}
 			if(stateStr.equals("1")){
 			    sql=sql+"WHERE ladder.`order`.state='examined' ";
@@ -425,6 +431,9 @@ public class OrderController extends BaseController {
 			}
 			if(stateStr.equals("4")){
 			    sql=sql+"WHERE ladder.`dispatch`.state='examined' ";
+			}
+			if(stateStr.equals("5")){
+			    sql=sql+"WHERE ladder.`order`.state='treated' ";
 			}
 			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
