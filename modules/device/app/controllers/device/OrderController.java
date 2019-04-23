@@ -86,7 +86,7 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Order order = models.device.Order.finder.byId(Integer.parseInt(id));
-			Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
+			Dispatch dispatch = models.device.Dispatch.finder.where().eq("order_id",order.id).findUnique();
 			if(order.state.equals("treating")){
 			    throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}else{
