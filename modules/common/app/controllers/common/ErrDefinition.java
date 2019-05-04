@@ -41,20 +41,20 @@ public class ErrDefinition {
     public static final int E_COMMON_FTP_COPY_FAILED                   = 636;
     public static final int E_COMMON_FTP_INCORRECT_PARAM               = 637;
 
-    public static final int E_QUESTION_CONFIG_NUM_TOO_LARGE            = 640;
-    public static final int E_QUESTION_READ_FAILED                     = 641;
+    public static final int E_QUESTION_CONFIG_NUM_TOO_LARGE             = 640;
+    public static final int E_QUESTION_READ_FAILED                      = 641;
 
-    public static final int E_BINARYS_UPLOAD_FAILD                     =650;
+    public static final int E_BINARYS_UPLOAD_FAILD                      =650;
 
 
-    public static final int E_COMMOND_REGISTER_ALREADY_EXIST           = 650;
-    public static final int E_COMMOND_REGISTER_INCORRECT_PARAM         = 651;
+    public static final int E_COMMOND_REGISTER_ALREADY_EXIST            = 650;
+    public static final int E_COMMOND_REGISTER_INCORRECT_PARAM          = 651;
 
-    public static final int E_COMMOND_MONITOR_ALREADY_EXIST           = 660;
-    public static final int E_COMMOND_MONITOR_INCORRECT_PARAM          = 661;
+    public static final int E_COMMOND_MONITOR_ALREADY_EXIST             = 660;
+    public static final int E_COMMOND_MONITOR_INCORRECT_PARAM           = 661;
 
-    public static final int E_DEVICE_IN_COMMOND                        = 670;
-    public static final int E_DEVICE_NOTIN_MONITOR                        = 671;
+    public static final int E_DEVICE_IN_COMMOND                         = 670;
+    public static final int E_DEVICE_NOTIN_MONITOR                      = 671;
     public static final int E_MESSAGE_CREATE_FAILED                     = 830;
     public static final int E_MESSAGE_READ_FAILED                       = 831;
     public static final int E_MESSAGE_UPDATE_FAILED                     = 832;
@@ -70,7 +70,9 @@ public class ErrDefinition {
     public static final int E_FOLLOW_INFO_DELETE_FAILED                 = 854;
     public static final int E_FOLLOW_INFO_ALREADY_EXIST                 = 855;
 
-
+    public static final int E_ROLES_INFO_CREATE_FAILED                  = 860;
+    public static final int E_ROLES_INFO_INCORRECT_PARAM                = 861;
+    public static final int E_ROLES_INFO_READ_FAILED                    = 862;
 }
 
 

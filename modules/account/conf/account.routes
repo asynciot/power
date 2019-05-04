@@ -3,15 +3,25 @@
 # ~~~~
 
 
-POST      /                           controllers.account.AccountController.create()
-PUT       /                           controllers.account.AccountController.update()
-GET       /                           controllers.account.AccountController.read()
-DELETE    /                           controllers.account.AccountController.delete()
+POST      /                             controllers.account.AccountController.create()
+PUT       /                             controllers.account.AccountController.update()
+GET       /                             controllers.account.AccountController.read()
+DELETE    /                             controllers.account.AccountController.delete()
 
 
-POST      /login                      controllers.account.AccountController.login()
-POST      /logout                     controllers.account.AccountController.logout()
-POST      /register                   controllers.account.AccountController.register()
-POST      /password                   controllers.account.AccountController.password()
-POST      /retrieve                   controllers.account.AccountController.retrieve()
-POST      /portrait                   controllers.account.AccountController.portrait()
+POST      /login                        controllers.account.AccountController.login()
+POST      /logout                       controllers.account.AccountController.logout()
+POST      /register                     controllers.account.AccountController.register()
+POST      /password                     controllers.account.AccountController.password()
+POST      /retrieve                     controllers.account.AccountController.retrieve()
+POST      /portrait                     controllers.account.AccountController.portrait()
+
+POST      /addMenu                      controllers.account.MenusController.create()
+GET       /Menu                         controllers.account.MenusController.read()
+
+POST      /addFunction                  controllers.account.FunctionsController.create()
+GET       /Function                     controllers.account.FunctionsController.read()
+
+POST      /addRole                      controllers.account.RolesController.create()
+POST      /Confer                       controllers.account.RolesController.confer()
+GET       /Role                         controllers.account.RolesController.read()

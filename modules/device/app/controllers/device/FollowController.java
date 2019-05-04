@@ -45,7 +45,7 @@ public class FollowController extends BaseController {
             if (form.hasErrors()) {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
-
+            String userId = session("userId");
             Follow followInfo = form.get();
             if(followInfo.imei==null||followInfo.imei.isEmpty()){
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
@@ -54,6 +54,9 @@ public class FollowController extends BaseController {
             followInfo.device_id=devices.id;
             followInfo.createTime=new Date();
             followInfo.userId=session("userId");
+            if (null == userId) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
             /*
             int count = Follow.finder.where()
             		.eq("userId", session("userId"))

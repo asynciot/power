@@ -20,6 +20,7 @@ create table account (
   portrait                      varchar(255),
   maxfollow                     integer,
   augroup                       integer,
+  role                          varchar(255),
   constraint pk_account primary key (id)
 );
 
@@ -213,6 +214,32 @@ create table follow_ladder (
   constraint pk_follow_ladder primary key (id)
 );
 
+create table functions (
+  id                            varchar(255) not null,
+  name                          varchar(255) not null,
+  monitor                       tinyint(1) default 0,
+  memory                        tinyint(1) default 0,
+  work_audt                     tinyint(1) default 0,
+  work_order                    tinyint(1) default 0,
+  work_up                       tinyint(1) default 0,
+  work_dispatch                 tinyint(1) default 0,
+  update_devices                tinyint(1) default 0,
+  rem_devices                   tinyint(1) default 0,
+  info_evelution                tinyint(1) default 0,
+  new_ladder                    tinyint(1) default 0,
+  rem_ladder                    tinyint(1) default 0,
+  update_ladder                 tinyint(1) default 0,
+  new_user                      tinyint(1) default 0,
+  update_user                   tinyint(1) default 0,
+  rem_user                      tinyint(1) default 0,
+  new_roles                     tinyint(1) default 0,
+  rem_roles                     tinyint(1) default 0,
+  update_roles                  tinyint(1) default 0,
+  assign_roles                  tinyint(1) default 0,
+  print                         tinyint(1) default 0,
+  constraint pk_functions primary key (id)
+);
+
 create table group (
   id                            integer auto_increment not null,
   leader                        varchar(255),
@@ -258,6 +285,29 @@ create table logs (
   device_id                     integer,
   time                          datetime(6),
   constraint pk_logs primary key (id)
+);
+
+create table menus (
+  id                            varchar(255) not null,
+  name                          varchar(255) not null,
+  dashboard                     tinyint(1) default 0,
+  menu                          tinyint(1) default 0,
+  map                           tinyint(1) default 0,
+  laddermap                     tinyint(1) default 0,
+  maintain                      tinyint(1) default 0,
+  auditinglist                  tinyint(1) default 0,
+  maintainlist                  tinyint(1) default 0,
+  event                         tinyint(1) default 0,
+  allist                        tinyint(1) default 0,
+  evolution                     tinyint(1) default 0,
+  ladder                        tinyint(1) default 0,
+  sys                           tinyint(1) default 0,
+  user_manage                   tinyint(1) default 0,
+  inform                        tinyint(1) default 0,
+  authority                     tinyint(1) default 0,
+  setting                       tinyint(1) default 0,
+  print                         tinyint(1) default 0,
+  constraint pk_menus primary key (id)
 );
 
 create table mess_record (
@@ -310,6 +360,14 @@ create table `order` (
   constraint pk_order primary key (id)
 );
 
+create table roles (
+  id                            varchar(255) not null,
+  name                          varchar(255) not null,
+  menus                         varchar(255),
+  functions                     varchar(255),
+  constraint pk_roles primary key (id)
+);
+
 create table runtime (
   id                            integer auto_increment not null,
   device_id                     integer,
@@ -360,6 +418,8 @@ drop table if exists follow;
 
 drop table if exists follow_ladder;
 
+drop table if exists functions;
+
 drop table if exists group;
 
 drop table if exists iplocation;
@@ -368,6 +428,8 @@ drop table if exists ladder;
 
 drop table if exists logs;
 
+drop table if exists menus;
+
 drop table if exists mess_record;
 
 drop table if exists message;
@@ -375,6 +437,8 @@ drop table if exists message;
 drop table if exists monitor;
 
 drop table if exists `order`;
+
+drop table if exists roles;
 
 drop table if exists runtime;
 

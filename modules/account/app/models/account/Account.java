@@ -68,6 +68,8 @@ public class Account extends Model{
 
     public Integer augroup;
 
+    public String role;
+
     public static Find<String, Account> finder =
             new Find<String, Account>(){};
 

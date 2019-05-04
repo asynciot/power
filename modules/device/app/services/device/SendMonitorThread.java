@@ -60,7 +60,6 @@ public class SendMonitorThread extends Thread {
                         Ebean.deleteAll(monitorList_event);
                     }else{
                         JsonNode node = Json.toJson(monitor);
-                        Logger.info(monitor.sequence.toString());
                         SocketManager.getInstance().broadcast(monitor.device_id.toString(), node.toString());
                     }
                 }
