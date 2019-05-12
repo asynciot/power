@@ -103,23 +103,21 @@ public class FunctionsController extends XDomainController {
         }
     }
 
-//    public Result update() {
-//        try {
-//            Form<Functions> form = formFactory.form(Functions.class);
-//            Functions functions = form.get();
-//            if(functions.name==null||functions.name.isEmpty()){
-//                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-//            }
-//            if(Functions.finder.where().eq("names",functions.name) != null){
-//                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-//            }
-//            Ebean.save(functions);
-//            return success();
-//        }
-//        catch (Throwable e) {
-//            e.printStackTrace();
-//            Logger.error(e.getMessage());
-//            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
-//        }
-//    }
+    public Result update() {
+        try {
+            Form<Functions> forms = formFactory.form(Functions.class).bindFromRequest();
+
+            Functions functions = forms.get();
+            if (null == functions.id || functions.id.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            Ebean.update(functions);
+            return success();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
+        }
+    }
 }

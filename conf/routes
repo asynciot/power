@@ -2,7 +2,7 @@
 # This file defines all application common.device.other.routes (Higher priority common.device.other.routes first)
 # ~~~~
 OPTIONS   /*name                     @controllers.OptionController.OptionMethod(name:String)
-GET       /                           controllers.HomeController.index
+GET       /                          controllers.HomeController.index
 GET       /getfile                   controllers.HomeController.getfile
 POST      /device/alert              controllers.HomeController.getalert()
 POST      /                          controllers.HomeController.getwechat
@@ -17,5 +17,5 @@ POST      /                          controllers.HomeController.getwechat
 ->        /other                     other.Routes
 
 
-GET     /$filePath<[^.]+>                        @controllers.HomeController.resource(filePath:String)
-GET     /*file                                   controllers.Assets.versioned(path="/public/dist", file: Asset)
+GET     /$filePath<[^.]+>            @controllers.HomeController.resource(filePath:String)
+GET     /*file                       controllers.Assets.versioned(path="/public/dist", file: Asset)

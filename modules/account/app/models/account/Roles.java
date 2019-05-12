@@ -20,7 +20,7 @@ public class Roles extends Model{
     @Id
     public String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,length=20)
     public String name;
 
     public String menus;

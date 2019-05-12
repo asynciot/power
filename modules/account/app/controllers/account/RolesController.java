@@ -119,9 +119,36 @@ public class RolesController extends XDomainController {
             if (id == null && id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_ROLES_INFO_INCORRECT_PARAM);
             }
-            Account account = Account.finder.where().eq("id", userId).findUnique();
+            Account account = Account.finder.where().eq("id",userId).findUnique();
             account.role = id;
             Ebean.save(account);
+            return success();
+        } catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
+    public Result delete() {
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+
+            Logger.info("1");
+            String id = form.get("id");
+            Logger.info(id);
+            if (id == null && id.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_ROLES_INFO_INCORRECT_PARAM);
+            }
+            Roles roles = Roles.finder.where().eq("id", id).findUnique();
+            Menus menus = Menus.finder.where().eq("id",id).findUnique();
+            Functions functions = Functions.finder.where().eq("id",id).findUnique();
+            Ebean.delete(roles);
+            Ebean.delete(menus);
+            Ebean.delete(functions);
             return success();
         } catch (CodeException ce) {
             Logger.error(ce.getMessage());

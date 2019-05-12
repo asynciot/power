@@ -362,7 +362,7 @@ create table `order` (
 
 create table roles (
   id                            varchar(255) not null,
-  name                          varchar(255) not null,
+  name                          varchar(20) not null,
   menus                         varchar(255),
   functions                     varchar(255),
   constraint pk_roles primary key (id)

@@ -74,6 +74,7 @@ public class AccountController extends XDomainController {
             newAccount.id = CodeGenerator.generateShortUUId();
             newAccount.createTime = new Date();
             newAccount.maxfollow=10;
+            newAccount.role="5";
             newAccount.augroup=3;
             Ebean.save(newAccount);
 
@@ -97,7 +98,6 @@ public class AccountController extends XDomainController {
             String username = form.get("username");
             String password = form.get("password");
 
-
             if (null == username || null == password) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
             }
@@ -108,7 +108,6 @@ public class AccountController extends XDomainController {
             }
             if(account==null){
                 throw new CodeException(ErrDefinition.E_ACCOUNT_NOT_FOUND);
-
             }
             if (account.password.compareTo(CodeGenerator.generateMD5(password)) != 0) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_PASSWORD_MISMATCH);

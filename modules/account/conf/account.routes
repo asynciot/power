@@ -18,10 +18,13 @@ POST      /portrait                     controllers.account.AccountController.po
 
 POST      /addMenu                      controllers.account.MenusController.create()
 GET       /Menu                         controllers.account.MenusController.read()
+PUT       /Menu/update                  controllers.account.MenusController.update()
 
 POST      /addFunction                  controllers.account.FunctionsController.create()
 GET       /Function                     controllers.account.FunctionsController.read()
+PUT       /Function/update              controllers.account.FunctionsController.update()
 
 POST      /addRole                      controllers.account.RolesController.create()
 POST      /Confer                       controllers.account.RolesController.confer()
 GET       /Role                         controllers.account.RolesController.read()
+DELETE    /delete                       controllers.account.RolesController.delete()

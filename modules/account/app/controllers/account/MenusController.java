@@ -102,4 +102,22 @@ public class MenusController extends XDomainController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+
+    public Result update() {
+        try {
+            Form<Menus> forms = formFactory.form(Menus.class).bindFromRequest();
+
+            Menus menus = forms.get();
+            if (null == menus.id || menus.id.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            Ebean.update(menus);
+            return success();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
+        }
+    }
 }
