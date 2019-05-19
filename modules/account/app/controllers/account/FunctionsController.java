@@ -40,15 +40,15 @@ public class FunctionsController extends XDomainController {
         try {
             Form<Functions> form = formFactory.form(Functions.class).bindFromRequest();
             if (form.hasErrors()) {
-                throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
             }
             Functions functions = form.get();
             if(functions.name==null||functions.name.isEmpty()){
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
             }
             Functions pd = Functions.finder.where().eq("name",functions.name).findUnique();
             if(pd != null){
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
             }
             Ebean.save(functions);
             return success();
@@ -56,7 +56,7 @@ public class FunctionsController extends XDomainController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
+            return failure(ErrDefinition.E_FUNCTION_INFO_CREATE_FAILED);
         }
     }
 
@@ -99,7 +99,7 @@ public class FunctionsController extends XDomainController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+            return failure(ErrDefinition.E_FUNCTION_INFO_READ_FAILED);
         }
     }
 
@@ -109,7 +109,7 @@ public class FunctionsController extends XDomainController {
 
             Functions functions = forms.get();
             if (null == functions.id || functions.id.isEmpty()) {
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
             }
             Ebean.update(functions);
             return success();
@@ -117,7 +117,7 @@ public class FunctionsController extends XDomainController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
+            return failure(ErrDefinition.E_FUNCTION_INFO_CREATE_FAILED);
         }
     }
 }

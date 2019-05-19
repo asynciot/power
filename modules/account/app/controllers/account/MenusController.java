@@ -40,15 +40,15 @@ public class MenusController extends XDomainController {
         try {
             Form<Menus> form = formFactory.form(Menus.class).bindFromRequest();
             if (form.hasErrors()) {
-                throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_MENU_INFO_INCORRECT_PARAM);
             }
             Menus menus = form.get();
             if(menus.name==null||menus.name.isEmpty()){
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_MENU_INFO_INCORRECT_PARAM);
             }
             Menus pd = Menus.finder.where().eq("name",menus.name).findUnique();
             if(pd != null){
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_MENU_INFO_INCORRECT_PARAM);
             }
             Ebean.save(menus);
             return success();
@@ -56,7 +56,7 @@ public class MenusController extends XDomainController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
+            return failure(ErrDefinition.E_MENU_INFO_CREATE_FAILED);
         }
     }
 
@@ -99,7 +99,7 @@ public class MenusController extends XDomainController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+            return failure(ErrDefinition.E_MENU_INFO_READ_FAILED);
         }
     }
 
@@ -109,7 +109,7 @@ public class MenusController extends XDomainController {
 
             Menus menus = forms.get();
             if (null == menus.id || menus.id.isEmpty()) {
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                throw new CodeException(ErrDefinition.E_MENU_INFO_INCORRECT_PARAM);
             }
             Ebean.update(menus);
             return success();
@@ -117,7 +117,7 @@ public class MenusController extends XDomainController {
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_COMMON_CREATE_FAILED);
+            return failure(ErrDefinition.E_MENU_INFO_CREATE_FAILED);
         }
     }
 }

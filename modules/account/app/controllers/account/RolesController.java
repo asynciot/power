@@ -137,9 +137,7 @@ public class RolesController extends XDomainController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
 
-            Logger.info("1");
             String id = form.get("id");
-            Logger.info(id);
             if (id == null && id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_ROLES_INFO_INCORRECT_PARAM);
             }

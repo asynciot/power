@@ -55,6 +55,7 @@ public class ErrDefinition {
 
     public static final int E_DEVICE_IN_COMMOND                         = 670;
     public static final int E_DEVICE_NOTIN_MONITOR                      = 671;
+
     public static final int E_MESSAGE_CREATE_FAILED                     = 830;
     public static final int E_MESSAGE_READ_FAILED                       = 831;
     public static final int E_MESSAGE_UPDATE_FAILED                     = 832;
@@ -73,6 +74,14 @@ public class ErrDefinition {
     public static final int E_ROLES_INFO_CREATE_FAILED                  = 860;
     public static final int E_ROLES_INFO_INCORRECT_PARAM                = 861;
     public static final int E_ROLES_INFO_READ_FAILED                    = 862;
+
+    public static final int E_FUNCTION_INFO_CREATE_FAILED               = 870;
+    public static final int E_FUNCTION_INFO_INCORRECT_PARAM             = 871;
+    public static final int E_FUNCTION_INFO_READ_FAILED                 = 872;
+
+    public static final int E_MENU_INFO_CREATE_FAILED                   = 880;
+    public static final int E_MENU_INFO_INCORRECT_PARAM                 = 881;
+    public static final int E_MENU_INFO_READ_FAILED                     = 882;
 }
 
 
