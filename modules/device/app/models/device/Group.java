@@ -19,9 +19,9 @@ public class Group extends Model {
 
     public String name;
 
-    public Integer mobile;
+    public String mobile;
 
-    public Date create_time;
+    public Date t_create;
 
     public String region;
 

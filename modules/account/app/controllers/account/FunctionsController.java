@@ -1,6 +1,5 @@
 package controllers.account;
 
-import Sms.common.SmsManager;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
@@ -20,9 +19,6 @@ import play.mvc.Result;
 import play.mvc.Security;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;

@@ -201,6 +201,7 @@ public class LadderController extends BaseController {
                     if(ladder !=null ) {
                         node.put("name", ladder.name);
                         DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
+                        Devices devices = Devices.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
                         if (deviceInfo != null) {
                             node.put("rssi", deviceInfo.rssi);
                             node.put("tagcolor", deviceInfo.tagcolor);
@@ -221,12 +222,17 @@ public class LadderController extends BaseController {
                             node.put("ip_country", iplocation.country);
                             node.put("ip_region", iplocation.region);
                         }
+                        if(devices !=null){
+                            node.put("t_logout", devices.t_logout.toString());
+                            node.put("t_update", devices.t_update.toString());
+                        }
                     }
                 }else {
                     Ladder ladder = Ladder.finder.where().eq("door1", node.get("door1").asText()).findUnique();
                     if (ladder != null) {
                         node.put("name", ladder.name);
                         DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("door1").asText()).findUnique();
+                        Devices devices = Devices.finder.where().eq("imei", node.get("door1").asText()).findUnique();
                         if (deviceInfo != null) {
                             node.put("rssi", deviceInfo.rssi);
                             node.put("tagcolor", deviceInfo.tagcolor);

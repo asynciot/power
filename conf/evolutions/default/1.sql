@@ -244,8 +244,8 @@ create table group (
   id                            integer auto_increment not null,
   leader                        varchar(255),
   name                          varchar(255),
-  mobile                        integer,
-  create_time                   datetime(6),
+  mobile                        varchar(255),
+  t_create                      datetime(6),
   region                        varchar(255),
   constraint pk_group primary key (id)
 );
