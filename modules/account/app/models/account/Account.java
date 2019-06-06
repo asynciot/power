@@ -63,6 +63,8 @@ public class Account extends Model{
     public Integer verifyCode;
 
     public String portrait;
+	
+	public String logo;
 
     public Integer maxfollow;
 
