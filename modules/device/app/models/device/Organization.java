@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by lengxia on 2018/3/2
  */
 @Entity
-public class Group extends Model {
+public class Organization extends Model {
     @Id
     public Integer id;
 
@@ -19,12 +19,13 @@ public class Group extends Model {
 
     public String name;
 
-    public String mobile;
-
     public Date t_create;
 
     public String region;
 
-    public static Find<Integer, Group> finder =
-            new Find<Integer, Group>(){};
+    public String organize_id;
+
+
+    public static Find<Integer, Organization> finder =
+            new Find<Integer, Organization>(){};
 }

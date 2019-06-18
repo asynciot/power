@@ -15,6 +15,7 @@ POST      /register                     controllers.account.AccountController.re
 POST      /password                     controllers.account.AccountController.password()
 POST      /retrieve                     controllers.account.AccountController.retrieve()
 POST      /portrait                     controllers.account.AccountController.portrait()
+GET       /readOrganization             controllers.account.AccountController.readOrganization()
 
 POST      /addMenu                      controllers.account.MenusController.create()
 GET       /Menu                         controllers.account.MenusController.read()

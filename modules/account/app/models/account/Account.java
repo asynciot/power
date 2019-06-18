@@ -70,6 +70,8 @@ public class Account extends Model{
 
     public String role;
 
+    public String organization_id;
+
     public static Find<String, Account> finder =
             new Find<String, Account>(){};
 

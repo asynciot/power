@@ -100,6 +100,7 @@ public class LadderController extends BaseController {
 
             String search_info = form.get("search_info");
             String ladder_id = form.get("id");
+            String group_id = form.get("group_id");
             String register=form.get("register");
             String tabcor = form.get("tagcolor");
             String state = form.get("state");
@@ -140,6 +141,9 @@ public class LadderController extends BaseController {
                 exprList=exprList.in("ctrl",ctrllist);
                 exprList=exprList.in("door1",door1list);
                 exprList=exprList.in("door2",door2list);
+            }
+            if (group_id != null && !group_id.isEmpty()) {
+                exprList=exprList.in("group_id",group_id);
             }
             if (state != null && !state.isEmpty()) {
                 exprList=exprList.contains("state",state);
@@ -328,6 +332,59 @@ public class LadderController extends BaseController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+
+    public Result group() {
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String ladder_id = form.get("ladder_id");
+            String id = form.get("id");
+
+            if (ladder_id == null || ladder_id.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            Ladder ladder=Ladder.finder.byId(Integer.parseInt(ladder_id));
+            ladder.group_id = id;
+
+            ladder.save();
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
+    public Result rmGroup() {
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+
+            String ladder_id = form.get("ladder_id");
+            if (ladder_id == null || ladder_id.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+
+            Ladder ladder=Ladder.finder.byId(Integer.parseInt(ladder_id));
+            ladder.group_id = "0";
+
+            ladder.save();
+            return success();
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
     public Result delete() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();

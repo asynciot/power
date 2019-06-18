@@ -21,6 +21,7 @@ create table account (
   maxfollow                     integer,
   augroup                       integer,
   role                          varchar(255),
+  organization_id               varchar(255),
   constraint pk_account primary key (id)
 );
 
@@ -240,16 +241,6 @@ create table functions (
   constraint pk_functions primary key (id)
 );
 
-create table group (
-  id                            integer auto_increment not null,
-  leader                        varchar(255),
-  name                          varchar(255),
-  mobile                        varchar(255),
-  t_create                      datetime(6),
-  region                        varchar(255),
-  constraint pk_group primary key (id)
-);
-
 create table iplocation (
   id                            integer auto_increment not null,
   ip                            varchar(255),
@@ -276,6 +267,7 @@ create table ladder (
   door2                         varchar(255),
   install_addr                  varchar(255),
   state                         varchar(255),
+  group_id                      varchar(5),
   constraint pk_ladder primary key (id)
 );
 
@@ -360,6 +352,27 @@ create table `order` (
   constraint pk_order primary key (id)
 );
 
+create table organization (
+  id                            integer auto_increment not null,
+  leader                        varchar(255),
+  name                          varchar(255),
+  t_create                      datetime(6),
+  region                        varchar(255),
+  organize_id                   varchar(255),
+  constraint pk_organization primary key (id)
+);
+
+create table organize (
+  id                            integer auto_increment not null,
+  leader                        varchar(255),
+  name                          varchar(255),
+  mobile                        varchar(255),
+  t_create                      datetime(6),
+  region                        varchar(255),
+  group_id                      varchar(255),
+  constraint pk_organize primary key (id)
+);
+
 create table roles (
   id                            varchar(255) not null,
   name                          varchar(20) not null,
@@ -420,8 +433,6 @@ drop table if exists follow_ladder;
 
 drop table if exists functions;
 
-drop table if exists group;
-
 drop table if exists iplocation;
 
 drop table if exists ladder;
@@ -437,6 +448,10 @@ drop table if exists message;
 drop table if exists monitor;
 
 drop table if exists `order`;
+
+drop table if exists organization;
+
+drop table if exists organize;
 
 drop table if exists roles;
 

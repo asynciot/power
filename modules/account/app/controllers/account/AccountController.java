@@ -492,4 +492,52 @@ public class AccountController extends XDomainController {
         message.createTime = new Date();
         Ebean.save(message);
     }
+    @Security.Authenticated(Secured.class)
+    public Result readOrganization() {
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            ExpressionList<Account> exprList = Account.finder.where();
+            List<Account> accountList = new ArrayList<Account>();
+
+            String id = form.get("group_id");
+            if (id != null && !id.isEmpty()) {
+                exprList=exprList.in("organization_id",id);
+            }
+
+            String pageStr = form.get("page");
+            String numStr = form.get("num");
+
+            if (null == pageStr || pageStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
+
+            if (null == numStr || numStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
+
+            Integer page = Integer.parseInt(pageStr);
+            Integer num = Integer.parseInt(numStr);
+
+            accountList = exprList
+                    .setFirstRow((page-1)*num)
+                    .setMaxRows(num)
+                    .orderBy("createTime desc")
+                    .findList();
+
+            int totalNum = exprList.findRowCount();
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            return successList(totalNum, totalPage, accountList);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_ACCOUNT_READ_FAILED);
+        }
+    }
+
 }
