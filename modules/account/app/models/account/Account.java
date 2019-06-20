@@ -65,6 +65,10 @@ public class Account extends Model{
     public String portrait;
 	
 	public String logo;
+	
+	public String bg1;
+	
+	public String bg2;
 
     public Integer maxfollow;
 
