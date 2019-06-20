@@ -362,6 +362,7 @@ create table organization (
   t_create                      datetime(6),
   region                        varchar(255),
   organize_id                   varchar(255),
+  number                        integer,
   constraint pk_organization primary key (id)
 );
 
@@ -373,6 +374,7 @@ create table organize (
   t_create                      datetime(6),
   region                        varchar(255),
   group_id                      varchar(255),
+  number                        integer,
   constraint pk_organize primary key (id)
 );
 
