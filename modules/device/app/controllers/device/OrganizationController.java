@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by lengxia on 2019/3/2.
@@ -40,6 +41,9 @@ public class OrganizationController extends BaseController{
             }
 
             Organization organization = form.get();
+
+            Random rand = new Random();
+            organization.number = (rand.nextInt(90000000)+10000000);
 //            if (organize.name == null || organize.name.isEmpty()) {
 //                throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
 //            }
@@ -67,15 +71,15 @@ public class OrganizationController extends BaseController{
             String pageStr = form.get("page");
             String numStr = form.get("nums");
             String id = form.get("id");
-            String name = form.get("name");
+            Integer number = Integer.parseInt(form.get("number"));
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             if (null == numStr || numStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if (name != null && !name.isEmpty()) {
-                exprList=exprList.eq("name",name);
+            if (number != null) {
+                exprList=exprList.eq("number",number);
             }
             if (id != null && !id.isEmpty()) {
                 exprList=exprList.contains("id",id);
@@ -126,11 +130,13 @@ public class OrganizationController extends BaseController{
             String userId = session("userId");
 
             Account account = Account.finder.where().eq("id",userId).findUnique();
-            String id = form.get("organize_id");
-            if (null == id || id.isEmpty()) {
+            Integer number = Integer.parseInt(form.get("number"));
+
+            if (null == number) {
                 throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
             }
-            account.organization_id = id;
+            Organization organization = Organization.finder.where().eq("number",number).findUnique();
+            account.organization_id = organization.id.toString();
 
             Ebean.update(account);
             return success();

@@ -25,6 +25,7 @@ public class Organization extends Model {
 
     public String organize_id;
 
+    public Integer number;
 
     public static Find<Integer, Organization> finder =
             new Find<Integer, Organization>(){};

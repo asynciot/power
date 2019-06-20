@@ -18,6 +18,7 @@ create table account (
   email                         varchar(255),
   create_time                   datetime(6),
   portrait                      varchar(255),
+  logo                          varchar(255),
   maxfollow                     integer,
   augroup                       integer,
   role                          varchar(255),
@@ -359,6 +360,7 @@ create table organization (
   t_create                      datetime(6),
   region                        varchar(255),
   organize_id                   varchar(255),
+  number                        integer,
   constraint pk_organization primary key (id)
 );
 
@@ -370,6 +372,7 @@ create table organize (
   t_create                      datetime(6),
   region                        varchar(255),
   group_id                      varchar(255),
+  number                        integer,
   constraint pk_organize primary key (id)
 );
 

@@ -24,6 +24,8 @@ public class Organize extends Model {
 
     public String group_id;
 
+    public Integer number;
+
     public static Find<Integer, Organize> finder =
             new Find<Integer, Organize>(){};
 }
