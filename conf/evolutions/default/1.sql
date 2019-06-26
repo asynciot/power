@@ -21,6 +21,7 @@ create table account (
 	logo                   		    varchar(255),
 	bg1                   		    varchar(255),
 	bg2                    		    varchar(255),
+  logo                          varchar(255),
   maxfollow                     integer,
   augroup                       integer,
   role                          varchar(255),
