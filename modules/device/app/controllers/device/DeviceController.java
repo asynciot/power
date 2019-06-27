@@ -21,6 +21,7 @@ import play.data.FormFactory;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
+import com.avaje.ebean.SqlRow;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
