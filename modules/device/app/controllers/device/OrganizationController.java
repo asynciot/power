@@ -68,17 +68,23 @@ public class OrganizationController extends BaseController{
             ExpressionList<Organization> exprList= Organization.finder.where();
             List<Organization> organize = new ArrayList<Organization>();
 
+            String username = form.get("username");
             String pageStr = form.get("page");
             String numStr = form.get("nums");
             String id = form.get("id");
-            Integer number = Integer.parseInt(form.get("number"));
+            String numbers = form.get("number");
+
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             if (null == numStr || numStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if (number != null) {
+            if(username != null){
+                exprList=exprList.eq("leader",username);
+            }
+            if (numbers != null) {
+                Integer number = Integer.parseInt(form.get("number"));
                 exprList=exprList.eq("number",number);
             }
             if (id != null && !id.isEmpty()) {
@@ -104,7 +110,7 @@ public class OrganizationController extends BaseController{
         catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
-            return failure(ErrDefinition.E_FUNCTION_INFO_READ_FAILED);
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
     public Result update(){
