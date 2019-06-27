@@ -22,7 +22,10 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
 import com.avaje.ebean.SqlRow;
-
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.SqlRow;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -386,10 +389,6 @@ public class DeviceController extends BaseController {
 										.findList();
 			Logger.info(orderList.size()+"");
 			return successList(orderList);
-		}
-		catch (CodeException ce) {
-			Logger.error(ce.getMessage());
-			return failure(ce.getCode());
 		}
 		catch (Throwable e) {
 			e.printStackTrace();
