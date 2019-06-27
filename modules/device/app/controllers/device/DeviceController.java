@@ -376,4 +376,24 @@ public class DeviceController extends BaseController {
             return failure(ErrDefinition.E_MESSAGE_READ_FAILED);
         }
     }
+	
+	public Result locate() {
+		try {
+			DynamicForm form = formFactory.form().bindFromRequest();
+			String sql="SELECT region,count(region) as counter FROM ladder.`device_info` left join ladder.`iplocation` on ladder.`iplocation`.id=ladder.`device_info`.iplocation_id where region!='XX' group by region order by counter desc";
+			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
+										.findList();
+			Logger.info(orderList.size()+"");
+			return successList(orderList);
+		}
+		catch (CodeException ce) {
+			Logger.error(ce.getMessage());
+			return failure(ce.getCode());
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			Logger.error(e.getMessage());
+			return failure(ErrDefinition.E_MESSAGE_READ_FAILED);
+		}
+	}
 }
