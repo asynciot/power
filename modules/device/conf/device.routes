@@ -22,6 +22,7 @@ DELETE      /Device                     controllers.device.DeviceController.dele
 GET         /Device/ReadMore            controllers.device.DeviceController.readMore()
 GET         /Device/ReadCount           controllers.device.DeviceController.readCount()
 GET         /Device/ReadCountFollow     controllers.device.DeviceController.readCountfollow()
+GET         /Device/Locate              controllers.device.DeviceController.locate()
 
 GET         /Event                      controllers.device.EventController.read()
 GET         /Event/ReadCount            controllers.device.EventController.readCountEvent()
