@@ -155,8 +155,7 @@ public class OrganizationController extends BaseController{
     }
     public Result rmGroup(){
         try {
-            DynamicForm form = formFactory.form().bindFromRequest();
-            String userId = form.get("id");
+            String userId = session("userId");
             if (null == userId || userId.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
             }
