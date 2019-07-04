@@ -22,6 +22,14 @@ public class Organization extends Model {
     public Date t_create;
 
     public String region;
+	
+	public String logo;
+	
+	public String bg1;
+	
+	public String bg2;
+	
+	public String bg3;
 
     public String organize_id;
 

@@ -21,10 +21,12 @@ import play.mvc.Result;
 import play.mvc.Security;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 /**
  * Created by lengxia on 2019/3/2.
@@ -121,6 +123,28 @@ public class OrganizationController extends BaseController{
 //            if (null == organize.id || organize.id.isEmpty()) {
 //                throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
 //            }
+			
+			String order_path="./public/images/logo/";
+			File files=new File(order_path);
+			if(!Files.exists(files.toPath())){
+			    Files.createDirectories(files.toPath());
+			}
+
+			Http.MultipartFormData body = request().body().asMultipartFormData();
+			if(body!=null){
+			    List<Http.MultipartFormData.FilePart> fileParts = body.getFiles();
+			    for(Http.MultipartFormData.FilePart filePart:fileParts){
+			        File file=(File) filePart.getFile();
+			        String filename=filePart.getFilename();
+			        File storeFile = new File( order_path+ filename);
+			        Files.move(file.toPath(),storeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			        
+					organization.logo="logo/"+filename;
+			    }
+			}
+			
+			
+			
             Ebean.update(organization);
             return success();
         }

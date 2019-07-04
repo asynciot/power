@@ -247,7 +247,6 @@ public class DispatchController extends BaseController{
             dispatch.before_pic=beforestr;
             dispatch.after_pic=afterstr;
             dispatch.save();
-
             return success();
         }
         catch (CodeException ce) {
