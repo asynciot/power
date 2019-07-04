@@ -296,6 +296,8 @@ create table menus (
   allist                        tinyint(1) default 0,
   evolution                     tinyint(1) default 0,
   ladder                        tinyint(1) default 0,
+  ele_group                     tinyint(1) default 0,
+  organize                      tinyint(1) default 0,
   sys                           tinyint(1) default 0,
   user_manage                   tinyint(1) default 0,
   inform                        tinyint(1) default 0,
