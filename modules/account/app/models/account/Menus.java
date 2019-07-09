@@ -44,7 +44,7 @@ public class Menus extends Model{
     public Boolean evolution;
 
     public Boolean ladder;
-    
+
     public Boolean ele_group;
 
     public Boolean organize;

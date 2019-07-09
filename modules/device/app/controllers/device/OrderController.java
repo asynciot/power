@@ -92,7 +92,7 @@ public class OrderController extends BaseController {
 			}else{
 			    order.state="treating";
 			    order.save();
-			    dispatch.state="untreated";
+			    dispatch.state="treating";
 			    dispatch.save();
 			}
             return success();
