@@ -1,1 +1,0 @@
-webpackJsonp([39],{AKeG:function(e,t,n){"use strict";var i=n("LI36");Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var l=i(n("hhHP")),u=n("A1Y1"),a=i(n("FIFv")),r=function(){return l.default.createElement(a.default,{type:"404",style:{minHeight:500,height:"80%"},linkElement:u.Link})};t.default=r}});
