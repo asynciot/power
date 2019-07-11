@@ -197,6 +197,13 @@ create table events (
   constraint pk_events primary key (id)
 );
 
+create table offline (
+  id                            integer auto_increment not null,
+  device_id                     integer,
+  t_logout                      datetime(6),
+  constraint pk_events primary key (id)
+);
+
 create table follow (
   id                            integer auto_increment not null,
   user_id                       varchar(255),
