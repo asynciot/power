@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name =  "`offline`")
-public class Order extends Model {
+public class Offline extends Model {
 
     @Id
     public Integer id;
@@ -21,6 +21,6 @@ public class Order extends Model {
 
     public String t_logout;
 
-    public static Find<Integer, Order> finder =
-            new Find<Integer, Order>(){};
+    public static Find<Integer, Offline> finder =
+            new Find<Integer, Offline>(){};
 }
