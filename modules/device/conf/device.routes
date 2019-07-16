@@ -38,6 +38,8 @@ POST        /Order/examine              controllers.device.OrderController.exami
 POST        /Order/adopt                controllers.device.OrderController.adopt()
 DELETE      /Order                      controllers.device.OrderController.delete()
 
+GET         /Offline                    controllers.device.OrderController.read()
+
 GET         /Dispatch                   controllers.device.DispatchController.read()
 POST        /Dispatch/finish            controllers.device.DispatchController.finish()
 POST        /Dispatch/confirm           controllers.device.DispatchController.confirm()
