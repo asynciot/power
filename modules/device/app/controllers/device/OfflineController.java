@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * Created by lengxia on 2018/12/9.
  */
-public class OrderController extends BaseController {
+public class OfflineController extends BaseController {
 
     @Inject
     FormFactory formFactory;
@@ -45,7 +45,7 @@ public class OrderController extends BaseController {
 			Integer page = Integer.parseInt(pageStr);
 			Integer num = Integer.parseInt(numStr);
 			String sql="SELECT device_name,count(1) as counter FROM ladder.`offline` left join ladder.`device_info` on ladder.`offline`.device_id=ladder.`device_info`.id ";
-			sql=sql+"where t_logout>'"+starttime+"' "
+			sql=sql+"where t_logout>'"+starttime+"' ";
 			sql=sql+"group by ladder.`device_info`.id order by counter desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.findList();

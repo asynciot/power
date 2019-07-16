@@ -177,10 +177,5 @@ public class HomeController extends XDomainController {
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
-
-
-
-
-
     }
 }
