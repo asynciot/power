@@ -70,7 +70,7 @@ public class FollowLadderController extends BaseController {
                 followInfo.ladder_id=ladder.id;
             }
             followInfo.createTime=new Date();
-            followInfo.userId=session("userId");
+            followInfo.user_id=session("userId");
             /*
             int count = Follow.finder.where()
             		.eq("userId", session("userId"))

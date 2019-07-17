@@ -129,18 +129,7 @@ public class LadderController extends BaseController {
                 }
             }
             if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
-                List<FollowLadder> followList= FollowLadder.finder.where().eq("userId", session("userId")).findList();
-                Set<String> ctrllist=new HashSet<>();
-                Set<String> door1list=new HashSet<>();
-                Set<String> door2list=new HashSet<>();
-                for(FollowLadder follows:followList){
-                    ctrllist.add(follows.ctrl);
-                    door1list.add(follows.door1);
-                    door2list.add(follows.door2);
-                }
-                exprList=exprList.in("ctrl",ctrllist);
-                exprList=exprList.in("door1",door1list);
-                exprList=exprList.in("door2",door2list);
+                List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
             }
             if (group_id != null && !group_id.isEmpty()) {
                 exprList=exprList.in("group_id",group_id);
