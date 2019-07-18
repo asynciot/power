@@ -47,8 +47,9 @@ public class CommandController extends BaseController {
             exprList=exprList.contains("IMEI",imei);
             Integer page = Integer.parseInt(pageStr);
             Integer num = Integer.parseInt(numStr);
-
+            String sql= "id desc";
             list = exprList
+                    .setOrderBy(sql)
                     .setFirstRow((page-1)*num)
                     .setMaxRows(num)
                     .findList();

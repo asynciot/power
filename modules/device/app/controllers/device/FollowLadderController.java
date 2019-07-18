@@ -71,24 +71,6 @@ public class FollowLadderController extends BaseController {
             }
             followInfo.createTime=new Date();
             followInfo.user_id=session("userId");
-            /*
-            int count = Follow.finder.where()
-            		.eq("userId", session("userId"))
-            		.eq("imei", followInfo.imei)
-            		.findRowCount();
-
-            if (count != 0) {
-            	throw new CodeException(ErrDefinition.E_FOLLOW_INFO_ALREADY_EXIST);
-            }
-
-            count=Follow.finder.where().eq("userId", session("userId")).findRowCount();
-            Account account=Account.finder.byId(followInfo.userId);
-            if(account!=null){
-                if(account.maxfollow<=count){
-                    throw new CodeException(ErrDefinition.E_ACCOUNT_FOLLOW_OUT_BOUND);
-                }
-            }
-            */
 
             Ebean.save(followInfo);
 
@@ -123,7 +105,6 @@ public class FollowLadderController extends BaseController {
                 followInfoList.add(followInfo);
                 return successList(1, 1, followInfoList);
             }
-
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
@@ -134,7 +115,7 @@ public class FollowLadderController extends BaseController {
 
             Integer page = Integer.parseInt(pageStr);
             Integer num = Integer.parseInt(numStr);
-            exprList.add(Expr.eq("userId", session("userId")));
+            exprList.add(Expr.eq("user_id", session("userId")));
 
             followInfoList = exprList
                     .setFirstRow((page-1)*num)

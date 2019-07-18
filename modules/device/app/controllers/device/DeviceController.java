@@ -169,6 +169,7 @@ public class DeviceController extends BaseController {
                     node.put("device_IMSI", devices.IMSI);
                     node.put("device_model", devices.model);
                     node.put("device_firmware", devices.firmware);
+                    node.put("cellular", devices.cellular);
                     node.put("device_t_create",devices.t_create.toString());
                     node.put("device_t_update",devices.t_update.toString());
                     node.put("device_t_logon",devices.t_logon.toString());

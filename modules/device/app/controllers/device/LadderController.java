@@ -130,6 +130,11 @@ public class LadderController extends BaseController {
             }
             if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
                 List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
+                Set<String> ctrllist=new HashSet<>();
+                for(FollowLadder follows:followList){
+                    ctrllist.add(follows.ctrl);
+                }
+                exprList=exprList.in("ctrl",ctrllist);
             }
             if (group_id != null && !group_id.isEmpty()) {
                 exprList=exprList.in("group_id",group_id);
