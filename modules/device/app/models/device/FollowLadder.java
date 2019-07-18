@@ -15,7 +15,7 @@ public class FollowLadder extends Model {
     @Id
     public Integer id;
 
-    public String userId;
+    public String user_id;
 
     public String ctrl;
 

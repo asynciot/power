@@ -416,6 +416,14 @@ create table sms_record (
   constraint pk_sms_record primary key (id)
 );
 
+create table tech (
+  id                            integer auto_increment not null,
+  name                          varchar(255),
+  reason                        varchar(255),
+  answer                        varchar(255),
+  constraint pk_tech primary key (id)
+);
+
 create index ix_account_create_time on account (create_time);
 create index ix_sms_record_mobile on sms_record (mobile);
 
@@ -478,6 +486,8 @@ drop table if exists roles;
 drop table if exists runtime;
 
 drop table if exists sms_record;
+
+drop table if exists tech;
 
 drop index ix_account_create_time on account;
 drop index ix_sms_record_mobile on sms_record;

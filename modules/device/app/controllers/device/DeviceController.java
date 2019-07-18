@@ -50,7 +50,6 @@ public class DeviceController extends BaseController {
     }
     public Result read(){
         try {
-
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<DeviceInfo> exprList= DeviceInfo.finder.where();
             List<DeviceInfo> deviceInfoList = new ArrayList<DeviceInfo>();
@@ -122,8 +121,8 @@ public class DeviceController extends BaseController {
 
             Integer page = Integer.parseInt(pageStr);
             Integer num = Integer.parseInt(numStr);
-
-            deviceInfoList = exprList
+            String sql = "device_name asc";
+            deviceInfoList = exprList.setOrderBy(sql)
                     .setFirstRow((page-1)*num)
                     .setMaxRows(num)
                     .findList();
@@ -185,6 +184,7 @@ public class DeviceController extends BaseController {
                 }
                 nodeList.add(node);
             }
+//            Logger.info(nodeList);
             return successList(totalNum, totalPage, nodeList);
         }
         catch (Throwable e) {

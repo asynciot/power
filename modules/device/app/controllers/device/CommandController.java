@@ -10,11 +10,13 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Result;
 
+import com.avaje.ebean.ExpressionList;
 import javax.inject.Inject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-
+import java.util.ArrayList;
+import java.util.List;
 /**
  * Created by lengxia on 2018/10/30.
  */
@@ -26,7 +28,35 @@ public class CommandController extends BaseController {
         return create(Commands.class, formFactory);
     }
     public Result read(){
-        return read(Commands.class, formFactory);
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            ExpressionList<Commands> exprList= Commands.finder.where();
+            List<Commands> list = new ArrayList<Commands>();
+            String imei = form.get("IMEI");
+            String numStr = form.get("num");
+            String pageStr = form.get("page");
+            if (imei==null||imei.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+            }
+            if (numStr==null||numStr.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+            }
+            if (pageStr==null||pageStr.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
+            }
+            exprList=exprList.contains("IMEI",imei);
+            Integer page = Integer.parseInt(pageStr);
+            Integer num = Integer.parseInt(numStr);
+
+            list = exprList
+                    .setFirstRow((page-1)*num)
+                    .setMaxRows(num)
+                    .findList();
+            return successList(list);
+        }
+        catch (CodeException ce){
+            return failure(ce.getCode());
+        }
     }
     public Result delete() {
         return delete(Commands.class, formFactory);
@@ -180,30 +210,29 @@ public class CommandController extends BaseController {
             return failure(ce.getCode());
         }
     }
-    public Result call(){
+    public Result call() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             String imei = form.get("IMEI");
-            String from=form.get("from");
-            String to=form.get("to");
-            if (imei == null || imei.isEmpty() || from==null||to==null) {
+            String from = form.get("from");
+            String to = form.get("to");
+            if (imei == null || imei.isEmpty() || from == null || to == null) {
                 throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
             }
-            byte[] tmp=new byte[20];
+            byte[] tmp = new byte[20];
             Commands commands = new Commands();
             commands.command = "CALL";
-            commands.submit=new Date();
-            commands.IMEI=imei;
-            commands.binary=tmp;
-            DeviceInfo deviceInfo=DeviceInfo.finder.where().eq("IMEI",imei).findUnique();
+            commands.submit = new Date();
+            commands.IMEI = imei;
+            commands.binary = tmp;
+            DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("IMEI", imei).findUnique();
 
             commands.int1 = Integer.parseInt(from);
             commands.int2 = Integer.parseInt(to);
 
             commands.save();
             return success();
-        }
-        catch (CodeException ce){
+        } catch (CodeException ce) {
             return failure(ce.getCode());
         }
     }
