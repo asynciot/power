@@ -122,7 +122,6 @@ public class DeviceController extends BaseController {
             Integer num = Integer.parseInt(numStr);
             String sql = "device_name asc";
 
-
             String item = form.get("item");
             if (item != null && !item.isEmpty()) {
                 deviceInfoList = exprList
@@ -138,6 +137,7 @@ public class DeviceController extends BaseController {
                         .setMaxRows(num)
                         .findList();
             }
+
 
             int totalNum = exprList.findRowCount();
             int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
