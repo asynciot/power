@@ -62,6 +62,8 @@ public class DeviceInfo extends Model{
 
     public String ladder_id;
 
+    public String item;
+
     public static Find<Integer, DeviceInfo> finder =
             new Find<Integer, DeviceInfo>(){};
 }

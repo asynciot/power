@@ -132,7 +132,8 @@ public class DeviceController extends BaseController {
                         .setMaxRows(num)
                         .findList();
             }else{
-                deviceInfoList = exprList.setOrderBy(sql)
+                deviceInfoList = exprList
+                        .setOrderBy(sql)
                         .setFirstRow((page-1)*num)
                         .setMaxRows(num)
                         .findList();

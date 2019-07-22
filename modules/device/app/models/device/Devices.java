@@ -50,8 +50,6 @@ public class Devices extends Model {
 
     public String ipaddr;
 
-    public String item;
-
     public static Find<Integer, Devices> finder =
             new Find<Integer, Devices>(){};
 }
