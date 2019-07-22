@@ -65,7 +65,6 @@ public class DeviceController extends BaseController {
             String follow=form.get("follow");
             String device_id=form.get("device_id");
             String install_addr=form.get("install_addr");
-            String item = form.get("item");
             if (device_id != null && !device_id.isEmpty()) {
                 DeviceInfo deviceInfo = DeviceInfo.finder.byId(Integer.parseInt(device_id));
                 if(deviceInfo!=null){
@@ -97,9 +96,6 @@ public class DeviceController extends BaseController {
                 }
                 exprList=exprList.in("IMEI",imeilist);
             }
-            if (item != null && !item.isEmpty()) {
-                exprList=exprList.contains("item",item);
-            }
             if (tabcor != null && !tabcor.isEmpty()) {
                 exprList=exprList.contains("tagcolor",tabcor);
             }
@@ -125,10 +121,22 @@ public class DeviceController extends BaseController {
             Integer page = Integer.parseInt(pageStr);
             Integer num = Integer.parseInt(numStr);
             String sql = "device_name asc";
-            deviceInfoList = exprList.setOrderBy(sql)
-                    .setFirstRow((page-1)*num)
-                    .setMaxRows(num)
-                    .findList();
+
+
+            String item = form.get("item");
+            if (item != null && !item.isEmpty()) {
+                deviceInfoList = exprList
+                        .eq("item",item)
+                        .setOrderBy(sql)
+                        .setFirstRow((page-1)*num)
+                        .setMaxRows(num)
+                        .findList();
+            }else{
+                deviceInfoList = exprList.setOrderBy(sql)
+                        .setFirstRow((page-1)*num)
+                        .setMaxRows(num)
+                        .findList();
+            }
 
             int totalNum = exprList.findRowCount();
             int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
