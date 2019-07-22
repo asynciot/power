@@ -367,6 +367,23 @@ create table `order` (
   constraint pk_order primary key (id)
 );
 
+create table order_code (
+  id                            integer auto_increment not null,
+  name                          varchar(255),
+  code                          varchar(255),
+  resolution_id                 varchar(255),
+  constraint pk_order_code primary key (id)
+);
+
+create table order_resolution (
+  id                            integer auto_increment not null,
+  reason                        varchar(255),
+  answer                        varchar(255),
+  code_id                       varchar(255),
+  sign                          varchar(255),
+  constraint pk_order_resolution primary key (id)
+);
+
 create table organization (
   id                            integer auto_increment not null,
   leader                        varchar(255),
@@ -417,14 +434,6 @@ create table sms_record (
   code                          varchar(4) not null,
   timestamp                     datetime(6) not null,
   constraint pk_sms_record primary key (id)
-);
-
-create table tech (
-  id                            integer auto_increment not null,
-  name                          varchar(255),
-  reason                        varchar(255),
-  answer                        varchar(255),
-  constraint pk_tech primary key (id)
 );
 
 create index ix_account_create_time on account (create_time);
@@ -480,6 +489,10 @@ drop table if exists `offline`;
 
 drop table if exists `order`;
 
+drop table if exists order_code;
+
+drop table if exists order_resolution;
+
 drop table if exists organization;
 
 drop table if exists organize;
@@ -489,8 +502,6 @@ drop table if exists roles;
 drop table if exists runtime;
 
 drop table if exists sms_record;
-
-drop table if exists tech;
 
 drop index ix_account_create_time on account;
 drop index ix_sms_record_mobile on sms_record;
