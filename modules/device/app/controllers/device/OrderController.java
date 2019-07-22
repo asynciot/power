@@ -168,6 +168,10 @@ public class OrderController extends BaseController {
             if(endtime!=null&&!endtime.isEmpty()){
                 exprList.add(Expr.le("createTime",endtime));
             }
+            String item = form.get("item");
+            if(item!=null&&!item.isEmpty()){
+                exprList.add(Expr.eq("item",item));
+            }
             String follow=form.get("follow");
             if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
                 List<Follow> followList= Follow.finder.where().eq("userId", session("userId")).findList();

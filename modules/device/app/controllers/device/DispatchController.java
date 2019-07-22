@@ -328,6 +328,10 @@ public class DispatchController extends BaseController{
             if (endtime != null && !endtime.isEmpty()) {
                 exprList.add(Expr.le("finish_time", endtime));
             }
+            String item = form.get("item");
+            if(item!=null&&!item.isEmpty()){
+                exprList.add(Expr.eq("item",item));
+            }
             dispatchList = exprList
                     .setFirstRow((page - 1) * num)
                     .setMaxRows(num)

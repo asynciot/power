@@ -33,6 +33,7 @@ public class Dispatch extends  Model{
 	public Integer code;
     public String remarks;
 
+    public String item;
     public static Find<Integer, Dispatch> finder =
             new Find<Integer, Dispatch>(){};
 }
