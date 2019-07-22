@@ -151,6 +151,10 @@ public class LadderController extends BaseController {
             if(install_addr!=null&&!install_addr.isEmpty()){
                 exprList=exprList.contains("install_addr",install_addr);
             }
+            String item=form.get("item");
+            if(item!=null&&!item.isEmpty()){
+                exprList=exprList.contains("item",item);
+            }
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }

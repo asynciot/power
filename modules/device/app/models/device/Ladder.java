@@ -29,6 +29,8 @@ public class Ladder extends Model {
     @Column(length = 5)
     public String group_id;
 
+    public String item;
+
     public static Find<Integer, Ladder> finder =
             new Find<Integer, Ladder>(){};
 }
