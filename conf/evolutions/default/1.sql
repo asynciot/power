@@ -126,6 +126,7 @@ create table device_info (
   runtime_state                 integer,
   group_id                      integer,
   ladder_id                     varchar(255),
+  item                          varchar(255),
   constraint pk_device_info primary key (id)
 );
 
