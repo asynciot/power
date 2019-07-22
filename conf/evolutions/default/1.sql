@@ -149,6 +149,7 @@ create table devices (
   cell_lac                      integer,
   cell_cid                      integer,
   ipaddr                        varchar(255),
+  item                          varchar(255),
   constraint uq_devices_imei unique (imei),
   constraint pk_devices primary key (id)
 );
@@ -171,6 +172,7 @@ create table dispatch (
   confirm_pic                   varchar(255),
   code                          integer,
   remarks                       varchar(255),
+  item                          varchar(255),
   constraint pk_dispatch primary key (id)
 );
 
@@ -361,6 +363,7 @@ create table `order` (
   device_type                   varchar(255),
   producer                      varchar(255),
   islast                        integer,
+  item                          varchar(255),
   constraint pk_order primary key (id)
 );
 

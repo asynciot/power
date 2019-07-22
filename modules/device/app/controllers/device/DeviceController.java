@@ -122,21 +122,25 @@ public class DeviceController extends BaseController {
             Integer num = Integer.parseInt(numStr);
             String sql = "device_name asc";
 
+			deviceInfoList = exprList.setOrderBy(sql)
+			        .setFirstRow((page-1)*num)
+			        .setMaxRows(num)
+			        .findList();
 
-            String item = form.get("item");
-            if (item != null && !item.isEmpty()) {
-                deviceInfoList = exprList
-                        .eq("item",item)
-                        .setOrderBy(sql)
-                        .setFirstRow((page-1)*num)
-                        .setMaxRows(num)
-                        .findList();
-            }else{
-                deviceInfoList = exprList.setOrderBy(sql)
-                        .setFirstRow((page-1)*num)
-                        .setMaxRows(num)
-                        .findList();
-            }
+//             String item = form.get("item");
+//             if (item != null && !item.isEmpty()) {
+//                 deviceInfoList = exprList
+//                         .eq("item",item)
+//                         .setOrderBy(sql)
+//                         .setFirstRow((page-1)*num)
+//                         .setMaxRows(num)
+//                         .findList();
+//             }else{
+//                 deviceInfoList = exprList.setOrderBy(sql)
+//                         .setFirstRow((page-1)*num)
+//                         .setMaxRows(num)
+//                         .findList();
+//             }
 
             int totalNum = exprList.findRowCount();
             int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
