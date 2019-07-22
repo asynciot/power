@@ -199,6 +199,13 @@ create table events (
   constraint pk_events primary key (id)
 );
 
+create table offline (
+  id                            integer auto_increment not null,
+  device_id                     integer,
+  t_logout                      datetime(6),
+  constraint pk_events primary key (id)
+);
+
 create table follow (
   id                            integer auto_increment not null,
   user_id                       varchar(255),
@@ -346,13 +353,6 @@ create table monitor (
   constraint pk_monitor primary key (id)
 );
 
-create table `offline` (
-  id                            integer auto_increment not null,
-  device_id                     integer,
-  t_logout                      varchar(255),
-  constraint pk_offline primary key (id)
-);
-
 create table `order` (
   id                            integer auto_increment not null,
   device_id                     integer,
@@ -390,10 +390,6 @@ create table organization (
   name                          varchar(255),
   t_create                      datetime(6),
   region                        varchar(255),
-  logo                          varchar(255),
-  bg1                           varchar(255),
-  bg2                           varchar(255),
-  bg3                           varchar(255),
   organize_id                   varchar(255),
   number                        integer,
   constraint pk_organization primary key (id)
@@ -484,8 +480,6 @@ drop table if exists mess_record;
 drop table if exists message;
 
 drop table if exists monitor;
-
-drop table if exists `offline`;
 
 drop table if exists `order`;
 
