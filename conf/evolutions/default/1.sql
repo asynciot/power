@@ -150,7 +150,6 @@ create table devices (
   cell_lac                      integer,
   cell_cid                      integer,
   ipaddr                        varchar(255),
-  item                          varchar(255),
   constraint uq_devices_imei unique (imei),
   constraint pk_devices primary key (id)
 );
@@ -274,6 +273,7 @@ create table ladder (
   install_addr                  varchar(255),
   state                         varchar(255),
   group_id                      varchar(5),
+  item                          varchar(255),
   constraint pk_ladder primary key (id)
 );
 

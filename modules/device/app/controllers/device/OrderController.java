@@ -390,11 +390,15 @@ public class OrderController extends BaseController {
         String sql="SELECT code,count(1) as counter FROM ladder.`order` WHERE type=1 ";
 		String starttime = form.get("starttime");
 		String endtime = form.get("endtime");
+		String item = form.get("item");
 		if(starttime!=null&&!starttime.isEmpty()){
 		    sql=sql+"AND time>'"+starttime+"' ";
 		}
 		if(endtime!=null&&!endtime.isEmpty()){
 			sql=sql+"AND time>'"+endtime+"' ";
+		}
+		if(item!=null&&!item.isEmpty()){
+			sql=sql+"AND item='"+item+"' ";
 		}
 		sql=sql+"group by code order by count(code) desc limit 10 ";
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
@@ -408,6 +412,7 @@ public class OrderController extends BaseController {
 			String pageStr = form.get("page");
 			String numStr = form.get("num");
 			String stateStr = form.get("state");
+			String item = form.get("item");
 			if (null == pageStr || pageStr.isEmpty()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}
@@ -438,6 +443,9 @@ public class OrderController extends BaseController {
 			}
 			if(stateStr.equals("5")){
 			    sql=sql+"WHERE ladder.`order`.state='treated' ";
+			}
+			if(item!=null&&!item.isEmpty()){
+				sql=sql+"AND ladder.`order`.item='"+item+"' ";
 			}
 			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
