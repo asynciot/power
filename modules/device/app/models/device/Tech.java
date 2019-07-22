@@ -10,16 +10,16 @@ import java.util.Date;
  * Created by lengxia on 2019/1/19.
  */
 @Entity
-public class OrderCode extends Model{
+public class Tech extends Model{
     @Id
     public Integer id;
 
     public String name;
 
-    public String code;
+    public String reason;
 
-    public String resolution_id;
+    public String answer;
 
-    public static Find<Integer, OrderCode> finder =
-            new Find<Integer, OrderCode>(){};
+    public static Find<Integer, Tech> finder =
+            new Find<Integer, Tech>(){};
 }

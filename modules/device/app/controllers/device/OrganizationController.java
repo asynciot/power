@@ -46,17 +46,12 @@ public class OrganizationController extends BaseController{
 
             Random rand = new Random();
             organization.number = (rand.nextInt(90000000)+10000000);
-
-
 //            if (organize.name == null || organize.name.isEmpty()) {
 //                throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
 //            }
             organization.t_create = new Date();
             Ebean.save(organization);
-            String userId = session("userId");
-            Account account = Account.finder.byId(userId);
-            account.organization_id =organization.id+";"+account.organization_id ;
-            Ebean.save(account);
+
             return success();
         }
         catch (CodeException ce) {

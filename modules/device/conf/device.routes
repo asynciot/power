@@ -88,4 +88,3 @@ GET         /followladder               controllers.device.FollowLadderControlle
 GET         /followladder/ReadMore      controllers.device.FollowLadderController.readMore()
 DELETE      /followladder               controllers.device.FollowLadderController.delete()
 
-GET         /OrderCode                  controllers.device.OrderCodeController.read()
