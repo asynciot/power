@@ -124,7 +124,6 @@ public class ChatController extends BaseController {
 			Integer num = Integer.parseInt(numStr);
 			Integer follow = Integer.parseInt(followStr);
 			
-
 			String sql="SELECT ladder.`chat`.id,content,follow,username,from_id,nickname,ladder.`chat`.create_time,portrait FROM ladder.`chat` left join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
 			if(followStr!=null&&!followStr.isEmpty()){
 			    sql=sql+"WHERE follow='"+follow+"' ";

@@ -57,24 +57,22 @@ public class FollowController extends BaseController {
             if (null == userId) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
-            /*
             int count = Follow.finder.where()
             		.eq("userId", session("userId"))
             		.eq("imei", followInfo.imei)
             		.findRowCount();
-            
+
             if (count != 0) {
             	throw new CodeException(ErrDefinition.E_FOLLOW_INFO_ALREADY_EXIST);
             }
 
-            count=Follow.finder.where().eq("userId", session("userId")).findRowCount();
+            /*count=Follow.finder.where().eq("userId", session("userId")).findRowCount();
             Account account=Account.finder.byId(followInfo.userId);
             if(account!=null){
                 if(account.maxfollow<=count){
                     throw new CodeException(ErrDefinition.E_ACCOUNT_FOLLOW_OUT_BOUND);
                 }
-            }
-            */
+            }*/
 
             Ebean.save(followInfo);
 

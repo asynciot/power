@@ -69,7 +69,7 @@ public class WechatController extends XDomainController {
         Map<String, Object> result = new HashMap<String,Object>();
         result.put("touser",touser);
         result.put("template_id","7Do5VrpCMm6XGAbzBM6wHRPXxiqThdslYTvMadIkKhE");
-        result.put("url","http://server.asynciot.com/order/"+order_id);
+        result.put("url","http://server.asynciot.com/company/order/"+order_id);
 
         Map<String, Object> data = new HashMap<String,Object>();
 

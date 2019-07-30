@@ -301,7 +301,6 @@ public class OrderController extends BaseController {
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
             List<Order> orderList = null;
-
             String starttime = form.get("starttime");
             String endtime = form.get("endtime");
             if (null == starttime || starttime.isEmpty()) {

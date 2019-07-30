@@ -2,7 +2,6 @@ package controllers.device;
 
 import akka.stream.Materializer;
 import akka.util.ByteString;
-import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -25,7 +24,6 @@ import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
-import com.avaje.ebean.SqlRow;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -257,10 +255,8 @@ public class DeviceController extends BaseController {
             if(maintenance_type!=null&&!maintenance_type.isEmpty()){
                 deviceInfo.maintenance_type=maintenance_type;
             }
-
             deviceInfo.save();
             return success();
-
         }
         catch (CodeException ce) {
             Logger.error(ce.getMessage());
@@ -398,8 +394,9 @@ public class DeviceController extends BaseController {
 		try {
 			DynamicForm form = formFactory.form().bindFromRequest();
 			String sql="SELECT region,count(region) as counter FROM ladder.`device_info` left join ladder.`iplocation` on ladder.`iplocation`.id=ladder.`device_info`.iplocation_id where region!='XX' group by region order by counter desc";
-			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
-										.findList();
+			List<SqlRow> orderList=Ebean
+                            .createSqlQuery(sql)
+                            .findList();
 			Logger.info(orderList.size()+"");
 			return successList(orderList);
 		}

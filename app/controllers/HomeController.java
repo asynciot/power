@@ -113,6 +113,7 @@ public class HomeController extends XDomainController {
 
         DynamicForm form = formFactory.form().bindFromRequest();
         try{
+
             String code = form.get("code");
             String device_id = form.get("device_id");
             String device_type = form.get("device_type");
@@ -159,6 +160,7 @@ public class HomeController extends XDomainController {
             }
 
             Order.save();
+            Logger.info("New Order!!-----------------------");
 
             WechatController wechatController=new WechatController(ws);
             List<Follow> followList=Follow.finder.where().eq("device_id",device_id).findList();
