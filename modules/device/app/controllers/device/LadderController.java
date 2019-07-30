@@ -199,9 +199,9 @@ public class LadderController extends BaseController {
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
                 if(node.get("ctrl").asText() != ""){
-                    Ladder ladder = Ladder.finder.where().eq("ctrl",node.get("ctrl").asText()).findUnique();
-                    if(ladder !=null ) {
-                        node.put("name", ladder.name);
+//                     Ladder ladder = Ladder.finder.where().eq("ctrl",node.get("ctrl").asText()).findUnique();
+//                     if(ladder !=null ) {
+//                         node.put("name", ladder.name);
                         DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
                         Devices devices = Devices.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
                         if (deviceInfo != null) {
@@ -228,11 +228,12 @@ public class LadderController extends BaseController {
                             node.put("t_logout", devices.t_logout.toString());
                             node.put("t_update", devices.t_update.toString());
                         }
-                    }
+                    // }
                 }else {
-                    Ladder ladder = Ladder.finder.where().eq("door1", node.get("door1").asText()).findUnique();
-                    if (ladder != null) {
-                        node.put("name", ladder.name);
+// 					Logger.info(node.get("door1").asText());
+//                     Ladder ladder = Ladder.finder.where().eq("door1", node.get("door1").asText()).findUnique();
+//                     if (ladder != null) {
+//                         node.put("name", ladder.name);
                         DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("door1").asText()).findUnique();
                         Devices devices = Devices.finder.where().eq("imei", node.get("door1").asText()).findUnique();
                         if (deviceInfo != null) {
@@ -255,7 +256,7 @@ public class LadderController extends BaseController {
                             node.put("ip_country", iplocation.country);
                             node.put("ip_region", iplocation.region);
                         }
-                    }
+                    // }
                 }
                 nodeList.add(node);
             }
