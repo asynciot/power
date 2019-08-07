@@ -270,12 +270,15 @@ public class OrderController extends BaseController {
             if(Order.state.equals("examined")){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }else{
-                Order.state="examined";
+                // Order.state="examined";
+				Order.state="treating";
                 Order.save();
+				dispatch.item=order.item;
                 dispatch.order_id=Order.id;
                 dispatch.create_time=new Date().getTime()+"";
                 dispatch.user_id=session("userId");
-                dispatch.state="prepare";
+                // dispatch.state="prepare";
+				dispatch.state="treating";
                 dispatch.device_id=Order.device_id;
                 dispatch.order_type=Order.type;
 				dispatch.code=Order.code;
