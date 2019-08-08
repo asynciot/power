@@ -64,7 +64,7 @@ public class OrganizeController extends BaseController{
 
             String pageStr = form.get("page");
             String numStr = form.get("nums");
-            String id = form.get("id");
+            String name = form.get("name");
 
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
@@ -72,9 +72,10 @@ public class OrganizeController extends BaseController{
             if (null == numStr || numStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if (id != null && !id.isEmpty()) {
-                exprList=exprList.contains("id",id);
+            if (name != null && !name.isEmpty()) {
+                exprList=exprList.contains("name",name);
             }
+
             Integer page = Integer.parseInt(pageStr);
             Integer num = Integer.parseInt(numStr);
 

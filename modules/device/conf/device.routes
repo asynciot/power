@@ -29,6 +29,7 @@ GET         /Event/ReadCount            controllers.device.EventController.readC
 GET         /Event/Activedoor           controllers.device.EventController.activedoor()
 
 GET         /Order                      controllers.device.OrderController.read()
+GET         /Order/Untreted             controllers.device.OrderController.readUntreted()
 GET         /TopFive                    controllers.device.OrderController.gettopfive()
 GET         /Order/Faultfreq            controllers.device.OrderController.faultfreq()
 GET         /Order/Progress             controllers.device.OrderController.progress()
