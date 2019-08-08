@@ -273,7 +273,7 @@ public class OrderController extends BaseController {
                 // Order.state="examined";
 				Order.state="treating";
                 Order.save();
-				dispatch.item=order.item;
+				dispatch.item=Order.item;
                 dispatch.order_id=Order.id;
                 dispatch.create_time=new Date().getTime()+"";
                 dispatch.user_id=session("userId");
@@ -304,6 +304,7 @@ public class OrderController extends BaseController {
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
             List<Order> orderList = null;
+			ExpressionList<Order> exprList = Order.finder.where();
             String starttime = form.get("starttime");
             String endtime = form.get("endtime");
             if (null == starttime || starttime.isEmpty()) {
@@ -313,54 +314,57 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
 
+			String follow=form.get("follow");
+			if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
+			    List<Follow> followList= Follow.finder.where().eq("userId", session("userId")).findList();
+			    Set<Integer> idlist=new HashSet<>();
+			    for(Follow follows:followList){
+			            idlist.add(follows.device_id);
+			    }
+			    exprList=exprList.in("device_id",idlist);
+			}
+			
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             long st=sdf.parse(starttime).getTime();
             long ed= st+86400000;
 
-            int monday =Order.finder
-                    .where()
+            int monday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
             st = ed;
             ed = ed+86400000;
-            int tuesday =Order.finder
-                    .where()
+            int tuesday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
             st = ed;
             ed = ed+86400000;
-            int wensday =Order.finder
-                    .where()
+            int wensday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
             st = ed;
             ed = ed+86400000;
-            int thursday =Order.finder
-                    .where()
+            int thursday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
             st = ed;
             ed = ed+86400000;
-            int friday =Order.finder
-                    .where()
+            int friday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
             st = ed;
             ed = ed+86400000;
-            int saturday =Order.finder
-                    .where()
+            int saturday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
             st = ed;
             ed = ed+86400000;
-            int sunday =Order.finder
-                    .where()
+            int sunday =exprList
                     .ge("create_time", st)
                     .le("create_time", ed)
                     .findRowCount();
