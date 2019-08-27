@@ -66,11 +66,7 @@ public class AccountController extends XDomainController {
             if (newAccount.password == null || newAccount.password.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_NO_PASSWORD);
             }
-
-            if (newAccount.password != null && !newAccount.password.isEmpty()) {
-                newAccount.password = CodeGenerator.generateMD5(newAccount.password);
-            }
-
+            newAccount.password = CodeGenerator.generateMD5(newAccount.password);
             newAccount.id = CodeGenerator.generateShortUUId();
             newAccount.createTime = new Date();
             newAccount.maxfollow=10;
@@ -152,7 +148,9 @@ public class AccountController extends XDomainController {
             if (account == null) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
             }
-
+            if (user == null) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
             if (tmp.nickname != null) {
                 account.nickname = tmp.nickname;
             }
@@ -216,7 +214,6 @@ public class AccountController extends XDomainController {
     @Security.Authenticated(Secured.class)
     public Result read() {
         try {
-
             DynamicForm form = formFactory.form().bindFromRequest();
 
             String userId = session("userId");
@@ -224,14 +221,14 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Account adminAccount = Account.finder.byId(userId);
-            List<Account> accountList = null;
+            List<Account> accountList;
             userId = form.get("id");
             if (userId != null && !userId.isEmpty()) {
                 Account account = Account.finder.byId(userId);
                 if (null == account) {
                     throw new CodeException(ErrDefinition.E_ACCOUNT_NOT_FOUND);
                 }
-                accountList = new ArrayList<Account>();
+                accountList = new ArrayList<>();
                 accountList.add(account);
                 return successList(1, 1, accountList);
             }
@@ -252,8 +249,8 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             String username = form.get("username");
             if (username != null && !username.isEmpty()) {
@@ -399,8 +396,9 @@ public class AccountController extends XDomainController {
             }
 
             Account account = Account.finder.byId(session("userId"));
-
-
+            if (account == null) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
+            }
             if (account.password.compareTo(CodeGenerator.generateMD5(oldPassword)) != 0) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_PASSWORD_MISMATCH);
             }
@@ -437,8 +435,10 @@ public class AccountController extends XDomainController {
                     File storeFile = new File( portrait_path+ filePart.getFilename());
                     Files.move(file.toPath(),storeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     Account account=Account.finder.byId(session("userId"));
-                    account.portrait="portrait/"+storeFile.getName();
-                    account.save();
+                    if(account != null){
+                        account.portrait="portrait/"+storeFile.getName();
+                        account.save();
+                    }
                     break;
                 }
             }else {
@@ -455,18 +455,18 @@ public class AccountController extends XDomainController {
         try {
             String mobile = form.get("mobile");
             String code = form.get("verifyCode");
-            String newpassword=form.get("newpassword");
-            if(mobile==null||code==null||newpassword==null){
+            String new_password = form.get("newpassword");
+            if(mobile==null||code==null||new_password==null){
                 throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
             }
-            if(SmsManager.getInstance().verifyCode(mobile, code)==false){
+            if(!SmsManager.getInstance().verifyCode(mobile, code)){
                 throw new CodeException(ErrDefinition.E_SMS_VERIFY_FAILED);
             }
-            Account account=Account.finder.where().eq("mobile", mobile).findUnique();;
+            Account account=Account.finder.where().eq("mobile", mobile).findUnique();
             if (account==null) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_NOT_FOUND);
             }
-            account.password=CodeGenerator.generateMD5(newpassword);
+            account.password=CodeGenerator.generateMD5(new_password);
             Ebean.update(account);
             return success();
         }
@@ -497,7 +497,7 @@ public class AccountController extends XDomainController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<Account> exprList = Account.finder.where();
-            List<Account> accountList = new ArrayList<Account>();
+            List<Account> accountList;
 
             String id = form.get("group_id");
             if (id != null && !id.isEmpty()) {
@@ -515,8 +515,8 @@ public class AccountController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             accountList = exprList
                     .setFirstRow((page-1)*num)

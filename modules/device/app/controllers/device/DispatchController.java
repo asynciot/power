@@ -15,12 +15,10 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
@@ -44,7 +42,7 @@ public class DispatchController extends BaseController{
             if(!Files.exists(files.toPath())){
                 Files.createDirectories(files.toPath());
             }
-            String confirmstr="";
+            StringBuilder confirmstr= new StringBuilder();
             Http.MultipartFormData body = request().body().asMultipartFormData();
             if(body!=null){
                 List<Http.MultipartFormData.FilePart> fileParts = body.getFiles();
@@ -54,13 +52,15 @@ public class DispatchController extends BaseController{
                     if(filename.startsWith("confirm")){
                         File storeFile = new File( order_path+ filename);
                         Files.move(file.toPath(),storeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        confirmstr+="order/"+filename+";";
+                        confirmstr.append("order/").append(filename).append(";");
                     }
                 }
             }
-            dispatch.confirm_time=new Date().getTime()+"";
-            dispatch.confirm_pic=confirmstr;
-            dispatch.save();
+            if (dispatch != null){
+                dispatch.confirm_time=new Date().getTime()+"";
+                dispatch.confirm_pic= confirmstr.toString();
+                dispatch.save();
+            }
             return success();
         }
         catch (CodeException ce) {
@@ -91,11 +91,13 @@ public class DispatchController extends BaseController{
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
-            dispatch.state="examined";
-            if(remarks!=null){
-                dispatch.remarks=remarks;
+            if (dispatch!=null){
+                dispatch.state="examined";
+                if(remarks!=null){
+                    dispatch.remarks=remarks;
+                }
+                dispatch.save();
             }
-            dispatch.save();
             return success();
         }
         catch (CodeException ce) {
@@ -125,38 +127,41 @@ public class DispatchController extends BaseController{
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Dispatch dispatch = models.device.Dispatch.finder.byId(Integer.parseInt(id));
-            dispatch.state="treated";
-            dispatch.save();
-			
-			Order order=Order.finder.byId(dispatch.order_id);
-			order.state="treated";		
-			if(!dispatch.result.equals("transfer")){
-			    DeviceInfo deviceInfo=DeviceInfo.finder.byId(dispatch.device_id);
-			    if(deviceInfo==null){
-			        throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-			    }
-			    if(dispatch.order_type==2){
-			        deviceInfo.maintenance_lasttime=new Date().getTime()+"";
-			    }
-			    if(dispatch.order_type==3){
-			        deviceInfo.inspection_lasttime=new Date().getTime()+"";
-			
-			    }
-			    String inspection_nexttime=form.get("inspection_nexttime");
-			    if(inspection_nexttime!=null&&!inspection_nexttime.isEmpty()){
-			        deviceInfo.inspection_nexttime=inspection_nexttime;
-			    }
-			    String maintenance_nexttime=form.get("maintenance_nexttime");
-			    if(maintenance_nexttime!=null&&!maintenance_nexttime.isEmpty()){
-			        deviceInfo.maintenance_nexttime=maintenance_nexttime;
-			    }
-			    deviceInfo.save();
-			
-			}else {
-			    order.state="untreated";
-			}
-			order.save();
-			
+            if (dispatch != null){
+                dispatch.state="treated";
+                dispatch.save();
+
+                Order order=Order.finder.byId(dispatch.order_id);
+                if (order !=null ){
+                    order.state="treated";
+                    if(!dispatch.result.equals("transfer")){
+                        DeviceInfo deviceInfo=DeviceInfo.finder.byId(dispatch.device_id);
+                        if(deviceInfo==null){
+                            throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                        }
+                        if(dispatch.order_type==2){
+                            deviceInfo.maintenance_lasttime=new Date().getTime()+"";
+                        }
+                        if(dispatch.order_type==3){
+                            deviceInfo.inspection_lasttime=new Date().getTime()+"";
+
+                        }
+                        String inspection_nexttime=form.get("inspection_nexttime");
+                        if(inspection_nexttime!=null&&!inspection_nexttime.isEmpty()){
+                            deviceInfo.inspection_nexttime=inspection_nexttime;
+                        }
+                        String maintenance_nexttime=form.get("maintenance_nexttime");
+                        if(maintenance_nexttime!=null&&!maintenance_nexttime.isEmpty()){
+                            deviceInfo.maintenance_nexttime=maintenance_nexttime;
+                        }
+                        deviceInfo.save();
+
+                    }else {
+                        order.state="untreated";
+                    }
+                    order.save();
+                }
+            }
             return success();
         }
         catch (CodeException ce) {
@@ -220,8 +225,8 @@ public class DispatchController extends BaseController{
             if(!Files.exists(files.toPath())){
                 Files.createDirectories(files.toPath());
             }
-            String beforestr="";
-            String afterstr="";
+            StringBuilder beforestr= new StringBuilder();
+            StringBuilder afterstr= new StringBuilder();
             Http.MultipartFormData body = request().body().asMultipartFormData();
             if(body!=null){
                 List<Http.MultipartFormData.FilePart> fileParts = body.getFiles();
@@ -231,22 +236,24 @@ public class DispatchController extends BaseController{
                     File storeFile = new File( order_path+ filename);
                     Files.move(file.toPath(),storeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     if(filename.startsWith("before")){
-                        beforestr+="order/"+filename+";";
+                        beforestr.append("order/").append(filename).append(";");
                     }
                     if(filename.startsWith("after")){
-                        afterstr+="order/"+filename+";";
+                        afterstr.append("order/").append(filename).append(";");
                     }
                 }
             }
-            if(remarks!=null){
-                dispatch.remarks=remarks;
+            if (dispatch!=null){
+                if(remarks!=null){
+                    dispatch.remarks=remarks;
+                }
+                dispatch.result=result;
+                dispatch.state="examined";
+                dispatch.finish_time=new Date().getTime()+"";
+                dispatch.before_pic= beforestr.toString();
+                dispatch.after_pic= afterstr.toString();
+                dispatch.save();
             }
-            dispatch.result=result;
-            dispatch.state="examined";
-            dispatch.finish_time=new Date().getTime()+"";
-            dispatch.before_pic=beforestr;
-            dispatch.after_pic=afterstr;
-            dispatch.save();
             return success();
         }
         catch (CodeException ce) {
@@ -262,14 +269,14 @@ public class DispatchController extends BaseController{
     public Result read() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
-            List<Dispatch> dispatchList = null;
+            List<Dispatch> dispatchList;
             String id = form.get("id");
             if (id != null && !id.isEmpty()) {
                 Dispatch fault = Dispatch.finder.byId(Integer.parseInt(id));
                 if (fault == null) {
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
-                dispatchList = new ArrayList<Dispatch>();
+                dispatchList = new ArrayList<>();
                 dispatchList.add(fault);
                 return successList(1, 1, dispatchList);
             }
@@ -285,8 +292,8 @@ public class DispatchController extends BaseController{
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             String order_id = form.get("order_id");
             if (order_id != null && !order_id.isEmpty()) {

@@ -39,8 +39,7 @@ import java.util.Set;
 public class LadderController extends BaseController {
     @Inject
     private FormFactory formFactory;
-    @Inject
-    WSClient ws;
+
     @Inject
     private Materializer mat;
 
@@ -194,7 +193,7 @@ public class LadderController extends BaseController {
             }
             int totalNum = resultData.get("data").get("totalNumber").asInt();
             int totalPage = resultData.get("data").get("totalPage").asInt();
-            List<ObjectNode> nodeList = new ArrayList<ObjectNode>();
+            List<ObjectNode> nodeList = new ArrayList<>();
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
                 if(!node.get("ctrl").asText().equals("")){

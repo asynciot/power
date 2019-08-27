@@ -16,13 +16,13 @@ import java.util.List;
  * Created by lengxia on 2018/11/27.
  */
 public class SendMonitorThread extends Thread {
-    public static Date update_time=new Date();
+    private static Date update_time=new Date();
 
     public SendMonitorThread(){
         Logger.info("create send Monitor Thread ok");
     }
     //java 合并两个byte数组
-    public static byte[] byteMerger(byte[] byte_1, byte[] byte_2){
+    private static byte[] byteMerger(byte[] byte_1, byte[] byte_2){
         byte[] byte_3 = new byte[byte_1.length+byte_2.length];
         System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);
         System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);
@@ -32,8 +32,7 @@ public class SendMonitorThread extends Thread {
 
     @Override
     public void run() {
-        List<Monitor> monitorList=null;
-        Field[] fields = Monitor.class.getDeclaredFields();
+        List<Monitor> monitorList;
         while (true){
             try{
                 monitorList=Monitor.finder.where().gt("time",update_time).findList();

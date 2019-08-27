@@ -1,12 +1,8 @@
 package controllers.account;
 
-import Sms.common.SmsManager;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.common.CodeException;
-import controllers.common.CodeGenerator;
 import controllers.common.ErrDefinition;
 import controllers.common.XDomainController;
 import models.account.Account;
@@ -17,18 +13,10 @@ import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.Json;
-import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
@@ -51,9 +39,11 @@ public class RolesController extends XDomainController {
             }
             Menus menus = Menus.finder.where().eq("name",roles.name).findUnique();
             Functions functions = Functions.finder.where().eq("name",roles.name).findUnique();
-            roles.menus = menus.id;
-            roles.functions = functions.id;
-            Ebean.save(roles);
+            if(menus!=null && functions!=null){
+                roles.menus = menus.id;
+                roles.functions = functions.id;
+                Ebean.save(roles);
+            }
             return success();
         }
         catch (Throwable e) {
@@ -67,7 +57,7 @@ public class RolesController extends XDomainController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<Roles> exprList= Roles.finder.where();
-            List<Roles> rolesList = new ArrayList<Roles>();
+            List<Roles> rolesList;
 
             String pageStr = form.get("page");
             String numStr = form.get("num");
@@ -81,8 +71,8 @@ public class RolesController extends XDomainController {
             if (id != null && !id.isEmpty()) {
                 exprList=exprList.contains("id",id);
             }
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             rolesList = exprList
                     .setFirstRow((page-1)*num)
@@ -108,20 +98,20 @@ public class RolesController extends XDomainController {
     public Result confer() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
-            ExpressionList<Roles> exprList = Roles.finder.where();
-            List<Roles> rolesList = new ArrayList<Roles>();
 
             String userId = form.get("userId");
             String id = form.get("id");
             if (null == userId) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
-            if (id == null && id.isEmpty()) {
+            if (id == null || id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_ROLES_INFO_INCORRECT_PARAM);
             }
             Account account = Account.finder.where().eq("id",userId).findUnique();
-            account.role = id;
-            Ebean.save(account);
+            if (account!=null){
+                account.role = id;
+                Ebean.save(account);
+            }
             return success();
         } catch (CodeException ce) {
             Logger.error(ce.getMessage());
@@ -138,7 +128,7 @@ public class RolesController extends XDomainController {
             DynamicForm form = formFactory.form().bindFromRequest();
 
             String id = form.get("id");
-            if (id == null && id.isEmpty()) {
+            if (id == null || id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_ROLES_INFO_INCORRECT_PARAM);
             }
             Roles roles = Roles.finder.where().eq("id", id).findUnique();

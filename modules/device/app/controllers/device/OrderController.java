@@ -55,8 +55,10 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
             Order order = models.device.Order.finder.byId(Integer.parseInt(id));
-            order.state="untreated";
-            order.save();
+            if (order!=null){
+                order.state="untreated";
+                order.save();
+            }
             return success();
         }
         catch (CodeException ce) {
@@ -118,7 +120,7 @@ public class OrderController extends BaseController {
                 if (Order == null) {
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
-                orderList = new ArrayList<Order>();
+                orderList = new ArrayList<>();
                 orderList.add(Order);
                 return successList(1, 1, orderList);
             }
@@ -133,8 +135,8 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             String device_id=form.get("device_id");
             if (device_id != null && !device_id.isEmpty()) {
@@ -206,14 +208,14 @@ public class OrderController extends BaseController {
     public Result readUntreted(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
-            List<Order> orderList = null;
+            List<Order> orderList;
             String id = form.get("id");
             if (id != null && !id.isEmpty()) {
                 Order Order = models.device.Order.finder.byId(Integer.parseInt(id));
                 if (Order == null) {
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
-                orderList = new ArrayList<Order>();
+                orderList = new ArrayList<>();
                 orderList.add(Order);
                 return successList(1, 1, orderList);
             }
@@ -228,8 +230,8 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             String islast=form.get("islast");
             if (islast != null && !islast.isEmpty()) {
@@ -289,7 +291,6 @@ public class OrderController extends BaseController {
             if (form.hasErrors()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-
             Order Order = form.get();
             if(Order.device_id==null){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
@@ -371,14 +372,11 @@ public class OrderController extends BaseController {
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
-
-
     }
 
     public Result readCountOrder(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
-            List<Order> orderList = null;
 			ExpressionList<Order> exprList = Order.finder.where();
             String starttime = form.get("starttime");
             String endtime = form.get("endtime");
@@ -501,10 +499,10 @@ public class OrderController extends BaseController {
 			if (null == numStr || numStr.isEmpty()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}
-			Integer page = Integer.parseInt(pageStr);
-			Integer num = Integer.parseInt(numStr);
+			int page = Integer.parseInt(pageStr);
+			int num = Integer.parseInt(numStr);
 			String sql="SELECT ladder.`order`.device_id,ladder.`order`.code,ladder.`order`.create_time,ladder.`dispatch`.expect_time,producer,ladder.`order`.state as state2,ladder.`dispatch`.state FROM ladder.`order` left join ladder.`dispatch` on ladder.`order`.id=ladder.`dispatch`.order_id ";
-			if(stateStr ==null&&stateStr.isEmpty()){
+			if(stateStr ==null || stateStr.isEmpty()){
 			    // sql=sql+"WHERE ladder.`order`.state<>'treated' or ladder.`dispatch`.state<>'treated' ";
 			}
 			if(stateStr.equals("6")){

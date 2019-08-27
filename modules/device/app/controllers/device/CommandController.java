@@ -23,7 +23,7 @@ import java.util.List;
 public class CommandController extends BaseController {
     @Inject
     private FormFactory formFactory;
-    public static int session_id=1;
+    private static int session_id=1;
     public Result create() {
         return create(Commands.class, formFactory);
     }
@@ -31,7 +31,7 @@ public class CommandController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<Commands> exprList= Commands.finder.where();
-            List<Commands> list = new ArrayList<Commands>();
+            List<Commands> list;
             String imei = form.get("IMEI");
             String numStr = form.get("num");
             String pageStr = form.get("page");
@@ -45,8 +45,8 @@ public class CommandController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
             }
             exprList=exprList.contains("IMEI",imei);
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
             String sql= "id desc";
             list = exprList
                     .setOrderBy(sql)
@@ -156,8 +156,8 @@ public class CommandController extends BaseController {
                 if(segment==null||address==null){
                     throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
                 }
-                String segment_str[] = segment.split(",");
-                String address_str[] = address.split(",");
+                String[] segment_str = segment.split(",");
+                String[] address_str = address.split(",");
                 if (segment_str.length<4||address_str.length < 16){
                     throw new CodeException(ErrDefinition.E_COMMOND_MONITOR_INCORRECT_PARAM);
                 }
@@ -226,8 +226,6 @@ public class CommandController extends BaseController {
             commands.submit = new Date();
             commands.IMEI = imei;
             commands.binary = tmp;
-            DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("IMEI", imei).findUnique();
-
             commands.int1 = Integer.parseInt(from);
             commands.int2 = Integer.parseInt(to);
 

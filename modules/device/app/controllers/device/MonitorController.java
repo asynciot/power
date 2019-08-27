@@ -5,9 +5,7 @@ import play.Logger;
 import play.mvc.LegacyWebSocket;
 import play.mvc.Result;
 import play.mvc.WebSocket;
-import sun.rmi.runtime.Log;
 
-import java.awt.geom.RectangularShape;
 import java.util.Date;
 
 /**

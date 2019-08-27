@@ -120,14 +120,12 @@ public class ChatController extends BaseController {
 			if (null == followStr || followStr.isEmpty()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}			
-			Integer page = Integer.parseInt(pageStr);
-			Integer num = Integer.parseInt(numStr);
-			Integer follow = Integer.parseInt(followStr);
+			int page = Integer.parseInt(pageStr);
+			int num = Integer.parseInt(numStr);
+			int follow = Integer.parseInt(followStr);
 			
 			String sql="SELECT ladder.`chat`.id,content,follow,username,from_id,nickname,ladder.`chat`.create_time,portrait FROM ladder.`chat` left join ladder.`account` on ladder.`chat`.from_id=ladder.`account`.id ";
-			if(followStr!=null&&!followStr.isEmpty()){
-			    sql=sql+"WHERE follow='"+follow+"' ";
-			}
+			sql=sql+"WHERE follow='"+follow+"' ";
 			sql=sql+"order by create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.findList();

@@ -6,15 +6,12 @@ import com.avaje.ebean.ExpressionList;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
-import models.account.Account;
 import models.device.Devices;
 import models.device.Follow;
-import play.Configuration;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.ws.WSClient;
 import play.mvc.Result;
 
 import javax.inject.Inject;
@@ -29,14 +26,6 @@ import java.util.List;
 public class FollowController extends BaseController {
     @Inject
     private FormFactory formFactory;
-
-    @Inject
-    private Configuration configuration;
-    
-    @Inject 
-    private WSClient ws;
-
-    private static int TIME_OUT = 10000;
 
     public Result create() {
         try {
@@ -92,7 +81,7 @@ public class FollowController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
 
-            List<Follow> followInfoList = null;
+            List<Follow> followInfoList;
             String id = form.get("id");
             
             if (id != null && !id.isEmpty()) {
@@ -117,8 +106,8 @@ public class FollowController extends BaseController {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
             exprList.add(Expr.eq("userId", session("userId")));
 
             followInfoList = exprList

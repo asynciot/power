@@ -29,9 +29,7 @@ public class BaseController extends XDomainController {
 			if (form.hasErrors()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}
-			
 			T obj = form.get();
-			
 			Ebean.save(obj);
 			
 			return success();
@@ -52,13 +50,12 @@ public class BaseController extends XDomainController {
 			if (!Model.class.isAssignableFrom(modelClass)) {
 				throw new CodeException(ErrDefinition.E_CLASS_NOT_SUPPORT);
 			}
-			
-			List<T> list = null;
+			List<T> list;
 			DynamicForm form = formFactory.form().bindFromRequest();
 			
 			String id = form.get("id");			
 			if (id != null && !id.isEmpty()) {
-				T obj = null;
+				T obj;
 				Field idField = modelClass.getDeclaredField("id");
 				if (idField.getType().isAssignableFrom(Integer.class)) {
 					obj = Ebean.find(modelClass, Integer.parseInt(id));
@@ -71,7 +68,7 @@ public class BaseController extends XDomainController {
 					throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 				}
 				
-				list = new ArrayList<T>();
+				list = new ArrayList<>();
 				list.add(obj);
 				addMoreInfo(list);
 				return successList(1, 1, list);
@@ -89,15 +86,15 @@ public class BaseController extends XDomainController {
             	throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
            
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
            
             addExprFilter(exprList, formFactory);
             com.avaje.ebean.Query<T> query = exprList
             		.setFirstRow((page-1)*num)
             		.setMaxRows(num);
             
-            Field createTimeField = null;
+            Field createTimeField;
             try {
             	createTimeField = modelClass.getDeclaredField("createTime");
             }
@@ -134,17 +131,15 @@ public class BaseController extends XDomainController {
 			return failure(ErrDefinition.E_COMMON_READ_FAILED);
 		}				        
 	}
-	
+
 	protected <T> void addExprFilter(ExpressionList<T> exprList, FormFactory formFactory) {
-		
+
 	}
-	
+
 	protected <T> void addMoreInfo(List<T> list) {
-		
+
 	}
-	
-	
-	
+
 	public <T> Result update(Class<T> modelClass, FormFactory formFactory) {
 		try {
 			if (!Model.class.isAssignableFrom(modelClass)) {
@@ -202,7 +197,6 @@ public class BaseController extends XDomainController {
 			DynamicForm form = formFactory.form().bindFromRequest();
 			
 			String id = form.get("id");
-			Field idField = modelClass.getDeclaredField("id");
 			T obj = Ebean.find(modelClass, id);
 			
 			if (obj == null) {

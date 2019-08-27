@@ -18,11 +18,9 @@ import play.core.j.JavaResultExtractor;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.libs.Json;
-import play.libs.ws.WSClient;
 import play.mvc.Result;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -38,11 +36,8 @@ public class DeviceController extends BaseController {
     private FormFactory formFactory;
 
     @Inject
-    WSClient ws;
-    @Inject
     private Materializer mat;
 
-    private static int TIME_OUT = 10000;
     public Result create() {
         return create(Devices.class, formFactory);
     }
@@ -50,12 +45,12 @@ public class DeviceController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<DeviceInfo> exprList= DeviceInfo.finder.where();
-            List<DeviceInfo> deviceInfoList = new ArrayList<DeviceInfo>();
+            List<DeviceInfo> deviceInfoList = new ArrayList<>();
 
             String IMEI = form.get("IMEI");
             String search_info = form.get("search_info");
-            String register=form.get("register");
-            String tabcor = form.get("tagcolor");
+            String register = form.get("register");
+            String tabcorlor = form.get("tagcolor");
             String state = form.get("state");
             String device_type = form.get("device_type");
             String pageStr = form.get("page");
@@ -94,8 +89,8 @@ public class DeviceController extends BaseController {
                 }
                 exprList=exprList.in("IMEI",imeilist);
             }
-            if (tabcor != null && !tabcor.isEmpty()) {
-                exprList=exprList.contains("tagcolor",tabcor);
+            if (tabcorlor != null && !tabcorlor.isEmpty()) {
+                exprList=exprList.contains("tagcolor",tabcorlor);
             }
             if (state != null && !state.isEmpty()) {
                 exprList=exprList.eq("state",state);
@@ -116,8 +111,8 @@ public class DeviceController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
             String sql = "device_name asc";
 
             String item = form.get("item");
@@ -155,6 +150,7 @@ public class DeviceController extends BaseController {
     public Result readMore(){
         try {
             Result ret = read();
+            int TIME_OUT = 10000;
             ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
             ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
             if (resultData.get("code").asInt() != 0) {
@@ -162,7 +158,7 @@ public class DeviceController extends BaseController {
             }
             int totalNum = resultData.get("data").get("totalNumber").asInt();
             int totalPage = resultData.get("data").get("totalPage").asInt();
-            List<ObjectNode> nodeList = new ArrayList<ObjectNode>();
+            List<ObjectNode> nodeList = new ArrayList<>();
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
                 Devices devices = Devices.finder.where().eq("IMEI",node.get("IMEI").asText()).findUnique();
@@ -225,6 +221,9 @@ public class DeviceController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             DeviceInfo deviceInfo=DeviceInfo.finder.byId(Integer.parseInt(device_id));
+            if(deviceInfo == null){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
             if(device_name!=null&&!device_name.isEmpty()){
                 deviceInfo.device_name=device_name;
             }
@@ -392,7 +391,6 @@ public class DeviceController extends BaseController {
 	
 	public Result locate() {
 		try {
-			DynamicForm form = formFactory.form().bindFromRequest();
 			String sql="SELECT region,count(region) as counter FROM ladder.`device_info` left join ladder.`iplocation` on ladder.`iplocation`.id=ladder.`device_info`.iplocation_id where region!='XX' group by region order by counter desc";
 			List<SqlRow> orderList=Ebean
                             .createSqlQuery(sql)

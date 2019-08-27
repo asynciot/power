@@ -43,7 +43,7 @@ public class OrderCodeController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<OrderResolution> exprList = OrderResolution.finder.where();
-            List<OrderResolution> codeList = new ArrayList<OrderResolution>();
+            List<OrderResolution> codeList;
             String code_id = form.get("code");
             if (code_id!=null&&!code_id.isEmpty()){
                 exprList=exprList.eq("sign",code_id);

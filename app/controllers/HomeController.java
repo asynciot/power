@@ -5,6 +5,7 @@ import controllers.common.ErrDefinition;
 import controllers.common.XDomainController;
 import inceptors.common.Secured;
 import models.account.Account;
+import models.device.DeviceInfo;
 import models.device.Order;
 import models.device.Follow;
 import org.w3c.dom.Document;
@@ -164,10 +165,11 @@ public class HomeController extends XDomainController {
 
             WechatController wechatController=new WechatController(ws);
             List<Follow> followList=Follow.finder.where().eq("device_id",device_id).findList();
+            DeviceInfo devices =  DeviceInfo.finder.where().eq("id",device_id).findUnique();
             for(Follow follow:followList){
                 Account account=Account.finder.byId(follow.userId);
                 if(account==null||account.wechat_id==null)continue;
-                wechatController.SendTmp_on(account.wechat_id,Order.code,Order.type,Order.device_id,Order.producer,account.id,Order.id);
+                wechatController.SendTmp_on(account.wechat_id,Order.code,Order.type,Order.device_id,Order.producer,account.id,Order.id,devices.device_name);
             }
             return ok("ok");
         }catch (CodeException ce) {

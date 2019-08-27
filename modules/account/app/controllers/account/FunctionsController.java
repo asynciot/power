@@ -1,11 +1,8 @@
 package controllers.account;
 
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.common.CodeException;
-import controllers.common.CodeGenerator;
 import controllers.common.ErrDefinition;
 import controllers.common.XDomainController;
 import models.account.Functions;
@@ -13,15 +10,9 @@ import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.Json;
-import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
@@ -60,7 +51,7 @@ public class FunctionsController extends XDomainController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<Functions> exprList= Functions.finder.where();
-            List<Functions> functionsList = new ArrayList<Functions>();
+            List<Functions> functionsList;
 
             String pageStr = form.get("page");
             String numStr = form.get("num");
@@ -75,8 +66,8 @@ public class FunctionsController extends XDomainController {
             if (id != null && !id.isEmpty()) {
                 exprList=exprList.contains("id",id);
             }
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             functionsList = exprList
                     .setFirstRow((page-1)*num)

@@ -44,11 +44,6 @@ public class FollowLadderController extends BaseController {
     private FormFactory formFactory;
 
     @Inject
-    private Configuration configuration;
-
-    @Inject
-    private WSClient ws;
-    @Inject
     private Materializer mat;
 
     private static int TIME_OUT = 10000;
@@ -64,10 +59,12 @@ public class FollowLadderController extends BaseController {
             FollowLadder followInfo = form.get();
             if(followInfo.ctrl!=null){
                 Ladder ladder=Ladder.finder.where().eq("ctrl",followInfo.ctrl).findUnique();
-                followInfo.ladder_id=ladder.id;
+                if (ladder!=null)
+                    followInfo.ladder_id=ladder.id;
             }else{
                 Ladder ladder=Ladder.finder.where().eq("door1",followInfo.door1).findUnique();
-                followInfo.ladder_id=ladder.id;
+                if (ladder!=null)
+                    followInfo.ladder_id=ladder.id;
             }
             followInfo.createTime=new Date();
             followInfo.user_id=session("userId");
@@ -91,7 +88,7 @@ public class FollowLadderController extends BaseController {
             DynamicForm form = formFactory.form().bindFromRequest();
 
             ExpressionList<FollowLadder> exprList = FollowLadder.finder.where();
-            List<FollowLadder> followInfoList = null;
+            List<FollowLadder> followInfoList;
             String id = form.get("id");
             String pageStr = form.get("page");
             String numStr = form.get("num");
@@ -101,7 +98,7 @@ public class FollowLadderController extends BaseController {
                 if(followInfo == null){
                     throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
                 }
-                followInfoList = new ArrayList<FollowLadder>();
+                followInfoList = new ArrayList<>();
                 followInfoList.add(followInfo);
                 return successList(1, 1, followInfoList);
             }
@@ -113,8 +110,8 @@ public class FollowLadderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
             exprList.add(Expr.eq("user_id", session("userId")));
 
             followInfoList = exprList
@@ -148,7 +145,7 @@ public class FollowLadderController extends BaseController {
             }
             int totalNum = resultData.get("data").get("totalNumber").asInt();
             int totalPage = resultData.get("data").get("totalPage").asInt();
-            List<ObjectNode> nodeList = new ArrayList<ObjectNode>();
+            List<ObjectNode> nodeList = new ArrayList<>();
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
                 Ladder ladder = Ladder.finder.where().eq("ctrl",node.get("ctrl").asText()).findUnique();

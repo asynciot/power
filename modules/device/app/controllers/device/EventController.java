@@ -35,14 +35,14 @@ public class EventController extends BaseController {
     public Result read(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
-            List<Events> eventsList = null;
+            List<Events> eventsList;
             String id = form.get("id");
             if (id != null && !id.isEmpty()) {
                 Events events = Events.finder.byId(Integer.parseInt(id));
                 if (events == null) {
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
-                eventsList = new ArrayList<Events>();
+                eventsList = new ArrayList<>();
                 eventsList.add(events);
                 return successList(1, 1, eventsList);
             }
@@ -58,8 +58,8 @@ public class EventController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
 
-            Integer page = Integer.parseInt(pageStr);
-            Integer num = Integer.parseInt(numStr);
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
 
             String starttime = form.get("starttime");
             String endtime = form.get("endtime");
