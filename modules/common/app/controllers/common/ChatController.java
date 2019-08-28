@@ -129,7 +129,6 @@ public class ChatController extends BaseController {
 			sql=sql+"order by create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.findList();
-			Logger.info(orderList.size()+"");
 			return successList(orderList);
 		}
 		catch (CodeException ce) {

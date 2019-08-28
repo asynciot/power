@@ -41,6 +41,8 @@ DELETE      /Order                      controllers.device.OrderController.delet
 
 GET         /Offline                    controllers.device.OfflineController.logoutlist()
 GET         /Offline/Single             controllers.device.OfflineController.single()
+GET         /Offline/Offline            controllers.device.OfflineController.offlinelist()
+GET         /Offline/SingleOff          controllers.device.OfflineController.deviceOffline()
 
 GET         /Dispatch                   controllers.device.DispatchController.read()
 POST        /Dispatch/finish            controllers.device.DispatchController.finish()

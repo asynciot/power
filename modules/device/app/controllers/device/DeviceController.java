@@ -191,7 +191,6 @@ public class DeviceController extends BaseController {
                 }
                 nodeList.add(node);
             }
-//            Logger.info(nodeList);
             return successList(totalNum, totalPage, nodeList);
         }
         catch (Throwable e) {
@@ -395,7 +394,6 @@ public class DeviceController extends BaseController {
 			List<SqlRow> orderList=Ebean
                             .createSqlQuery(sql)
                             .findList();
-			Logger.info(orderList.size()+"");
 			return successList(orderList);
 		}
 		catch (Throwable e) {

@@ -351,6 +351,7 @@ create table `offline` (
   id                            integer auto_increment not null,
   device_id                     integer,
   t_logout                      varchar(255),
+  duration                      varchar(255),
   constraint pk_offline primary key (id)
 );
 

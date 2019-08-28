@@ -229,7 +229,6 @@ public class EventController extends BaseController {
 		sql=sql+"group by device_id order by count(device_id) desc limit 10";
 	    List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
 
-	    Logger.info(orderList.size()+"");
 	    return successList(orderList);
 		
 // 		ObjectNode node = Json.newObject();

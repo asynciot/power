@@ -35,7 +35,6 @@ public class OrderController extends BaseController {
     public Result gettopfive(){
         String sql="SELECT device_id,count(device_id) as type FROM ladder.`order` group by device_id order by count(device_id) desc limit 10 ";
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
-        Logger.info(orderList.size()+"");
         return successList(orderList);
     }
 
@@ -481,7 +480,6 @@ public class OrderController extends BaseController {
 		}
 		sql=sql+"group by code order by count(code) desc limit 10 ";
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
-        Logger.info(orderList.size()+"");
         return successList(orderList);
     }
 	
@@ -529,7 +527,6 @@ public class OrderController extends BaseController {
 			sql=sql+"order by ladder.`order`.create_time desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 										.findList();
-			Logger.info(orderList.size()+"");
 			return successList(orderList);
 			}
 		catch (CodeException ce) {
