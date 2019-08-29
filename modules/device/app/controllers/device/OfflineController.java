@@ -46,15 +46,16 @@ public class OfflineController extends BaseController {
 			}
 			int page = Integer.parseInt(pageStr);
 			int num = Integer.parseInt(numStr);
-			String sql="SELECT device_name,imei,ladder.`device_info`.id,count(1) as counter FROM ladder.`offline` left join ladder.`device_info` on ladder.`offline`.device_id=ladder.`device_info`.id where ladder.`offline`.device_id>'0' ";
+			String sql="SELECT device_name,imei,ladder.`device_info`.id,count(1) as counter FROM ladder.`offline` left join ladder.`device_info` on ladder.`offline`.device_id=ladder.`device_info`.id where  ";
 			if(starttime!=null&&!starttime.isEmpty()){
-				sql=sql+"AND t_logout>'"+starttime+"' ";
+				sql=sql+"t_logout>'"+starttime+"' ";
 			}
 			if(endtime!=null&&!endtime.isEmpty()){
 				sql=sql+"AND t_logout<'"+endtime+"' ";
 			}
-			sql=sql+"group by ladder.`device_info`.id";
-			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
+			String sql2=sql+"group by ladder.`device_info`.id;";
+			Logger.info("1----------------------------");
+			List<SqlRow> orderList=Ebean.createSqlQuery(sql2)
 					.findList();
 			int totalNum = orderList.size();
 			sql=sql+"group by ladder.`device_info`.id order by counter desc limit "+(page-1)*num+","+num;
