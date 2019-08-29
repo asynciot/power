@@ -53,12 +53,15 @@ public class OfflineController extends BaseController {
 			if(endtime!=null&&!endtime.isEmpty()){
 				sql=sql+"AND t_logout<'"+endtime+"' ";
 			}
-			sql=sql+"group by ladder.`device_info`.id order by counter desc limit "+(page-1)*num+","+num;
+
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 					.findList();
-			int totalNumber = orderList.size();
-			int totalPage = totalNumber/num;
-			return successList(totalNumber,totalPage,orderList);
+			int totalNum = orderList.size();
+			sql=sql+"group by ladder.`device_info`.id order by counter desc limit "+(page-1)*num+","+num;
+			orderList=Ebean.createSqlQuery(sql)
+					.findList();
+			int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+			return successList(totalNum,totalPage,orderList);
 		}
 		catch (CodeException ce) {
 			Logger.error(ce.getMessage());
