@@ -44,8 +44,8 @@ public class OfflineController extends BaseController {
 			if (null == numStr || numStr.isEmpty()) {
 				throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
 			}
-			Integer page = Integer.parseInt(pageStr);
-			Integer num = Integer.parseInt(numStr);
+			int page = Integer.parseInt(pageStr);
+			int num = Integer.parseInt(numStr);
 			String sql="SELECT device_name,imei,ladder.`device_info`.id,count(1) as counter FROM ladder.`offline` left join ladder.`device_info` on ladder.`offline`.device_id=ladder.`device_info`.id where ladder.`offline`.device_id>'0' ";
 			if(starttime!=null&&!starttime.isEmpty()){
 				sql=sql+"AND t_logout>'"+starttime+"' ";
@@ -56,8 +56,10 @@ public class OfflineController extends BaseController {
 			sql=sql+"group by ladder.`device_info`.id order by counter desc limit "+(page-1)*num+","+num;
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 					.findList();
-			return successList(orderList);
-			}
+			int totalNumber = orderList.size();
+			int totalPage = totalNumber/num;
+			return successList(totalNumber,totalPage,orderList);
+		}
 		catch (CodeException ce) {
 			Logger.error(ce.getMessage());
 			return failure(ce.getCode());
