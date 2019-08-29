@@ -53,7 +53,7 @@ public class OfflineController extends BaseController {
 			if(endtime!=null&&!endtime.isEmpty()){
 				sql=sql+"AND t_logout<'"+endtime+"' ";
 			}
-
+			sql=sql+"group by ladder.`device_info`.id";
 			List<SqlRow> orderList=Ebean.createSqlQuery(sql)
 					.findList();
 			int totalNum = orderList.size();
