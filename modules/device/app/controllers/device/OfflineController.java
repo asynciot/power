@@ -160,7 +160,7 @@ public class OfflineController extends BaseController {
 				exprList = exprList.in("device_id",id);
 			}
 			if(device_name!=null && !device_name.isEmpty()){
-				DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("device_name",device_name).findUnique();
+				DeviceInfo deviceInfo = DeviceInfo.finder.where().contains("device_name",device_name).findUnique();
 				if (deviceInfo != null){
 					exprList = exprList.in("device_id",deviceInfo.id);
 				}
