@@ -103,18 +103,14 @@ public class HomeController extends XDomainController {
                     "<MsgType><![CDATA[text]]></MsgType>" +
                     "<Content><![CDATA[%s]]></Content>"+
                     "</xml>",FromUserName,ToUserName,CreateTime,"hello");
-
             */
         }
         return ok("success");
-
-
     }
     public Result getalert(){
 
         DynamicForm form = formFactory.form().bindFromRequest();
         try{
-
             String code = form.get("code");
             String device_id = form.get("device_id");
             String device_type = form.get("device_type");
@@ -124,7 +120,7 @@ public class HomeController extends XDomainController {
             if(!producer.equals("sys")&&account_pro==null){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if(code==null||code.isEmpty()||device_id==null||device_id.isEmpty()||producer==null||producer.isEmpty()||type==null||type.isEmpty()){
+            if(code == null || code.isEmpty() || device_id == null || device_id.isEmpty() || producer.isEmpty() || type == null || type.isEmpty()){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             if(type.equals("1")&&code.equals("0")){
@@ -153,7 +149,6 @@ public class HomeController extends XDomainController {
                     .eq("device_id", Order.device_id)
                     .eq("type", Order.type)
                     .eq("islast",1)
-                    .notIn("state","treated")
                     .findUnique();
             if(orderlast!=null){
                 orderlast.islast=0;

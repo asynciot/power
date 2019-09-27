@@ -55,6 +55,7 @@ public class ErrDefinition {
 
     public static final int E_DEVICE_IN_COMMOND                         = 670;
     public static final int E_DEVICE_NOTIN_MONITOR                      = 671;
+    public static final int E_DEVICE_INCORRECT_PARAM                    = 672;
 
     public static final int E_MESSAGE_CREATE_FAILED                     = 830;
     public static final int E_MESSAGE_READ_FAILED                       = 831;

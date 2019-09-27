@@ -1,19 +1,22 @@
 package controllers.device;
 
+import akka.stream.Materializer;
+import akka.util.ByteString;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import com.avaje.ebean.SqlRow;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
-import controllers.common.XDomainController;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.account.Account;
-import models.device.Order;
-import models.device.Dispatch;
-import models.device.Follow;
+import models.device.Devices;
+import models.device.*;
 import play.Logger;
+import play.core.j.JavaResultExtractor;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
@@ -31,6 +34,8 @@ public class OrderController extends BaseController {
 
     @Inject
     FormFactory formFactory;
+    @Inject
+    private Materializer mat;
 
     public Result gettopfive(){
         String sql="SELECT device_id,count(device_id) as type FROM ladder.`order` group by device_id order by count(device_id) desc limit 10 ";
@@ -137,6 +142,13 @@ public class OrderController extends BaseController {
             int page = Integer.parseInt(pageStr);
             int num = Integer.parseInt(numStr);
 
+            String imei = form.get("imei");
+            if(imei !=null && !imei.isEmpty()){
+                Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
+                if(devices!=null){
+                    exprList.add(Expr.eq("device_id",devices.id));
+                }
+            }
             String device_id=form.get("device_id");
             if (device_id != null && !device_id.isEmpty()) {
                 exprList.add(Expr.eq("device_id", Integer.parseInt(device_id)));
@@ -258,14 +270,16 @@ public class OrderController extends BaseController {
                 exprList=exprList.in("device_id",idlist);
             }
             exprList=exprList.not(Expr.eq("state", "treated"));
+
             orderList = exprList
                     .setFirstRow((page-1)*num)
                     .setMaxRows(num)
                     .orderBy("createTime desc")
                     .findList();
 
-            int totalNum = exprList.findRowCount();
-            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            int totalNum = Integer.parseInt(numStr);
+            int totalPage = Integer.parseInt(pageStr);
 
             return successList(totalNum, totalPage, orderList);
         }
@@ -279,6 +293,39 @@ public class OrderController extends BaseController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+    public Result readMore(){
+        try {
+            Result ret = readUntreted();
+            int TIME_OUT = 10000;
+            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+            if (resultData.get("code").asInt() != 0) {
+                return ret;
+            }
+
+            List<ObjectNode> nodeList = new ArrayList<>();
+            for(JsonNode child : resultData.get("data").get("list")){
+                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+                DeviceInfo devices = DeviceInfo.finder.where().eq("id",node.get("device_id").asText()).findUnique();
+                if(devices!=null){
+                    node.put("online",devices.state);
+                    if(devices.state.equals("online")){
+                        nodeList.add(node);
+                    }
+                }
+            }
+            int num = resultData.get("data").get("totalNumber").asInt();
+            int totalNum = nodeList.size();
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+            return successList(totalNum, totalPage, nodeList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
     public Result delete(){
         return delete(Order.class,formFactory);
     }
@@ -295,7 +342,7 @@ public class OrderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             Order.createTime=new Date().getTime()+"";
-            int count = Order.finder.where()
+            int count = models.device.Order.finder.where()
                     .eq("device_id", Order.device_id)
                     .eq("type", Order.type)
                     .eq("state", Order.state)
@@ -345,14 +392,12 @@ public class OrderController extends BaseController {
             if(Order.state.equals("examined")){
                 throw  new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }else{
-                // Order.state="examined";
 				Order.state="treating";
                 Order.save();
 				dispatch.item=Order.item;
                 dispatch.order_id=Order.id;
                 dispatch.create_time=new Date().getTime()+"";
                 dispatch.user_id=session("userId");
-                // dispatch.state="prepare";
 				dispatch.state="treating";
                 dispatch.device_id=Order.device_id;
                 dispatch.order_type=Order.type;

@@ -8,6 +8,7 @@ import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 import models.account.Account;
 import models.device.DeviceInfo;
+import models.device.Devices;
 import models.device.Dispatch;
 import models.device.Order;
 import play.Logger;
@@ -295,6 +296,13 @@ public class DispatchController extends BaseController{
             int page = Integer.parseInt(pageStr);
             int num = Integer.parseInt(numStr);
 
+            String imei = form.get("imei");
+            if(imei != null && !imei.isEmpty()){
+                Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
+                if (devices!=null){
+                    exprList.add(Expr.eq("device_id",devices.id));
+                }
+            }
             String order_id = form.get("order_id");
             if (order_id != null && !order_id.isEmpty()) {
                 exprList.add(Expr.eq("order_id", Integer.parseInt(order_id)));

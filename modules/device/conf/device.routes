@@ -29,7 +29,7 @@ GET         /Event/ReadCount            controllers.device.EventController.readC
 GET         /Event/Activedoor           controllers.device.EventController.activedoor()
 
 GET         /Order                      controllers.device.OrderController.read()
-GET         /Order/Untreted             controllers.device.OrderController.readUntreted()
+GET         /Order/Untreted             controllers.device.OrderController.readMore()
 GET         /TopFive                    controllers.device.OrderController.gettopfive()
 GET         /Order/Faultfreq            controllers.device.OrderController.faultfreq()
 GET         /Order/Progress             controllers.device.OrderController.progress()
@@ -39,9 +39,9 @@ POST        /Order/examine              controllers.device.OrderController.exami
 POST        /Order/adopt                controllers.device.OrderController.adopt()
 DELETE      /Order                      controllers.device.OrderController.delete()
 
-GET         /Offline                    controllers.device.OfflineController.logoutlist()
+GET         /Offline                    controllers.device.OfflineController.logoutList()
 GET         /Offline/Single             controllers.device.OfflineController.single()
-GET         /Offline/Offline            controllers.device.OfflineController.offlinelist()
+GET         /Offline/Offline            controllers.device.OfflineController.offlineList()
 GET         /Offline/SingleOff          controllers.device.OfflineController.deviceOffline()
 
 GET         /Dispatch                   controllers.device.DispatchController.read()
@@ -79,8 +79,9 @@ PUT         /Organization/bind          controllers.device.OrganizationControlle
 DELETE      /Organization               controllers.device.OrganizationController.delete()
 
 POST        /Ladder                     controllers.device.LadderController.create()
-GET         /Ladder                     controllers.device.LadderController.read()
+GET         /Ladder                     controllers.device.LadderController.ReadFault()
 GET         /Ladder/ReadMore            controllers.device.LadderController.readMore()
+GET         /Ladder/Event               controllers.device.LadderController.readLadderEvent()
 PUT         /Ladder                     controllers.device.LadderController.update()
 PUT         /Ladder/Group               controllers.device.LadderController.group()
 PUT         /Ladder/RemoveGroup         controllers.device.LadderController.rmGroup()

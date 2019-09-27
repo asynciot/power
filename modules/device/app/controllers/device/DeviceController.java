@@ -198,7 +198,6 @@ public class DeviceController extends BaseController {
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
-
     }
     public Result update() {
         try {

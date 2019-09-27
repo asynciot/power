@@ -3,7 +3,9 @@ package controllers.device;
 import akka.stream.Materializer;
 import akka.util.ByteString;
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.SqlRow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,12 +14,7 @@ import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 
-import models.device.Cellocation;
-import models.device.DeviceInfo;
-import models.device.Ladder;
-import models.device.Devices;
-import models.device.IPlocation;
-import models.device.FollowLadder;
+import models.device.*;
 
 import play.Logger;
 import play.core.j.JavaResultExtractor;
@@ -28,10 +25,8 @@ import play.libs.ws.WSClient;
 import play.mvc.Result;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by lengxia on 2018/10/30.
@@ -92,7 +87,7 @@ public class LadderController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             ExpressionList<Ladder> exprList= Ladder.finder.where();
-            List<Ladder> ladderInfoList = new ArrayList<Ladder>();
+            List<Ladder> ladderInfoList = new ArrayList<>();
 
             String search_info = form.get("search_info");
             String ladder_id = form.get("id");
@@ -197,55 +192,67 @@ public class LadderController extends BaseController {
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
                 if(!node.get("ctrl").asText().equals("")){
-                        DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
-                        Devices devices = Devices.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
-                        if (deviceInfo != null) {
-                            node.put("rssi", deviceInfo.rssi);
-                            node.put("tagcolor", deviceInfo.tagcolor);
-                            node.put("cellocation_id", deviceInfo.cellocation_id);
-                            node.put("IPlocation_id", deviceInfo.IPlocation_id);
-                        }
-                        Cellocation cellocation = Cellocation.finder.where().eq("id", deviceInfo.cellocation_id).findUnique();
-                        IPlocation iplocation = IPlocation.finder.where().eq("id", deviceInfo.IPlocation_id).findUnique();
-                        if (cellocation != null) {
-                            node.put("cell_lat", cellocation.lat);
-                            node.put("cell_lon", cellocation.lon);
-                            node.put("cell_radius", cellocation.radius);
-                            node.put("cell_address", cellocation.address);
-                        }
-                        if (iplocation != null) {
-                            node.put("ip_ip", iplocation.ip);
-                            node.put("ip_city", iplocation.city);
-                            node.put("ip_country", iplocation.country);
-                            node.put("ip_region", iplocation.region);
-                        }
-                        if(devices !=null){
+                    DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
+                    Devices devices = Devices.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
+                    if (deviceInfo != null) {
+                        node.put("rssi", deviceInfo.rssi);
+                        node.put("tagcolor", deviceInfo.tagcolor);
+                        node.put("cellocation_id", deviceInfo.cellocation_id);
+                        node.put("IPlocation_id", deviceInfo.IPlocation_id);
+                    }
+                    Cellocation cellocation = Cellocation.finder.where().eq("id", deviceInfo.cellocation_id).findUnique();
+                    IPlocation iplocation = IPlocation.finder.where().eq("id", deviceInfo.IPlocation_id).findUnique();
+                    if (cellocation != null) {
+                        node.put("cell_lat", cellocation.lat);
+                        node.put("cell_lon", cellocation.lon);
+                        node.put("cell_radius", cellocation.radius);
+                        node.put("cell_address", cellocation.address);
+                    }
+                    if (iplocation != null) {
+                        node.put("ip_ip", iplocation.ip);
+                        node.put("ip_city", iplocation.city);
+                        node.put("ip_country", iplocation.country);
+                        node.put("ip_region", iplocation.region);
+                    }
+                    if(devices !=null){
+                        if(devices.t_logout!=null){
                             node.put("t_logout", devices.t_logout.toString());
+                        }
+                        if(devices.t_update!=null){
                             node.put("t_update", devices.t_update.toString());
                         }
+                    }
                 }else {
-                        DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("door1").asText()).findUnique();
-                        Devices devices = Devices.finder.where().eq("imei", node.get("door1").asText()).findUnique();
-                        if (deviceInfo != null) {
-                            node.put("rssi", deviceInfo.rssi);
-                            node.put("tagcolor", deviceInfo.tagcolor);
-                            node.put("cellocation_id", deviceInfo.cellocation_id);
-                            node.put("IPlocation_id", deviceInfo.IPlocation_id);
+                    DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("door1").asText()).findUnique();
+                    Devices devices = Devices.finder.where().eq("imei", node.get("door1").asText()).findUnique();
+                    if (deviceInfo != null) {
+                        node.put("rssi", deviceInfo.rssi);
+                        node.put("tagcolor", deviceInfo.tagcolor);
+                        node.put("cellocation_id", deviceInfo.cellocation_id);
+                        node.put("IPlocation_id", deviceInfo.IPlocation_id);
+                    }
+                    Cellocation cellocation = Cellocation.finder.where().eq("id", deviceInfo.cellocation_id).findUnique();
+                    IPlocation iplocation = IPlocation.finder.where().eq("id", deviceInfo.IPlocation_id).findUnique();
+                    if (cellocation != null) {
+                        node.put("cell_lat", cellocation.lat);
+                        node.put("cell_lon", cellocation.lon);
+                        node.put("cell_radius", cellocation.radius);
+                        node.put("cell_address", cellocation.address);
+                    }
+                    if (iplocation != null) {
+                        node.put("ip_ip", iplocation.ip);
+                        node.put("ip_city", iplocation.city);
+                        node.put("ip_country", iplocation.country);
+                        node.put("ip_region", iplocation.region);
+                    }
+                    if(devices !=null){
+                        if(devices.t_logout!=null){
+                            node.put("t_logout", devices.t_logout.toString());
                         }
-                        Cellocation cellocation = Cellocation.finder.where().eq("id", deviceInfo.cellocation_id).findUnique();
-                        IPlocation iplocation = IPlocation.finder.where().eq("id", deviceInfo.IPlocation_id).findUnique();
-                        if (cellocation != null) {
-                            node.put("cell_lat", cellocation.lat);
-                            node.put("cell_lon", cellocation.lon);
-                            node.put("cell_radius", cellocation.radius);
-                            node.put("cell_address", cellocation.address);
+                        if(devices.t_update!=null){
+                            node.put("t_update", devices.t_update.toString());
                         }
-                        if (iplocation != null) {
-                            node.put("ip_ip", iplocation.ip);
-                            node.put("ip_city", iplocation.city);
-                            node.put("ip_country", iplocation.country);
-                            node.put("ip_region", iplocation.region);
-                        }
+                    }
                 }
                 nodeList.add(node);
             }
@@ -258,6 +265,42 @@ public class LadderController extends BaseController {
         }
 
     }
+    public Result ReadFault(){
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            List<Ladder> ladderList = Ladder.finder.where().eq("state","online").findList();
+            ExpressionList<Order> exprList = Order.finder.where();
+
+            String numStr = form.get("num");
+            List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
+            Set<String> ctrllist=new HashSet<>();
+            for(FollowLadder follows:followList){
+                ctrllist.add(String.valueOf(follows.ladder_id));
+            }
+            exprList=exprList.in("id",ctrllist);
+            for(Ladder ladder: ladderList){
+                if(ladder.state.equals("online")){
+                    exprList.add(Expr.eq("device_id", ladder.ctrl_id));
+                    exprList.add(Expr.eq("islast", 1));
+                }
+            }
+            exprList = exprList.not(Expr.eq("state", "treated"));
+            List<Order> orderList = exprList.findList();
+
+            int num = Integer.parseInt(numStr);
+            int totalNum = exprList.findRowCount();
+
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            return successList(totalNum,totalPage,orderList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
     public Result update() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
@@ -409,4 +452,74 @@ public class LadderController extends BaseController {
         }
     }
 
+    public Result readLadderEvent(){
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String ladder_id = form.get("id");
+            String numStr = form.get("num");
+            String pageStr = form.get("page");
+            if(ladder_id == null){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            Ladder ladder = Ladder.finder.where().idEq(ladder_id).findUnique();
+            if(ladder!=null){
+                ExpressionList<Events> exprList = Events.finder.where();
+                Devices device_one;
+                Devices device_two;
+                String sqlList = "SELECT * FROM ladder.events WHERE device_id=";
+
+                String sqlCount = "SELECT count(0) as id FROM ladder.events WHERE device_id=";
+                String sql ="";
+                String startTime = form.get("start");
+                String endTime = form.get("end");
+                if (ladder.ctrl != null && !ladder.ctrl.isEmpty()){
+                    device_one = Devices.finder.where().eq("imei",ladder.ctrl).findUnique();
+                    assert device_one != null;
+                    sql += device_one.id;
+                    if(startTime!=null&&!startTime.isEmpty()){
+                        sql += " and time>='"+startTime+"'";
+                    }
+                    if(endTime!=null&&!endTime.isEmpty()){
+                        sql += " and time<='"+endTime+"'";
+                    }
+                    sql +=" or device_id=";
+                }
+
+                if(ladder.door1!=null && !ladder.door1.isEmpty()){
+                    device_two = Devices.finder.where().eq("imei",ladder.door1).findUnique();
+                    assert device_two != null;
+                    sql += +device_two.id;
+                }
+
+                if(startTime!=null&&!startTime.isEmpty()){
+                    sql += " and time>='"+startTime+"'";
+                }
+                if(endTime!=null&&!endTime.isEmpty()){
+                    sql += " and time<='"+endTime+"'";
+                }
+
+                int page = Integer.parseInt(pageStr);
+                int num = Integer.parseInt(numStr);
+                sqlCount += sql;
+                sql += " order by id desc limit "+(page-1)*num+","+num;
+                sqlList += sql;
+                List<SqlRow> eventsList=Ebean.createSqlQuery(sqlList)
+                        .findList();
+                int counts = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");
+                int totalNum = counts;
+                int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+                return successList(totalNum,totalPage,eventsList);
+            }
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
 }
