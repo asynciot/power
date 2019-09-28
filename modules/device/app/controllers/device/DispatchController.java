@@ -3,14 +3,12 @@ package controllers.device;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.SqlRow;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 import models.account.Account;
-import models.device.DeviceInfo;
-import models.device.Devices;
-import models.device.Dispatch;
-import models.device.Order;
+import models.device.*;
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.FormFactory;
@@ -360,6 +358,58 @@ public class DispatchController extends BaseController{
             Logger.error(ce.getMessage());
             return failure(ce.getCode());
         } catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readLadder(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            String id = form.get("id");
+            String pageStr = form.get("page");
+            String numStr = form.get("num");
+
+            if (id==null||id.isEmpty()){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            Ladder ladder = Ladder.finder.where().idEq(id).findUnique();
+            if (ladder!=null){
+                Devices device_one;
+                Devices device_two;
+                String sqlList = "SELECT * FROM ladder.dispatch WHERE device_id=";
+                String sqlCount = "SELECT count(0) as id FROM ladder.dispatch WHERE device_id=";
+                String sql ="";
+                if (ladder.ctrl != null && !ladder.ctrl.isEmpty()){
+                    device_one = Devices.finder.where().eq("imei",ladder.ctrl).findUnique();
+                    assert device_one != null;
+                    sql += device_one.id;
+                    sql +=" or device_id=";
+                }
+                if (ladder.door1 != null && !ladder.door1.isEmpty()){
+                    device_two = Devices.finder.where().eq("imei",ladder.door1).findUnique();
+                    assert device_two != null;
+                    sql += +device_two.id;
+                }
+                int page = Integer.parseInt(pageStr);
+                int num = Integer.parseInt(numStr);
+                sqlCount += sql;
+                sql += " order by id desc limit "+(page-1)*num+","+num;
+                sqlList += sql;
+                List<SqlRow> dispatchList=Ebean.createSqlQuery(sqlList)
+                        .findList();
+                int counts = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");
+                int totalNum = counts;
+                int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+                return successList(totalNum,totalPage,dispatchList);
+            }
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);

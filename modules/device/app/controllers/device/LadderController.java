@@ -463,7 +463,6 @@ public class LadderController extends BaseController {
             }
             Ladder ladder = Ladder.finder.where().idEq(ladder_id).findUnique();
             if(ladder!=null){
-                ExpressionList<Events> exprList = Events.finder.where();
                 Devices device_one;
                 Devices device_two;
                 String sqlList = "SELECT * FROM ladder.events WHERE device_id=";
