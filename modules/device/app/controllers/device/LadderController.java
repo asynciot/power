@@ -496,17 +496,28 @@ public class LadderController extends BaseController {
                 if(endTime!=null&&!endTime.isEmpty()){
                     sql += " and time<='"+endTime+"'";
                 }
-
-                int page = Integer.parseInt(pageStr);
-                int num = Integer.parseInt(numStr);
-                sqlCount += sql;
-                sql += " order by id desc limit "+(page-1)*num+","+num;
-                sqlList += sql;
-                List<SqlRow> eventsList=Ebean.createSqlQuery(sqlList)
-                        .findList();
-                int counts = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");
-                int totalNum = counts;
-                int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+                int totalNum=0;
+                int totalPage=0;
+                List<SqlRow> eventsList;
+                if(!numStr.isEmpty()&&!pageStr.isEmpty()){
+                    int page = Integer.parseInt(pageStr);
+                    int num = Integer.parseInt(numStr);
+                    sqlCount += sql;
+                    sql += " order by id desc limit "+(page-1)*num+","+num;
+                    sqlList += sql;
+                    eventsList=Ebean.createSqlQuery(sqlList)
+                            .findList();
+                    totalNum = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");
+                    totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+                }else{
+                    sqlCount += sql;
+                    sql += " order by id desc";
+                    sqlList += sql;
+                    eventsList=Ebean.createSqlQuery(sqlList)
+                            .findList();
+                    totalNum = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");
+                    totalPage = 1;
+                }
                 return successList(totalNum,totalPage,eventsList);
             }
             return failure(ErrDefinition.E_COMMON_READ_FAILED);

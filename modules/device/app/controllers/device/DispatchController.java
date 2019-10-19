@@ -398,8 +398,7 @@ public class DispatchController extends BaseController{
                 sqlList += sql;
                 List<SqlRow> dispatchList=Ebean.createSqlQuery(sqlList)
                         .findList();
-                int counts = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");
-                int totalNum = counts;
+                int totalNum = Ebean.createSqlQuery(sqlCount).findUnique().getInteger("id");;
                 int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
                 return successList(totalNum,totalPage,dispatchList);
             }

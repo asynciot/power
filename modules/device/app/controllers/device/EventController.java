@@ -103,6 +103,68 @@ public class EventController extends BaseController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+    public Result readEventNoPage(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            List<Events> eventsList;
+            String id = form.get("id");
+            if (id != null && !id.isEmpty()) {
+                Events events = Events.finder.byId(Integer.parseInt(id));
+                if (events == null) {
+                    throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                }
+                eventsList = new ArrayList<>();
+                eventsList.add(events);
+                return successList(1, 1, eventsList);
+            }
+            String device_id=form.get("device_id");
+            String imei=form.get("imei");
+            ExpressionList<Events> exprList = null;
+            if(device_id!=null&&!device_id.isEmpty()){
+                exprList = Events.finder.where().eq("device_id",device_id);
+            }
+            if (imei!=null&&!imei.isEmpty()){
+                exprList = Events.finder.where().eq("imei",imei);
+            }
+
+            String startTime = form.get("startTime");
+            String endTime = form.get("endTime");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if(startTime!=null&&!startTime.isEmpty()){
+                Date st = sdf.parse(startTime);
+                exprList.add(Expr.ge("time",st));
+            }
+            if(endTime!=null&&!endTime.isEmpty()){
+                Date ed = sdf.parse(endTime);
+                exprList.add(Expr.le("time",ed));
+            }
+            String length=form.get("length");
+            if (length != null && !length.isEmpty()) {
+                exprList.add(Expr.eq("length", length));
+            }
+            String interval=form.get("interval");
+            if (interval != null && !interval.isEmpty()) {
+                exprList.add(Expr.eq("interval", interval));
+            }
+            eventsList = exprList
+                    .orderBy("time desc")
+                    .findList();
+
+            int totalNum = exprList.findRowCount();
+            int totalPage = 1;
+
+            return successList(totalNum, totalPage, eventsList);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
     public Result readCountEvent(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
