@@ -45,7 +45,8 @@ GET         /Offline/Single             controllers.device.OfflineController.sin
 GET         /Offline/Offline            controllers.device.OfflineController.offlineList()
 GET         /Offline/SingleOff          controllers.device.OfflineController.deviceOffline()
 
-GET         /Dispatch                   controllers.device.DispatchController.read()
+GET         /Dispatch                   controllers.device.DispatchController.readMore()
+GET         /Dispatch/ReadMore          controllers.device.DispatchController.readMore()
 GET         /Dispatch/ladder            controllers.device.DispatchController.readLadder()
 POST        /Dispatch/finish            controllers.device.DispatchController.finish()
 POST        /Dispatch/confirm           controllers.device.DispatchController.confirm()

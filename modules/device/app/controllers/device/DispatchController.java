@@ -1,19 +1,26 @@
 package controllers.device;
 
+import akka.stream.Materializer;
+import akka.util.ByteString;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import com.avaje.ebean.SqlRow;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 import models.account.Account;
 import models.device.*;
 import play.Logger;
+import play.core.j.JavaResultExtractor;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -27,6 +34,8 @@ import java.util.*;
 public class DispatchController extends BaseController{
     @Inject
     FormFactory formFactory;
+    @Inject
+    private Materializer mat;
 
     public Result confirm(){
         try{
@@ -357,6 +366,37 @@ public class DispatchController extends BaseController{
         } catch (CodeException ce) {
             Logger.error(ce.getMessage());
             return failure(ce.getCode());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readMore(){
+        try{
+            Result ret = read();
+            int TIME_OUT = 10000;
+            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+            if (resultData.get("code").asInt() != 0) {
+                return ret;
+            }
+            int totalNum = resultData.get("data").get("totalNumber").asInt();
+            int totalPage = resultData.get("data").get("totalPage").asInt();
+            List<ObjectNode> nodeList = new ArrayList<>();
+
+            for (JsonNode child : resultData.get("data").get("list")) {
+                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+                Order order = Order.finder.byId(node.get("order_id").asInt());
+                DeviceInfo deviceInfo = DeviceInfo.finder.byId(node.get("device_id").asInt());
+                Logger.info(deviceInfo.id.toString());
+                if(order!=null){
+                    node.put("device_type",order.device_type);
+                    node.put("device_name",deviceInfo.device_name);
+                }
+                nodeList.add(node);
+            }
+            return successList(totalNum, totalPage, nodeList);
         } catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
