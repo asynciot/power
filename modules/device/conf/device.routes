@@ -25,6 +25,7 @@ GET         /Device/ReadCountFollow     controllers.device.DeviceController.read
 GET         /Device/Locate              controllers.device.DeviceController.locate()
 
 GET         /Event                      controllers.device.EventController.read()
+GET         /Event/IMEI                 controllers.device.EventController.readByIMEI()
 GET         /Event/NoPage               controllers.device.EventController.readEventNoPage()
 GET         /Event/ReadCount            controllers.device.EventController.readCountEvent()
 GET         /Event/Activedoor           controllers.device.EventController.activedoor()

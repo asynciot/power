@@ -47,26 +47,16 @@ public class EventController extends BaseController {
                 eventsList.add(events);
                 return successList(1, 1, eventsList);
             }
-            ExpressionList<Events> exprList = null;
             String device_id=form.get("device_id");
-            if (device_id!=null&&!device_id.isEmpty()){
-                exprList = Events.finder.where().eq("device_id",device_id);
-            }
-            String imei = form.get("imei");
-            if(imei!=null && !imei.isEmpty()){
-                Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
-                exprList = Events.finder.where().eq("device_id",devices.id);
-            }
+            ExpressionList<Events> exprList = Events.finder.where().eq("device_id",device_id);
             String pageStr = form.get("page");
             String numStr = form.get("num");
             if (null == pageStr || pageStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-
             if (null == numStr || numStr.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-
             int page = Integer.parseInt(pageStr);
             int num = Integer.parseInt(numStr);
 
@@ -90,7 +80,6 @@ public class EventController extends BaseController {
                 exprList.add(Expr.eq("interval", interval));
             }
 
-
             eventsList = exprList
                     .setFirstRow((page-1)*num)
                     .setMaxRows(num)
@@ -107,6 +96,68 @@ public class EventController extends BaseController {
             return failure(ce.getCode());
         }
             catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readByIMEI(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            List<Events> eventsList;
+            ExpressionList<Events> exprList = null;
+            String imei = form.get("imei");
+            if(imei!=null && !imei.isEmpty()){
+                Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
+                exprList = Events.finder.where().eq("device_id",devices.id);
+            }
+            String pageStr = form.get("page");
+            String numStr = form.get("num");
+            if (null == pageStr || pageStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            if (null == numStr || numStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
+
+            String startTime = form.get("starttime");
+            String endTime = form.get("endtime");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if(startTime!=null&&!startTime.isEmpty()){
+                Date st = sdf.parse(startTime);
+                exprList.add(Expr.ge("time",st));
+            }
+            if(endTime!=null&&!endTime.isEmpty()){
+                Date ed = sdf.parse(endTime);
+                exprList.add(Expr.le("time",ed));
+            }
+            String length=form.get("length");
+            if (length != null && !length.isEmpty()) {
+                exprList.add(Expr.eq("length", length));
+            }
+            String interval=form.get("interval");
+            if (interval != null && !interval.isEmpty()) {
+                exprList.add(Expr.eq("interval", interval));
+            }
+
+            eventsList = exprList
+                    .setFirstRow((page-1)*num)
+                    .setMaxRows(num)
+                    .orderBy("time desc")
+                    .findList();
+
+            int totalNum = exprList.findRowCount();
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            return successList(totalNum, totalPage, eventsList);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
