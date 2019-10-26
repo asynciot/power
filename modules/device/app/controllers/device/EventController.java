@@ -9,6 +9,7 @@ import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.device.Devices;
 import models.device.Events;
 import play.Logger;
 import play.data.DynamicForm;
@@ -46,8 +47,16 @@ public class EventController extends BaseController {
                 eventsList.add(events);
                 return successList(1, 1, eventsList);
             }
+            ExpressionList<Events> exprList = null;
             String device_id=form.get("device_id");
-            ExpressionList<Events> exprList = Events.finder.where().eq("device_id",device_id);
+            if (device_id!=null&&!device_id.isEmpty()){
+                exprList = Events.finder.where().eq("device_id",device_id);
+            }
+            String imei = form.get("imei");
+            if(imei!=null && !imei.isEmpty()){
+                Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
+                exprList = Events.finder.where().eq("device_id",devices.id);
+            }
             String pageStr = form.get("page");
             String numStr = form.get("num");
             if (null == pageStr || pageStr.isEmpty()) {
