@@ -60,15 +60,15 @@ public class EventController extends BaseController {
             int page = Integer.parseInt(pageStr);
             int num = Integer.parseInt(numStr);
 
-            String starttime = form.get("starttime");
-            String endtime = form.get("endtime");
+            String startTime = form.get("starttime");
+            String endTime = form.get("endtime");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if(starttime!=null&&!starttime.isEmpty()){
-                Date st = sdf.parse(starttime);
+            if(startTime!=null&&!startTime.isEmpty()){
+                Date st = sdf.parse(startTime);
                 exprList.add(Expr.ge("time",st));
             }
-            if(endtime!=null&&!endtime.isEmpty()){
-                Date ed = sdf.parse(endtime);
+            if(endTime!=null&&!endTime.isEmpty()){
+                Date ed = sdf.parse(endTime);
                 exprList.add(Expr.le("time",ed));
             }
             String length=form.get("length");
@@ -111,17 +111,9 @@ public class EventController extends BaseController {
                 Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
                 exprList = Events.finder.where().eq("device_id",devices.id);
             }
-            String pageStr = form.get("page");
-            String numStr = form.get("num");
-            if (null == pageStr || pageStr.isEmpty()) {
+            if(exprList==null){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            if (null == numStr || numStr.isEmpty()) {
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-            }
-            int page = Integer.parseInt(pageStr);
-            int num = Integer.parseInt(numStr);
-
             String startTime = form.get("starttime");
             String endTime = form.get("endtime");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -141,21 +133,13 @@ public class EventController extends BaseController {
             if (interval != null && !interval.isEmpty()) {
                 exprList.add(Expr.eq("interval", interval));
             }
-
             eventsList = exprList
-                    .setFirstRow((page-1)*num)
-                    .setMaxRows(num)
                     .orderBy("time desc")
                     .findList();
-
             int totalNum = exprList.findRowCount();
-            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+            int totalPage = 1;
 
             return successList(totalNum, totalPage, eventsList);
-        }
-        catch (CodeException ce) {
-            Logger.error(ce.getMessage());
-            return failure(ce.getCode());
         }
         catch (Throwable e) {
             e.printStackTrace();
