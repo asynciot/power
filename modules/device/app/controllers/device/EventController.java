@@ -114,8 +114,8 @@ public class EventController extends BaseController {
             if(exprList==null){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-            String startTime = form.get("starttime");
-            String endTime = form.get("endtime");
+            String startTime = form.get("startTime");
+            String endTime = form.get("endTime");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             if(startTime!=null&&!startTime.isEmpty()){
                 Date st = sdf.parse(startTime);
@@ -170,7 +170,9 @@ public class EventController extends BaseController {
             if (imei!=null&&!imei.isEmpty()){
                 exprList = Events.finder.where().eq("imei",imei);
             }
-
+            if(exprList==null){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
             String startTime = form.get("startTime");
             String endTime = form.get("endTime");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
