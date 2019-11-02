@@ -430,6 +430,16 @@ create table runtime (
   constraint pk_runtime primary key (id)
 );
 
+create table simplify_events (
+  id                            integer auto_increment not null,
+  device_id                     integer,
+  event_type                    varchar(255),
+  device_type                   varchar(255),
+  start_time                    datetime(6),
+  end_time                      datetime(6),
+  constraint pk_simplify_events primary key (id)
+);
+
 create table sms_record (
   id                            integer auto_increment not null,
   mobile                        varchar(255) not null,
@@ -502,6 +512,8 @@ drop table if exists organize;
 drop table if exists roles;
 
 drop table if exists runtime;
+
+drop table if exists simplify_events;
 
 drop table if exists sms_record;
 

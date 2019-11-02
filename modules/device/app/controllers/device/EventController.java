@@ -17,6 +17,7 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Result;
 import play.libs.Json;
+import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -40,7 +41,9 @@ public class EventController extends BaseController {
             List<Events> eventsList;
             String id = form.get("id");
             if (id != null && !id.isEmpty()) {
+                Logger.info(id);
                 Events events = Events.finder.byId(Integer.parseInt(id));
+                Logger.info(events.id.toString());
                 if (events == null) {
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
@@ -355,6 +358,8 @@ public class EventController extends BaseController {
             DynamicForm form = formFactory.form().bindFromRequest();
             List<SimplifyEvents> eventsList;
             ExpressionList<SimplifyEvents> exprList = null;
+            String pageStr = form.get("page");
+            String numStr = form.get("num");
             String imei = form.get("imei");
             if(imei!=null && !imei.isEmpty()){
                 Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
@@ -363,12 +368,12 @@ public class EventController extends BaseController {
                 }
                 exprList = SimplifyEvents.finder.where().eq("device_id",devices.id);
             }
-            if(exprList==null){
-                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
-            }
             String device_id = form.get("device_id");
             if (device_id!=null && !device_id.isEmpty()){
                 exprList = SimplifyEvents.finder.where().eq("device_id",device_id);
+            }
+            if(exprList==null){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             String startTime = form.get("startTime");
             String endTime = form.get("endTime");
@@ -381,11 +386,15 @@ public class EventController extends BaseController {
                 Date ed = sdf.parse(endTime);
                 exprList.add(Expr.le("end_time",ed));
             }
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
             eventsList = exprList
-                    .orderBy("time desc")
+                    .setFirstRow((page-1)*num)
+                    .setMaxRows(num)
+                    .orderBy("start_time desc")
                     .findList();
             int totalNum = exprList.findRowCount();
-            int totalPage = 1;
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
             return successList(totalNum, totalPage, eventsList);
         }
         catch (Throwable e) {
