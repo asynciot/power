@@ -17,7 +17,6 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Result;
 import play.libs.Json;
-import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -425,7 +424,7 @@ public class EventController extends BaseController {
             }
             String startTime = form.get("startTime");
             String endTime = form.get("endTime");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             if(startTime!=null&&!startTime.isEmpty()){
                 Date st = sdf.parse(startTime);
                 exprList.add(Expr.ge("start_time",st));
