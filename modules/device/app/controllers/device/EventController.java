@@ -403,4 +403,48 @@ public class EventController extends BaseController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+    public Result readSimple(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            List<SimplifyEvents> eventsList;
+            ExpressionList<SimplifyEvents> exprList = null;
+            String imei = form.get("imei");
+            if(imei!=null && !imei.isEmpty()){
+                Devices devices = Devices.finder.where().eq("imei",imei).findUnique();
+                if (devices==null){
+                    throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+                }
+                exprList = SimplifyEvents.finder.where().eq("device_id",devices.id);
+            }
+            String device_id = form.get("device_id");
+            if (device_id!=null && !device_id.isEmpty()){
+                exprList = SimplifyEvents.finder.where().eq("device_id",device_id);
+            }
+            if(exprList==null){
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            String startTime = form.get("startTime");
+            String endTime = form.get("endTime");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if(startTime!=null&&!startTime.isEmpty()){
+                Date st = sdf.parse(startTime);
+                exprList.add(Expr.ge("start_time",st));
+            }
+            if(endTime!=null&&!endTime.isEmpty()){
+                Date ed = sdf.parse(endTime);
+                exprList.add(Expr.le("end_time",ed));
+            }
+            eventsList = exprList
+                    .orderBy("start_time desc")
+                    .findList();
+            int totalNum = exprList.findRowCount();
+            int totalPage = 1;
+            return successList(totalNum, totalPage, eventsList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
 }
