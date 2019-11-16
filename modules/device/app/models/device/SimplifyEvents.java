@@ -22,6 +22,10 @@ public class SimplifyEvents extends Model {
 
     public Date end_time;
 
+    public Integer current;
+
+    public Integer speed;
+
     public static Find<Integer, SimplifyEvents> finder =
             new Find<Integer, SimplifyEvents>(){};
 }

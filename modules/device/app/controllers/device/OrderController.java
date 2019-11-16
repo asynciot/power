@@ -302,7 +302,6 @@ public class OrderController extends BaseController {
             if (resultData.get("code").asInt() != 0) {
                 return ret;
             }
-
             List<ObjectNode> nodeList = new ArrayList<>();
             for(JsonNode child : resultData.get("data").get("list")){
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
