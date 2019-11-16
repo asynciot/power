@@ -376,14 +376,13 @@ public class EventController extends BaseController {
             }
             String startTime = form.get("startTime");
             String endTime = form.get("endTime");
+            Logger.info(endTime);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(startTime!=null&&!startTime.isEmpty()){
-                Date st = sdf.parse(startTime);
-                exprList.add(Expr.ge("start_time",st));
+                exprList.add(Expr.ge("start_time",startTime));
             }
             if(endTime!=null&&!endTime.isEmpty()){
-                Date ed = sdf.parse(endTime);
-                exprList.add(Expr.le("end_time",ed));
+                exprList.add(Expr.le("end_time",endTime));
             }
             int page = Integer.parseInt(pageStr);
             int num = Integer.parseInt(numStr);
@@ -439,6 +438,37 @@ public class EventController extends BaseController {
             int totalNum = exprList.findRowCount();
             int totalPage = 1;
             return successList(totalNum, totalPage, eventsList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readLadderEvent(){
+        try{
+            DynamicForm form = formFactory.form().bindFromRequest();
+            List<SimplifyEvents> eventsList = null;
+            ExpressionList<SimplifyEvents> exprList = SimplifyEvents.finder.where();
+            String id1 = form.get("id1");
+            String id2 = form.get("id2");
+            String start_time = form.get("startTime");
+            String end_time = form.get("endTime");
+            if(id1!=null&&!id1.isEmpty()&&id2!=null&&!id2.isEmpty()) {
+                exprList.add(Expr.ge("start_time",start_time));
+                exprList.add(Expr.le("end_time",end_time));
+                exprList.or(Expr.eq("device_id",id1),Expr.eq("device_id",id2));
+            }else if (id1!=null && !id1.isEmpty()){
+                exprList.add(Expr.ge("start_time",start_time));
+                exprList.add(Expr.le("end_time",end_time));
+                exprList.add(Expr.eq("device_id",id1));
+            }else if (id2!=null&& !id2.isEmpty()){
+                exprList.add(Expr.ge("start_time",start_time));
+                exprList.add(Expr.le("end_time",end_time));
+                exprList.add(Expr.eq("device_id",id2));
+            }
+            eventsList = exprList.orderBy("id").findList();
+            return successList(0, 0, eventsList);
         }
         catch (Throwable e) {
             e.printStackTrace();
