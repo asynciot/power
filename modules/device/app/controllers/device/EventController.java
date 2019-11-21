@@ -448,7 +448,7 @@ public class EventController extends BaseController {
     public Result readLadderEvent(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
-            List<SimplifyEvents> eventsList = null;
+            List<SimplifyEvents> eventsList;
             ExpressionList<SimplifyEvents> exprList = SimplifyEvents.finder.where();
             String id1 = form.get("id1");
             String id2 = form.get("id2");
@@ -468,7 +468,8 @@ public class EventController extends BaseController {
                 exprList.add(Expr.eq("device_id",id2));
             }
             eventsList = exprList.orderBy("id").findList();
-            return successList(0, 0, eventsList);
+            int num = eventsList.size();
+            return successList(num, 1, eventsList);
         }
         catch (Throwable e) {
             e.printStackTrace();

@@ -194,6 +194,9 @@ public class LadderController extends BaseController {
                 if(!node.get("ctrl").asText().equals("")){
                     DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
                     Devices devices = Devices.finder.where().eq("imei", node.get("ctrl").asText()).findUnique();
+                    Devices door1 = Devices.finder.where().eq("imei", node.get("door1").asText()).findUnique();
+
+                    node.put("door_id1",door1.id);
                     if (deviceInfo != null) {
                         node.put("rssi", deviceInfo.rssi);
                         node.put("tagcolor", deviceInfo.tagcolor);
