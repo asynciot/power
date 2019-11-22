@@ -124,7 +124,7 @@ create table device_info (
   delay                         varchar(255),
   rssi                          integer,
   runtime_state                 integer,
-  group_id                      integer,
+  group_id                      varchar(255),
   ladder_id                     varchar(255),
   item                          varchar(255),
   constraint pk_device_info primary key (id)

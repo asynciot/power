@@ -375,14 +375,19 @@ public class LadderController extends BaseController {
             DynamicForm form = formFactory.form().bindFromRequest();
             String ladder_id = form.get("ladder_id");
             String id = form.get("id");
-
+            String imei = form.get("imei");
             if (ladder_id == null || ladder_id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             Ladder ladder=Ladder.finder.byId(Integer.parseInt(ladder_id));
+            DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei",imei).findUnique();
             if(ladder !=null){
                 ladder.group_id = id;
                 ladder.save();
+            }
+            if(deviceInfo != null){
+                deviceInfo.group_id = id;
+                deviceInfo.save();
             }
             return success();
         }
@@ -400,16 +405,21 @@ public class LadderController extends BaseController {
     public Result rmGroup() {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
-
             String ladder_id = form.get("ladder_id");
+            String imei = form.get("imei");
+
             if (ladder_id == null || ladder_id.isEmpty()) {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
-
             Ladder ladder=Ladder.finder.byId(Integer.parseInt(ladder_id));
+            DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("imei",imei).findUnique();
             if(ladder !=null){
-                ladder.group_id = "0";
+                ladder.group_id = null;
                 ladder.save();
+            }
+            if(deviceInfo != null){
+                deviceInfo.group_id = null;
+                deviceInfo.save();
             }
             return success();
         }
