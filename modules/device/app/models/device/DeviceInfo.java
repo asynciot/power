@@ -58,7 +58,7 @@ public class DeviceInfo extends Model{
 
     public Integer runtime_state;
 
-    public Integer group_id;
+    public String group_id;
 
     public String ladder_id;
 
