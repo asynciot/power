@@ -167,9 +167,6 @@ public class OrganizationController extends BaseController{
             Account account = Account.finder.where().eq("id",userId).findUnique();
             Integer number = Integer.parseInt(form.get("number"));
 
-            if (null == number) {
-                throw new CodeException(ErrDefinition.E_FUNCTION_INFO_INCORRECT_PARAM);
-            }
             Organization organization = Organization.finder.where().eq("number",number).findUnique();
             account.organization_id = organization.id.toString();
 

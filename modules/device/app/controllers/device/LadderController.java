@@ -23,6 +23,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
+import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -92,9 +93,7 @@ public class LadderController extends BaseController {
             String search_info = form.get("search_info");
             String ladder_id = form.get("id");
             String group_id = form.get("group_id");
-
             String register = form.get("register");
-
             String tag = form.get("tagcolor");
             String state = form.get("state");
             String pageStr = form.get("page");
@@ -266,8 +265,8 @@ public class LadderController extends BaseController {
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
-
     }
+
     public Result ReadFault(){
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
@@ -524,6 +523,169 @@ public class LadderController extends BaseController {
                 return successList(totalNum,totalPage,eventsList);
             }
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
+    public Result readSimple(){
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            ExpressionList<Ladder> exprList= Ladder.finder.where();
+            List<Ladder> ladderInfoList;
+
+            String search_info = form.get("search_info");
+            String install_addr = form.get("install_addr");
+            String group_id = form.get("group_id");
+            String pageStr = form.get("page");
+            String numStr = form.get("num");
+
+            if (search_info != null && !search_info.isEmpty()){
+                exprList=Ladder.finder.where().contains("ctrl",search_info);
+                if(exprList.findRowCount()<1) {
+                    exprList = Ladder.finder.where().contains("door1", search_info);
+                    if (exprList.findRowCount() < 1) {
+                        exprList = Ladder.finder.where().contains("door2", search_info);
+                        if (exprList.findRowCount() < 1) {
+                            exprList = Ladder.finder.where().contains("name", search_info);
+                        }
+                    }
+                }
+            }
+            List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
+            Set<String> ctrllist=new HashSet<>();
+            for(FollowLadder follows:followList){
+                ctrllist.add(follows.ctrl);
+            }
+            exprList=exprList.in("ctrl",ctrllist);
+            if (group_id != null && !group_id.isEmpty()) {
+                exprList.or(Expr.eq("group_id",group_id),Expr.eq("group_id",null));
+            }
+            if(install_addr!=null&&!install_addr.isEmpty()){
+                exprList=exprList.contains("install_addr",install_addr);
+            }
+            if (null == pageStr || pageStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            if (null == numStr || numStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
+
+            ladderInfoList = exprList
+                    .setFirstRow((page-1)*num)
+                    .setMaxRows(num)
+                    .orderBy("group_id desc")
+                    .findList();
+
+            int totalNum = exprList.findRowCount();
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            return successList(totalNum, totalPage, ladderInfoList);
+        }
+        catch (CodeException ce) {
+            Logger.error(ce.getMessage());
+            return failure(ce.getCode());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readSimpleF(){
+        try {
+            Result ret = readSimple();
+            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+            if (resultData.get("code").asInt() != 0) {
+                return ret;
+            }
+            int totalNum = resultData.get("data").get("totalNumber").asInt();
+            int totalPage = resultData.get("data").get("totalPage").asInt();
+            List<ObjectNode> nodeList = new ArrayList<>();
+            for (JsonNode child : resultData.get("data").get("list")) {
+                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+                Logger.info(String.valueOf(node.get("group_id")));
+                if (node.get("group_id").toString()!="null") {
+                    node.put("follow","yes");
+                } else {
+                    node.put("follow","no");
+                }
+                nodeList.add(node);
+            }
+            return successList(totalNum, totalPage, nodeList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readSimpleS(){
+        try {
+            DynamicForm form = formFactory.form().bindFromRequest();
+            ExpressionList<Ladder> exprList= Ladder.finder.where();
+            List<Ladder> ladderInfoList;
+
+            String search_info = form.get("search_info");
+            String install_addr = form.get("install_addr");
+            String group_id = form.get("group_id");
+            String pageStr = form.get("page");
+            String numStr = form.get("num");
+
+            if (search_info != null && !search_info.isEmpty()){
+                exprList=Ladder.finder.where().contains("ctrl",search_info);
+                if(exprList.findRowCount()<1) {
+                    exprList = Ladder.finder.where().contains("door1", search_info);
+                    if (exprList.findRowCount() < 1) {
+                        exprList = Ladder.finder.where().contains("door2", search_info);
+                        if (exprList.findRowCount() < 1) {
+                            exprList = Ladder.finder.where().contains("name", search_info);
+                        }
+                    }
+                }
+            }
+            List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
+            Set<String> ctrllist=new HashSet<>();
+            for(FollowLadder follows:followList){
+                ctrllist.add(follows.ctrl);
+            }
+            exprList=exprList.in("ctrl",ctrllist);
+            if (group_id != null && !group_id.isEmpty()) {
+                exprList.add(Expr.eq("group_id",group_id));
+            }
+            if(install_addr!=null&&!install_addr.isEmpty()){
+                exprList=exprList.contains("install_addr",install_addr);
+            }
+            if (null == pageStr || pageStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+            if (null == numStr || numStr.isEmpty()) {
+                throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
+            }
+
+            int page = Integer.parseInt(pageStr);
+            int num = Integer.parseInt(numStr);
+
+            ladderInfoList = exprList
+                    .setFirstRow((page-1)*num)
+                    .setMaxRows(num)
+                    .findList();
+
+            int totalNum = exprList.findRowCount();
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            return successList(totalNum, totalPage, ladderInfoList);
         }
         catch (CodeException ce) {
             Logger.error(ce.getMessage());
