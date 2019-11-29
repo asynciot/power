@@ -270,7 +270,6 @@ public class DeviceController extends BaseController {
         return delete(DeviceInfo.class, formFactory);
     }
     public Result readCountfollow() {
-
             List<Follow> followList= Follow.finder.where().eq("userId", session("userId")).findList();
             Set<String> imeilist=new HashSet<>();
             for(Follow follows:followList){

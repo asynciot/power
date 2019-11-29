@@ -21,6 +21,7 @@ import play.core.j.JavaResultExtractor;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
 import sun.rmi.runtime.Log;
@@ -705,6 +706,51 @@ public class LadderController extends BaseController {
             e.printStackTrace();
             Logger.error(e.getMessage());
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readCountFollow() {
+        List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
+        List<Ladder> ladderList = Ladder.finder.where().eq("state","online").findList();
+        ExpressionList<Order> exprList = Order.finder.where();
+
+        Set<Integer> idList=new HashSet<>();
+        Set<String> ctrlList=new HashSet<>();
+        for(FollowLadder follows:followList){
+            idList.add(follows.ladder_id);
+            ctrlList.add(String.valueOf(follows.ladder_id));
+        }
+        try {
+            exprList = exprList.in("id",ctrlList);
+            for(Ladder ladder: ladderList){
+                if(ladder.state.equals("online")){
+                    exprList.add(Expr.eq("device_id", ladder.ctrl_id));
+                    exprList.add(Expr.eq("islast", 1));
+                }
+            }
+            exprList = exprList.not(Expr.eq("state", "treated"));
+            int online =Ladder.finder
+                    .where()
+                    .eq("state", "online")
+                    .in("id",idList)
+                    .findRowCount();
+            int offline =exprList.findRowCount();
+
+            int longOffline =Ladder.finder
+                    .where()
+                    .eq("state", "longoffline")
+                    .in("id",idList)
+                    .findRowCount();
+
+            ObjectNode node = Json.newObject();
+            node.put("online", String.format("%d", online));
+            node.put("offline", String.format("%d", offline));
+            node.put("longoffline", String.format("%d", longOffline));
+            return success("data", node);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_MESSAGE_READ_FAILED);
         }
     }
 }
