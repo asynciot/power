@@ -1,9 +1,13 @@
 package controllers.device;
 
+import akka.stream.Materializer;
+import akka.util.ByteString;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import com.avaje.ebean.SqlRow;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.common.BaseController;
 import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
@@ -13,6 +17,7 @@ import models.device.Devices;
 import models.device.Events;
 import models.device.SimplifyEvents;
 import play.Logger;
+import play.core.j.JavaResultExtractor;
 import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Result;
@@ -30,6 +35,8 @@ import java.util.List;
 public class EventController extends BaseController {
     @Inject
     private FormFactory formFactory;
+    @Inject
+    private Materializer mat;
 
     public Result create() {
         return create(Events.class, formFactory);
@@ -40,9 +47,7 @@ public class EventController extends BaseController {
             List<Events> eventsList;
             String id = form.get("id");
             if (id != null && !id.isEmpty()) {
-                Logger.info(id);
                 Events events = Events.finder.byId(Integer.parseInt(id));
-                Logger.info(events.id.toString());
                 if (events == null) {
                     throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
                 }
@@ -470,6 +475,32 @@ public class EventController extends BaseController {
             eventsList = exprList.orderBy("id").findList();
             int num = eventsList.size();
             return successList(num, 1, eventsList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readEventMore(){
+        try{
+            Result ret = readLadderEvent();
+            int TIME_OUT = 10000;
+            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+            if (resultData.get("code").asInt() != 0) {
+                return ret;
+            }
+            int totalNum = resultData.get("data").get("totalNumber").asInt();
+            int totalPage = resultData.get("data").get("totalPage").asInt();
+            List<ObjectNode> nodeList = new ArrayList<>();
+            for (JsonNode child : resultData.get("data").get("list")) {
+                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+                Devices devices = Devices.finder.where().eq("id",node.get("device_id").asText()).findUnique();
+                node.put("device_model",devices.model);
+                nodeList.add(node);
+            }
+            return successList(totalNum, totalPage, nodeList);
         }
         catch (Throwable e) {
             e.printStackTrace();

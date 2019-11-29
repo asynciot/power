@@ -186,13 +186,14 @@ public class OrderController extends BaseController {
                 exprList.add(Expr.eq("item",item));
             }
             String follow=form.get("follow");
-            if(follow!=null&&!follow.isEmpty()&&follow.equals("yes")){
+            if(follow.equals("yes")){
                 List<Follow> followList= Follow.finder.where().eq("userId", session("userId")).findList();
                 Set<Integer> idlist=new HashSet<>();
                 for(Follow follows:followList){
                         idlist.add(follows.device_id);
                 }
                 exprList=exprList.in("device_id",idlist);
+                System.out.print(exprList);
             }
 
             orderList = exprList
