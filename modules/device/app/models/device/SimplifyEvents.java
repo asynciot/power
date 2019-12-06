@@ -26,6 +26,10 @@ public class SimplifyEvents extends Model {
 
     public Integer speed;
 
+    public Integer door;
+
+    public Integer max_door;
+
     public static Find<Integer, SimplifyEvents> finder =
             new Find<Integer, SimplifyEvents>(){};
 }
