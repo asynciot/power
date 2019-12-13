@@ -87,6 +87,8 @@ DELETE      /Organization               controllers.device.OrganizationControlle
 
 POST        /Ladder                     controllers.device.LadderController.create()
 GET         /Ladder                     controllers.device.LadderController.ReadFault()
+GET         /Ladder/ReadFault           controllers.device.LadderController.ReadLadderFault()
+GET         /Ladder/ReadFaultInfo       controllers.device.LadderController.readFaultInfo()
 GET         /Ladder/ReadMore            controllers.device.LadderController.readMore()
 GET         /Ladder/ReadSimple          controllers.device.LadderController.readSimpleF()
 GET         /Ladder/ReadSimpleS         controllers.device.LadderController.readSimpleS()

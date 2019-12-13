@@ -303,6 +303,84 @@ public class LadderController extends BaseController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+    public Result ReadLadderFault(){
+        try {
+            ExpressionList<Order> exprList = Order.finder.where();
+
+            List<FollowLadder> followList= FollowLadder.finder.where().eq("user_id", session("userId")).findList();
+            Set<String> ctrllist=new HashSet<>();
+            for(FollowLadder follows:followList){
+                if (follows.ctrl!=null&&!follows.ctrl.isEmpty()){
+                    Devices devices = Devices.finder.where().eq("imei",follows.ctrl).findUnique();
+                    Logger.info(follows.ctrl);
+                    if (devices!=null){
+                        ctrllist.add(String.valueOf(devices.id));
+                    }
+                }else if (follows.door1!=null&&!follows.door1.isEmpty()){
+                    Devices devices = Devices.finder.where().eq("imei",follows.door1).findUnique();
+                    if (devices!=null){
+                        ctrllist.add(String.valueOf(devices.id));
+                    }
+                }
+            }
+            exprList=exprList.in("id",ctrllist);
+            exprList.add(Expr.eq("islast", 1));
+            exprList = exprList.not(Expr.eq("state", "treated"));
+
+            List<Order> orderList = exprList.findList();
+
+            int num = 10;
+            int totalNum = exprList.findRowCount();
+
+            int totalPage = totalNum % num == 0 ? totalNum / num : totalNum / num + 1;
+
+            return successList(totalNum,totalPage,orderList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+    public Result readFaultInfo(){
+        try {
+            Result ret = ReadLadderFault();
+            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+            if (resultData.get("code").asInt() != 0) {
+                return ret;
+            }
+            int totalNum = resultData.get("data").get("totalNumber").asInt();
+            int totalPage = resultData.get("data").get("totalPage").asInt();
+            List<ObjectNode> nodeList = new ArrayList<>();
+            for (JsonNode child : resultData.get("data").get("list")) {
+                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+                Devices devices = Devices.finder.where().eq("id",node.get("device_id")).findUnique();
+                if (devices!=null){
+                    Ladder ladder = Ladder.finder.where().eq("ctrl_id",devices.id).findUnique();
+                    if (ladder==null){
+                        ladder = Ladder.finder.where().eq("door1",devices.IMEI).findUnique();
+                    }
+                    if (ladder != null){
+                        node.put("name",ladder.name);
+                        node.put("ctrl",ladder.ctrl);
+                        node.put("door1",ladder.door1);
+                        node.put("door2",ladder.door2);
+                        node.put("install_addr",ladder.install_addr);
+                        node.put("state",ladder.state);
+                        node.put("item",ladder.item);
+                    }
+                }
+                nodeList.add(node);
+            }
+            return successList(totalNum, totalPage, nodeList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
 
     public Result update() {
         try {
