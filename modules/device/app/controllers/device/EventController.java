@@ -362,7 +362,7 @@ public class EventController extends BaseController {
             sql=sql+"AND start_time>'"+startTime+"' ";
         }
         if(endTime!=null&&!endTime.isEmpty()){
-            sql=sql+"AND end_time>'"+endTime+"' ";
+            sql=sql+"AND end_time<'"+endTime+"' ";
         }
         if(item!=null&&!item.isEmpty()){
             sql=sql+"AND item='"+item+"' ";
