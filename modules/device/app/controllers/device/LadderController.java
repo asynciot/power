@@ -704,7 +704,6 @@ public class LadderController extends BaseController {
             List<ObjectNode> nodeList = new ArrayList<>();
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
-                Logger.info(String.valueOf(node.get("group_id")));
                 if (node.get("group_id").toString()!="null") {
                     node.put("follow","yes");
                 } else {

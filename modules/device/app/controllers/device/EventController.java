@@ -15,6 +15,7 @@ import controllers.common.ErrDefinition;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.device.Devices;
 import models.device.Events;
+import models.device.Ladder;
 import models.device.SimplifyEvents;
 import play.Logger;
 import play.core.j.JavaResultExtractor;
@@ -22,8 +23,10 @@ import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.mvc.Result;
 import play.libs.Json;
+import scala.util.Try;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,6 +40,8 @@ public class EventController extends BaseController {
     private FormFactory formFactory;
     @Inject
     private Materializer mat;
+
+    private static int TIME_OUT = 10000;
 
     public Result create() {
         return create(Events.class, formFactory);
@@ -328,15 +333,15 @@ public class EventController extends BaseController {
 
 	public Result activedoor(){
 		DynamicForm form = formFactory.form().bindFromRequest();
-	    String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.`events` inner join ladder.`device_info` on ladder.`events`.device_id=ladder.`device_info`.id WHERE ladder.`events`.device_id>0 ";
-		String starttime = form.get("starttime");
-		String endtime = form.get("endtime");
+	    String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.simplify_events inner join ladder.`device_info` on ladder.`simplify_events`.device_id=ladder.`device_info`.id WHERE ladder.`events`.device_id>0 ";
+		String startTime = form.get("starttime");
+		String endTime = form.get("endtime");
 		String item = form.get("item");
-		if(starttime!=null&&!starttime.isEmpty()){
-		    sql=sql+"AND time>'"+starttime+"' ";
+		if(startTime!=null&&!startTime.isEmpty()){
+		    sql=sql+"AND time>'"+startTime+"' ";
 		}
-		if(endtime!=null&&!endtime.isEmpty()){
-				sql=sql+"AND time>'"+endtime+"' ";
+		if(endTime!=null&&!endTime.isEmpty()){
+				sql=sql+"AND time>'"+endTime+"' ";
 		}
 		if(item!=null&&!item.isEmpty()){
 			sql=sql+"AND item='"+item+"' ";
@@ -345,11 +350,58 @@ public class EventController extends BaseController {
 	    List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
 
 	    return successList(orderList);
-		
-// 		ObjectNode node = Json.newObject();
-// 		node.put("sql", sql);		
-// 		return success("data",node);
 	}
+
+    public Result ladderEvents(){
+        DynamicForm form = formFactory.form().bindFromRequest();
+        String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.simplify_events inner join ladder.`device_info` on ladder.`simplify_events`.device_id=ladder.`device_info`.id WHERE ladder.`events`.device_id>0 And device_type='15'";
+        String startTime = form.get("starttime");
+        String endTime = form.get("endtime");
+        String item = form.get("item");
+        if(startTime!=null&&!startTime.isEmpty()){
+            sql=sql+"AND time>'"+startTime+"' ";
+        }
+        if(endTime!=null&&!endTime.isEmpty()){
+            sql=sql+"AND time>'"+endTime+"' ";
+        }
+        if(item!=null&&!item.isEmpty()){
+            sql=sql+"AND item='"+item+"' ";
+        }
+        sql=sql+"group by device_id order by count(device_id) desc limit 10";
+        List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
+        return successList(startTime!=null ?Integer.parseInt(startTime):0,endTime!=null ?Integer.parseInt(endTime):0,orderList);
+    }
+
+//    public Result ReadMore(){
+//        try{
+//            Result ret = ladderEvents();
+//            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+//            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+//            if (resultData.get("code").asInt() != 0) {
+//                return ret;
+//            }
+//            int startTime = resultData.get("data").get("startTime").asInt();
+//            int endTime = resultData.get("data").get("endTime").asInt();
+//            List<ObjectNode> nodeList = new ArrayList<>();
+//            for (JsonNode child : resultData.get("data").get("list")) {
+//                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+//                Devices devices = Devices.finder.where().eq("id", node.get("device_id")).findUnique();
+//                Ladder ladder = Ladder.finder.where().eq("door1",devices.IMEI).findUnique();
+//                List<SimplifyEvents> Simple1 = new ArrayList<>();
+//                List<SimplifyEvents> Simple2 = new ArrayList<>();
+//                if (ladder.ctrl!=null){
+//                    Simple1 = SimplifyEvents.finder.where().eq("device_id",ladder.ctrl).le("end_time",endTime).ge("start_time",startTime).findList();
+//                    node.putPOJO("ctrlList",Simple1);
+//                }
+//
+//
+//            }
+//            return successList(nodeList);
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public Result update() {
         return update(Events.class, formFactory);
