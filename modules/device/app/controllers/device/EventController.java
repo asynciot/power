@@ -354,15 +354,15 @@ public class EventController extends BaseController {
 
     public Result ladderEvents(){
         DynamicForm form = formFactory.form().bindFromRequest();
-        String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.simplify_events inner join ladder.`device_info` on ladder.simplify_events.device_id=ladder.`device_info`.id WHERE ladder.simplify_events.device_id>0 And device_type='15'";
-        String startTime = form.get("starttime");
-        String endTime = form.get("endtime");
+        String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.simplify_events inner join ladder.`device_info` on ladder.simplify_events.device_id=ladder.`device_info`.id WHERE ladder.simplify_events.device_id>0 And device_type='15' ";
+        String startTime = form.get("startTime");
+        String endTime = form.get("endTime");
         String item = form.get("item");
         if(startTime!=null&&!startTime.isEmpty()){
             sql=sql+"AND time>'"+startTime+"' ";
         }
         if(endTime!=null&&!endTime.isEmpty()){
-            sql=sql+"AND time>'"+endTime+"' ";
+            sql=sql+"AND time<'"+endTime+"' ";
         }
         if(item!=null&&!item.isEmpty()){
             sql=sql+"AND item='"+item+"' ";
