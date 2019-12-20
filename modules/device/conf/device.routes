@@ -32,6 +32,7 @@ GET         /Event/ReadLadderEvent      controllers.device.EventController.readE
 GET         /Event/NoPage               controllers.device.EventController.readEventNoPage()
 GET         /Event/ReadCount            controllers.device.EventController.readCountEvent()
 GET         /Event/Activedoor           controllers.device.EventController.activedoor()
+GET         /Event/LadderEvents         controllers.device.EventController.ladderEvents()
 
 GET         /Order                      controllers.device.OrderController.read()
 GET         /Order/Untreted             controllers.device.OrderController.readMore()
