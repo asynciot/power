@@ -124,7 +124,6 @@ public class HomeController extends XDomainController {
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
             if(type.equals("1")&&code.equals("0")){
-                Logger.info("no alert");
                 return ok("no alert");
             }
             Order Order =new Order();

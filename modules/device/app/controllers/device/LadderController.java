@@ -311,21 +311,21 @@ public class LadderController extends BaseController {
             Set<String> ctrllist=new HashSet<>();
             for(FollowLadder follows:followList){
                 if (follows.ctrl!=null&&!follows.ctrl.isEmpty()){
-                    Devices devices = Devices.finder.where().eq("imei",follows.ctrl).findUnique();
-                    Logger.info(follows.ctrl);
+                    DeviceInfo devices = DeviceInfo.finder.where().eq("imei",follows.ctrl).eq("state","online").findUnique();
                     if (devices!=null){
                         ctrllist.add(String.valueOf(devices.id));
                     }
                 }else if (follows.door1!=null&&!follows.door1.isEmpty()){
-                    Devices devices = Devices.finder.where().eq("imei",follows.door1).findUnique();
+                    DeviceInfo devices = DeviceInfo.finder.where().eq("imei",follows.door1).eq("state","online").findUnique();
                     if (devices!=null){
                         ctrllist.add(String.valueOf(devices.id));
                     }
                 }
             }
-            exprList=exprList.in("id",ctrllist);
             exprList.add(Expr.eq("islast", 1));
+            exprList =exprList.in("device_id",ctrllist);
             exprList = exprList.not(Expr.eq("state", "treated"));
+            exprList = exprList.not(Expr.eq("state", "examined"));
 
             List<Order> orderList = exprList.findList();
 
@@ -355,19 +355,22 @@ public class LadderController extends BaseController {
             List<ObjectNode> nodeList = new ArrayList<>();
             for (JsonNode child : resultData.get("data").get("list")) {
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
-                Devices devices = Devices.finder.where().eq("id",node.get("device_id")).findUnique();
+                String device_id = String.valueOf(node.get("device_id"));
+                Devices devices = Devices.finder.where().eq("id",device_id).findUnique();
                 if (devices!=null){
                     Ladder ladder = Ladder.finder.where().eq("ctrl_id",devices.id).findUnique();
                     if (ladder==null){
                         ladder = Ladder.finder.where().eq("door1",devices.IMEI).findUnique();
                     }
                     if (ladder != null){
+                        String state = String.valueOf(node.get("state"));
                         node.put("name",ladder.name);
                         node.put("ctrl",ladder.ctrl);
                         node.put("door1",ladder.door1);
                         node.put("door2",ladder.door2);
                         node.put("install_addr",ladder.install_addr);
-                        node.put("state",ladder.state);
+                        node.put("device_state",ladder.state);
+                        node.put("state",state);
                         node.put("item",ladder.item);
                     }
                 }

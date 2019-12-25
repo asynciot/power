@@ -354,7 +354,7 @@ public class EventController extends BaseController {
 
     public Result ladderEvents(){
         DynamicForm form = formFactory.form().bindFromRequest();
-        String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.simplify_events inner join ladder.`device_info` on ladder.simplify_events.device_id=ladder.`device_info`.id WHERE ladder.simplify_events.device_id>0 And device_type='15' ";
+        String sql="SELECT device_id,device_name,count(1) as counter FROM ladder.simplify_events inner join ladder.`device_info` on ladder.simplify_events.device_id=ladder.`device_info`.id WHERE ladder.simplify_events.device_id>0 And ladder.simplify_events.device_type='15' ";
         String startTime = form.get("startTime");
         String endTime = form.get("endTime");
         String item = form.get("item");
@@ -369,7 +369,7 @@ public class EventController extends BaseController {
         }
         sql=sql+"group by device_id order by count(device_id) desc limit 10";
         List<SqlRow> orderList=Ebean.createSqlQuery(sql).findList();
-        return successList(startTime!=null ?Integer.parseInt(startTime):0,endTime!=null ?Integer.parseInt(endTime):0,orderList);
+        return successList(orderList);
     }
 
 //    public Result ReadMore(){
@@ -393,8 +393,6 @@ public class EventController extends BaseController {
 //                    Simple1 = SimplifyEvents.finder.where().eq("device_id",ladder.ctrl).le("end_time",endTime).ge("start_time",startTime).findList();
 //                    node.putPOJO("ctrlList",Simple1);
 //                }
-//
-//
 //            }
 //            return successList(nodeList);
 //        }
@@ -433,7 +431,6 @@ public class EventController extends BaseController {
             }
             String startTime = form.get("startTime");
             String endTime = form.get("endTime");
-            Logger.info(endTime);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(startTime!=null&&!startTime.isEmpty()){
                 exprList.add(Expr.ge("start_time",startTime));

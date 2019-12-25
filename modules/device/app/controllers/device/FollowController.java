@@ -29,17 +29,17 @@ public class FollowController extends BaseController {
 
     public Result create() {
         try {
-            Form<Follow> form = formFactory.form(Follow.class).bindFromRequest();
+            DynamicForm form = formFactory.form().bindFromRequest();
 
-            if (form.hasErrors()) {
-                throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
-            }
             String userId = session("userId");
-            Follow followInfo = form.get();
-            if(followInfo.imei==null||followInfo.imei.isEmpty()){
+            String imei = form.get("imei");
+            Follow followInfo = new Follow();
+
+            if(imei==null||imei.isEmpty()){
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
-            Devices devices=Devices.finder.where().eq("IMEI",followInfo.imei).findUnique();
+            Devices devices=Devices.finder.where().eq("IMEI",imei).findUnique();
+            followInfo.imei=imei;
             followInfo.device_id=devices.id;
             followInfo.createTime=new Date();
             followInfo.userId=session("userId");
@@ -134,12 +134,24 @@ public class FollowController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             String device_id = form.get("device_id");
+            String imei = form.get("imei");
             String ftype = form.get("ftype");
-            Follow follow= Follow.finder.where()
-                    .eq("userId", session("userId"))
-                    .eq("device_id", device_id)
-                    .eq("ftype", ftype)
-                    .findUnique();
+            Follow follow = new Follow();
+            if (device_id!=null&&!device_id.isEmpty()){
+               follow = Follow.finder.where()
+                        .eq("userId", session("userId"))
+                        .eq("device_id", device_id)
+                        .eq("ftype", ftype)
+                        .findUnique();
+            }
+            if (imei!=null&&!imei.isEmpty()){
+                follow = Follow.finder.where()
+                        .eq("userId", session("userId"))
+                        .eq("imei", imei)
+                        .eq("ftype", ftype)
+                        .findUnique();
+            }
+
             if (follow == null ) {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }

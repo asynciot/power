@@ -217,7 +217,6 @@ public class DispatchController extends BaseController{
             String id = form.get("id");
             String result=form.get("result");
             String remarks=form.get("remarks");
-            Logger.info(result+"ss");
             if(id==null||id.isEmpty()){
                 throw new CodeException(ErrDefinition.E_COMMON_INCORRECT_PARAM);
             }
@@ -389,7 +388,6 @@ public class DispatchController extends BaseController{
                 ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
                 Order order = Order.finder.byId(node.get("order_id").asInt());
                 DeviceInfo deviceInfo = DeviceInfo.finder.byId(node.get("device_id").asInt());
-                Logger.info(deviceInfo.id.toString());
                 if(order!=null){
                     node.put("device_type",order.device_type);
                     node.put("device_name",deviceInfo.device_name);
