@@ -21,6 +21,7 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
+import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -482,7 +483,6 @@ public class AccountController extends XDomainController {
 
     }
     private void createWelcomeMsg(String toId) {
-        //create notification message
         Message message = new Message();
         message.title = "注册消息";
         message.content = "欢迎您加入宁波申菱电梯物联网平台";

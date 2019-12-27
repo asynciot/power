@@ -58,7 +58,7 @@ public class OrderController extends BaseController {
             if (adminAccount == null||adminAccount.augroup>1) {
                 throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
             }
-            Order order = models.device.Order.finder.byId(Integer.parseInt(id));
+            Order order = Order.finder.where().eq("id",Integer.parseInt(id)).findUnique();
             if (order!=null){
                 order.state="untreated";
                 order.save();
