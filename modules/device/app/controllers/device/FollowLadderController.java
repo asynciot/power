@@ -14,12 +14,7 @@ import controllers.common.CodeException;
 import controllers.common.ErrDefinition;
 
 import models.account.Account;
-import models.device.Devices;
-import models.device.Ladder;
-import models.device.Cellocation;
-import models.device.DeviceInfo;
-import models.device.IPlocation;
-import models.device.FollowLadder;
+import models.device.*;
 
 import play.Configuration;
 import play.Logger;
@@ -29,6 +24,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.libs.ws.WSClient;
 import play.mvc.Result;
+import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -50,25 +46,41 @@ public class FollowLadderController extends BaseController {
 
     public Result create() {
         try {
-            Form<FollowLadder> form = formFactory.form(FollowLadder.class).bindFromRequest();
+            DynamicForm form = formFactory.form().bindFromRequest();
 
             if (form.hasErrors()) {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
-
-            FollowLadder followInfo = form.get();
-            if(followInfo.ctrl!=null){
-                Ladder ladder=Ladder.finder.where().eq("ctrl",followInfo.ctrl).findUnique();
+            String userId = session("userId");
+            String ctrl = form.get("ctrl");
+            String door1 = form.get("door1");
+            String door2 = form.get("door2");
+            FollowLadder followInfo = new FollowLadder();
+            followInfo.user_id=userId;
+            followInfo.ctrl = ctrl;
+            followInfo.door1 = door1;
+            followInfo.door2 = door2;
+            if (null == userId) {
+                throw new CodeException(ErrDefinition.E_ACCOUNT_UNAUTHENTICATED);
+            }
+            if(ctrl!=null&&!ctrl.isEmpty()){
+                Ladder ladder=Ladder.finder.where().eq("ctrl",ctrl).findUnique();
                 if (ladder!=null)
                     followInfo.ladder_id=ladder.id;
             }else{
-                Ladder ladder=Ladder.finder.where().eq("door1",followInfo.door1).findUnique();
+                Ladder ladder=Ladder.finder.where().eq("door1",door1).findUnique();
                 if (ladder!=null)
                     followInfo.ladder_id=ladder.id;
             }
+//            int count = FollowLadder.finder.where()
+//                    .eq("user_id", session("userId"))
+//                    .eq("ctrl", followInfo.ctrl)
+//                    .findRowCount();
+//
+//            if (count != 0) {
+//                throw new CodeException(ErrDefinition.E_FOLLOW_INFO_ALREADY_EXIST);
+//            }
             followInfo.createTime=new Date();
-            followInfo.user_id=session("userId");
-
             Ebean.save(followInfo);
 
             return success();
@@ -210,10 +222,12 @@ public class FollowLadderController extends BaseController {
         try {
             DynamicForm form = formFactory.form().bindFromRequest();
             String ladder_id = form.get("ladder_id");
+            Logger.info(ladder_id);
             FollowLadder follow= FollowLadder.finder.where()
-                    .eq("userId", session("userId"))
+                    .eq("user_id", session("userId"))
                     .eq("ladder_id", ladder_id)
                     .findUnique();
+            Logger.info(follow.ladder_id+"");
             if (follow == null ) {
                 throw new CodeException(ErrDefinition.E_FOLLOW_INFO_INCORRECT_PARAM);
             }
