@@ -73,6 +73,8 @@ POST        /artlocation                controllers.device.ArtlocationController
 GET         /artlocation                controllers.device.ArtlocationController.read()
 DELETE      /artlocation                controllers.device.ArtlocationController.delete()
 
+POST        /cellocation                controllers.device.CellocationController.create()
+
 POST        /Group                      controllers.device.OrganizeController.create()
 GET         /Group                      controllers.device.OrganizeController.read()
 PUT         /Group                      controllers.device.OrganizeController.update()
