@@ -35,6 +35,7 @@ GET         /Event/Activedoor           controllers.device.EventController.activ
 GET         /Event/LadderEvents         controllers.device.EventController.ladderEvents()
 
 GET         /Order                      controllers.device.OrderController.read()
+GET         /Order/DeviceName           controllers.device.OrderController.readDeviceName()
 GET         /Order/Untreted             controllers.device.OrderController.readMore()
 GET         /TopFive                    controllers.device.OrderController.gettopfive()
 GET         /Order/Faultfreq            controllers.device.OrderController.faultfreq()

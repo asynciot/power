@@ -50,27 +50,35 @@ public class LadderController extends BaseController {
                 throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
             }
             Ladder ladderInfo = form.get();
-            if (ladderInfo.name == null || ladderInfo.name.isEmpty()) {
-                throw new CodeException(ErrDefinition.E_COMMON_FTP_INCORRECT_PARAM);
-            }
-            Devices devices;
-            if (!ladderInfo.ctrl.isEmpty()) {
-                devices = Devices.finder.where().eq("IMEI", ladderInfo.ctrl).findUnique();
-                if (devices!=null){
-                    ladderInfo.ctrl_id = devices.id.toString();
+
+            DeviceInfo deviceInfo_1;
+            DeviceInfo deviceInfo_2;
+            if (!ladderInfo.ctrl.isEmpty()&&ladderInfo.door1.isEmpty()) {
+                deviceInfo_1 = DeviceInfo.finder.where().eq("IMEI", ladderInfo.ctrl).findUnique();
+                if (deviceInfo_1!=null){
+                    ladderInfo.ctrl_id = deviceInfo_1.id.toString();
+                    ladderInfo.state = deviceInfo_1.state;
+                    Ebean.save(ladderInfo);
+                    deviceInfo_1.ladder_id = ladderInfo.id.toString();
+                    Ebean.save(deviceInfo_1);
                 }
-            }else{
-                devices = Devices.finder.where().eq("IMEI", ladderInfo.door1).findUnique();
-                if (devices!=null){
-                    ladderInfo.ctrl_id = devices.id.toString();
-                }
-            }
-            DeviceInfo deviceInfo = DeviceInfo.finder.where().eq("IMEI", devices.IMEI).findUnique();
-            if(deviceInfo!=null){
-                ladderInfo.state = deviceInfo.state;
+            }else if (!ladderInfo.ctrl.isEmpty()) {
+                deviceInfo_1 = DeviceInfo.finder.where().eq("IMEI", ladderInfo.ctrl).findUnique();
+                deviceInfo_2 = DeviceInfo.finder.where().eq("IMEI", ladderInfo.door1).findUnique();
+                ladderInfo.ctrl_id = deviceInfo_1.id.toString();
+                ladderInfo.state = deviceInfo_1.state;
                 Ebean.save(ladderInfo);
-                deviceInfo.ladder_id = ladderInfo.id.toString();
-                Ebean.save(deviceInfo);
+                deviceInfo_1.ladder_id = ladderInfo.id.toString();
+                deviceInfo_2.ladder_id = ladderInfo.id.toString();
+                Ebean.save(deviceInfo_1);
+                Ebean.save(deviceInfo_2);
+            }else if (!ladderInfo.door1.isEmpty()){
+                deviceInfo_2 = DeviceInfo.finder.where().eq("IMEI", ladderInfo.door1).findUnique();
+                ladderInfo.ctrl_id = deviceInfo_2.id.toString();
+                ladderInfo.state = deviceInfo_2.state;
+                Ebean.save(ladderInfo);
+                deviceInfo_2.ladder_id = ladderInfo.id.toString();
+                Ebean.save(deviceInfo_2);
             }
             return success();
         }

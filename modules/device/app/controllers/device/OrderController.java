@@ -219,6 +219,36 @@ public class OrderController extends BaseController {
             return failure(ErrDefinition.E_COMMON_READ_FAILED);
         }
     }
+    public Result readDeviceName(){
+        try {
+            Result ret = read();
+            int TIME_OUT = 10000;
+            ByteString body = JavaResultExtractor.getBody(ret, TIME_OUT, mat);
+            ObjectNode resultData = (ObjectNode) new ObjectMapper().readTree(body.decodeString("UTF-8"));
+            if (resultData.get("code").asInt() != 0) {
+                return ret;
+            }
+            int totalNum = resultData.get("data").get("totalNumber").asInt();
+
+            int totalPage = resultData.get("data").get("totalPage").asInt();
+            List<ObjectNode> nodeList = new ArrayList<>();
+            for(JsonNode child : resultData.get("data").get("list")){
+                ObjectNode node = (ObjectNode) new ObjectMapper().readTree(child.toString());
+                DeviceInfo devices = DeviceInfo.finder.where().eq("id",node.get("device_id").asText()).findUnique();
+                if(devices!=null){
+                    node.put("device_name",devices.device_name);
+                    nodeList.add(node);
+                }
+            }
+            return successList(totalNum, totalPage, nodeList);
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            Logger.error(e.getMessage());
+            return failure(ErrDefinition.E_COMMON_READ_FAILED);
+        }
+    }
+
     public Result readUntreted(){
         try{
             DynamicForm form = formFactory.form().bindFromRequest();
