@@ -51,7 +51,7 @@ public class CellocationController extends BaseController{
                 cellocation.cell_mcc = 460;
                 cellocation.cell_lac = 0;
                 cellocation.cell_cid = 0;
-                cellocation.radius = 0.0;
+                cellocation.radius = 0.00;
 
                 Ebean.save(cellocation);
                 cellocation = Cellocation.finder.where().eq("address",retVal.get("address").asText()).findUnique();
